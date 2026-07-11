@@ -5,15 +5,17 @@ import com.example.productosmvc.model.Product;
 import com.example.productosmvc.repository.ProductRepository;
 import com.example.productosmvc.service.ProductService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
     @Mock
@@ -21,10 +23,6 @@ public class ProductServiceTest {
 
     @InjectMocks
     private ProductService productService;
-
-    public ProductServiceTest() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testGetProductById() {
