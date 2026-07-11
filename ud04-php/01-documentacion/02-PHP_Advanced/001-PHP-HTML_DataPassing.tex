@@ -1,0 +1,198 @@
+% Created 2023-12-27 mié 22:52
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.12)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+
+\section{PHP and HTML}
+\label{sec:orgd224f90}
+
+Integrating PHP with HTML and managing data formats are crucial skills
+in web development. Here's a suggested order for tackling these topics,
+along with explanations and examples for each:
+
+\subsection{Embedding PHP in HTML}
+\label{sec:orgc0505e7}
+Start by learning how to embed PHP code within an HTML document. This is
+foundational for creating dynamic web pages.
+
+\subsubsection{Example:}
+\label{sec:orgd2054ac}
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PHP in HTML Example</title>
+</head>
+<body>
+    <h1>Welcome to My Website</h1>
+    <?php
+        echo "<p>Today's date is " . date("Y-m-d") . ".</p>";
+    ?>
+</body>
+</html>
+\end{minted}
+
+This example demonstrates how to insert PHP within an HTML document to
+display the current date.
+
+\subsection{Embedding HTML in PHP}
+\label{sec:org71fefc5}
+Next, understand how to output HTML content from PHP scripts. This is
+useful when you need to generate complex HTML structures based on
+certain conditions or data processing in PHP.
+
+\subsubsection{Example:}
+\label{sec:org72e313a}
+\begin{minted}[]{php}
+<?php
+$loggedIn = true;
+echo "<div>";
+if ($loggedIn) {
+    echo "<h2>Welcome back, user!</h2>";
+} else {
+    echo "<h2>Welcome, guest!</h2>";
+}
+echo "</div>";
+?>
+\end{minted}
+
+In this example, PHP decides which HTML content to output based on a
+condition.
+
+\subsection{Using PHP and HTML with Forms}
+\label{sec:orgeec87f7}
+Learn to create HTML forms and process form data with PHP. This is
+essential for user interaction on websites.
+
+\subsubsection{Example:}
+\label{sec:org1156daa}
+\begin{minted}[]{html}
+<!-- HTML Form -->
+<form action="submit.php" method="post">
+    Name: <input type="text" name="name">
+    <input type="submit">
+</form>
+\end{minted}
+
+\begin{minted}[]{php}
+<?php
+// submit.php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    echo "<p>Hello, " . htmlspecialchars($_POST['name']) . "!</p>";
+}
+?>
+\end{minted}
+
+This demonstrates a simple form submission and data handling in PHP.
+
+\subsection{PHP for Control Structures in HTML}
+\label{sec:orgcb0113f}
+Utilize PHP's control structures (loops, conditionals) to dynamically
+generate HTML content.
+
+\subsubsection{Example:}
+\label{sec:org22696a2}
+\begin{minted}[]{php}
+<ul>
+    <?php
+    for ($i = 1; $i <= 5; $i++) {
+        echo "<li>Item $i</li>";
+    }
+    ?>
+</ul>
+\end{minted}
+
+This example uses a PHP loop to create a list in HTML.
+
+\subsection{Data Formatting and Manipulation in PHP}
+\label{sec:orge5820d0}
+Once comfortable with embedding PHP in HTML and vice versa, focus on
+data formatting in PHP. This includes string formatting, date/time
+formatting, number formatting, etc.
+
+\subsubsection{Example:}
+\label{sec:org50a2b01}
+\begin{minted}[]{php}
+<?php
+$price = 49.99;
+$formattedPrice = number_format($price, 2);
+echo "<p>The price is $$formattedPrice</p>";
+?>
+\end{minted}
+
+This illustrates number formatting in PHP.
+
+\subsection{Advanced Data Formatting}
+\label{sec:org2811f27}
+Delve into more complex data formatting like JSON encoding/decoding,
+which is particularly useful in web APIs.
+
+\subsubsection{Example:}
+\label{sec:org32337ec}
+\begin{minted}[]{php}
+<?php
+$data = ['name' => 'John', 'age' => 30];
+$jsonData = json_encode($data);
+echo $jsonData;
+?>
+\end{minted}
+
+This example converts a PHP array into a JSON string.
+
+\subsection{Conclusion and Order of Learning}
+\label{sec:org1bd0311}
+Starting with embedding PHP in HTML helps set the stage for dynamic web
+content creation. As you progress, learning to process and handle user
+input via forms becomes essential. Then, focusing on PHP's control
+structures within HTML will deepen your understanding of creating
+responsive web pages. Finally, mastering data formatting ensures that
+the data you work with is presented and utilized effectively.
+
+By following this progression, you'll develop a strong foundation in PHP
+for web development, paving the way for more advanced topics such as
+database integration, session management, and security.
+\end{document}

@@ -1,0 +1,208 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* CascadeType y las relaciones entre entidades.
+En **Spring Boot** (y más generalmente en JPA, que es la tecnología
+subyacente), el atributo =cascade= de las relaciones entre entidades
+define cómo se propagan las operaciones realizadas en una entidad
+principal a sus entidades relacionadas. Esto se utiliza junto con las
+anotaciones de relaciones como =@OneToOne=, =@OneToMany=,
+=@ManyToOne=, o =@ManyToMany=.
+
+El =CascadeType= se refiere a los tipos de acciones que se aplicarán
+en cascada desde la entidad principal a las entidades asociadas. Estas
+acciones pueden incluir operaciones como **persistir**,
+**actualizar**, **eliminar**, etc.
+
+** Diferentes tipos de =CascadeType=
+
+*** 1. =CascadeType.ALL=
+   - Aplica **todas** las operaciones en cascada (incluso eliminar,
+     persistir, etc.) a la entidad relacionada.
+   - Significa que todas las operaciones (persist, merge, remove,
+     refresh, detach) que se realicen en la entidad principal también
+     se aplicarán a las entidades relacionadas.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   En este caso, si creas, actualizas o eliminas un =Usuario=, todas
+   esas operaciones también afectarán a los =Prestamos= relacionados.
+
+*** 2. =CascadeType.PERSIST=
+   - Esta opción solo hace que la operación de **persistencia**
+     (guardar una entidad nueva) se propague en cascada.
+   - Cuando se llama a =EntityManager.persist()= o a un método de
+     repositorio que guarda la entidad principal, también persistirá
+     las entidades relacionadas si estas no existían previamente.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.PERSIST)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   En este ejemplo, cuando guardas un =Usuario= nuevo, también se
+   guardarán automáticamente los =Prestamos= relacionados que no
+   existían antes, pero no se actualizarán o eliminarán los
+   existentes.
+
+*** 3. =CascadeType.MERGE=
+   - Propaga la operación de **actualización** (merge) desde la
+     entidad principal hacia las entidades relacionadas.
+   - Cuando se actualiza la entidad principal, las entidades
+     relacionadas también se actualizarán si están incluidas en la
+     relación.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.MERGE)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   En este caso, si actualizas un =Usuario=, los =Prestamos= asociados
+   también se actualizarán automáticamente.
+
+*** 4. =CascadeType.REMOVE=
+   - Esta opción propaga la operación de **eliminación** (remove) en
+     cascada. Cuando se elimina la entidad principal, también se
+     eliminarán las entidades relacionadas.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   Si eliminas un =Usuario=, automáticamente se eliminarán todos los
+   =Prestamos= relacionados.
+
+*** 5. =CascadeType.REFRESH=
+   - Aplica la operación de **refrescar** en cascada. Cuando se llama
+     a =EntityManager.refresh()= en la entidad principal, también se
+     recargan las entidades relacionadas desde la base de datos,
+     desechando cualquier cambio local.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.REFRESH)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   Si actualizas un =Usuario= en la base de datos y luego lo
+   refrescas, también se actualizarán sus =Prestamos= asociados desde
+   la base de datos.
+
+*** 6. =CascadeType.DETACH=
+   - Propaga la operación de **detach** en cascada. Cuando se
+     desasocia la entidad principal del =EntityManager= (es decir,
+     deja de ser gestionada), también se desasocian las entidades
+     relacionadas.
+
+   **Ejemplo**:
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario", cascade = CascadeType.DETACH)
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+   Si se llama a =EntityManager.detach()= sobre un =Usuario=, los
+   =Prestamos= asociados también dejarán de ser gestionados por el
+   =EntityManager=.
+
+** Combinaciones de =CascadeType=
+
+También es posible combinar varios tipos de =CascadeType= si no deseas
+aplicar **todas** las operaciones en cascada, pero sí un subconjunto
+de ellas. Esto se puede hacer utilizando un array de tipos de cascada.
+
+*** Ejemplo de combinación:
+
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "usuario",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+   private List<Prestamo> prestamos;
+   #+END_SRC
+
+En este caso, solo se aplicarán las operaciones de **persistir** y
+**actualizar** en cascada. Las operaciones de eliminar o refrescar no
+se propagarán a las entidades relacionadas.
+
+** Resumen de =CascadeType=
+
+| Tipo                  | Descripción                                      |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.ALL=     | Aplica todas las operaciones (persistir,         |
+|                       | actualizar, eliminar, etc.) en cascada.          |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.PERSIST= | Solo propaga la operación de **guardar**         |
+|                       | (persistir) a las entidades relacionadas.        |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.MERGE=   | Solo propaga la operación de **actualización**   |
+|                       | (merge) a las entidades relacionadas.            |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.REMOVE=  | Propaga la operación de **eliminar** en cascada, |
+|                       | eliminando también las entidades relacionadas.   |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.REFRESH= | Propaga la operación de **refrescar** para       |
+|                       | recargar las entidades desde la base de datos.   |
+|-----------------------+--------------------------------------------------|
+| =CascadeType.DETACH=  | Propaga la operación de **desasociar** para      |
+|                       | que las entidades dejen de estar gestionadas     |
+|                       | por el =EntityManager=.                          |
+|                       |                                                  |
+|-----------------------+--------------------------------------------------|
+
+** Buenas prácticas con =CascadeType=
+
+- **Uso de =CascadeType.ALL=**: Debe utilizarse con cuidado, ya que
+  puede llevar a un comportamiento no deseado si no controlas qué
+  operaciones se propagan. Es útil en relaciones donde quieres aplicar
+  todas las operaciones en cascada, como en relaciones padre-hijo.
+
+- **=CascadeType.REMOVE=**: Úsalo solo cuando estés seguro de que
+  quieres eliminar automáticamente las entidades relacionadas cuando
+  se elimine la entidad principal. De lo contrario, podrías perder
+  datos no intencionadamente.
+
+- **Combinaciones**: En la mayoría de los casos, se usa una
+  combinación de =PERSIST= y =MERGE=, ya que estas cubren la mayoría
+  de las operaciones de crear y actualizar sin tocar eliminaciones o
+  refrescos.

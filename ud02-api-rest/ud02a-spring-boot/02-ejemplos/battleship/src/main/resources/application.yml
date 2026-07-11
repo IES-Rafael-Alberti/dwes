@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: battleship
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+server:
+  servlet:
+    application-display-name: ""
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    display-request-duration: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  security:
+    jwt:
+      issuer: battleship-api
+      audience: battleship-client
+      access-token-expiration: 900000
+      refresh-token-expiration: 604800000
+      private-key: classpath:keys/private.pem
+      public-key: classpath:keys/public.pem

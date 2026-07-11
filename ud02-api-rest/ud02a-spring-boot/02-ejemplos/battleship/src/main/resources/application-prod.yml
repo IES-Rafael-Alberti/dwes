@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: ${SSL_KEYSTORE_PATH}
+    key-store-password: ${SSL_KEYSTORE_PASSWORD}
+    key-store-type: PKCS12
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    max-connections: 8192
+    accept-count: 100
+    connection-timeout: 5000
+    accesslog:
+      enabled: true
+      directory: /var/log/battleship
+      pattern: "%h %l %u %t \"%r\" %s %b %D"
+      rotate: true
+      prefix: access
+      suffix: .log
+
+app:
+  security:
+    jwt:
+      access-token-expiration: 900000
+      refresh-token-expiration: 604800000
+      private-key: ${JWT_PRIVATE_KEY}
+      public-key: ${JWT_PUBLIC_KEY}
+
+logging:
+  level:
+    com.example.battleship: INFO
+    org.springframework: WARN
+  file:
+    path: /var/log/battleship
+    name: battleship.log
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 10MB

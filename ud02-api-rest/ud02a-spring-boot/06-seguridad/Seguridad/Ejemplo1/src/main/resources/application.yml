@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.example.seguridad: DEBUG
+
+app:
+  security:
+    jwt:
+      secret: "MzJieXRlcy1zZWNyZXRvLWV4YW1wbG8tc3ByaW5nLWJvb3QtZGVtby0xMjM0NQ=="
+      expiration: 3600000

@@ -1,0 +1,179 @@
+#+TITLE: Tarea: extender el Blog con Laravel 10 y sail.
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=1.25cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+#+END_COMMENT
+
+#+LATEX_HEADER: \AtBeginEnvironment{noerr}{\dontdofcolorbox}
+#+LATEX_HEADER: \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+
+
+* Extensión del Blog con Laravel 10
+*** Tarea: Ampliar la Aplicación Blog en Laravel
+    :PROPERTIES:
+    :CUSTOM_ID: tarea-ampliar-la-aplicación-blog-en-laravel
+    :END:
+
+**** Objetivo
+     :PROPERTIES:
+     :CUSTOM_ID: objetivo
+     :END:
+
+Mejorar la actual aplicación blog en Laravel introduciendo
+características adicionales incluyendo múltiples tipos de publicaciones,
+perfiles de usuario avanzados, un panel de administración para la
+gestión de roles de usuario y más. Implementar pruebas para las
+funcionalidades obligatorias.
+
+**** Requisitos Obligatorios
+     :PROPERTIES:
+     :CUSTOM_ID: requisitos-obligatorios
+     :END:
+
+1. *Múltiples Tipos de Publicaciones*
+
+   - Ampliar el blog para admitir diferentes tipos de publicaciones:
+     texto e imagen.
+   - Actualizar la vista de creación de publicaciones para permitir a
+     los usuarios seleccionar el tipo de publicación y subir una imagen
+     si el tipo de publicación es "imagen".
+   - Modificar el modelo y controlador de Post para manejar la carga y
+     almacenamiento de imágenes.
+
+2. *Perfiles de Usuario Avanzados*
+
+   - Añadir nuevos campos al perfil de usuario: biografía, enlace al
+     sitio web y manejadores de redes sociales (por ejemplo, Facebook,
+     Twitter, Instagram).
+   - Implementar la funcionalidad que permite a los usuarios actualizar
+     su perfil con estos nuevos campos.
+   - Permitir a los usuarios cambiar su avatar. Asegurar que la
+     aplicación maneje la carga y actualice el perfil del usuario
+     adecuadamente.
+
+3. *Panel de Administración para la Gestión de Roles de Usuario*
+
+   - Crear un panel de administración accesible solo para usuarios con
+     el rol de Admin.
+   - Implementar tres roles de usuario: Admin, Editor y Regular. Usar
+     las características de autorización incorporadas de Laravel
+     (Gates and Policies) para gestionar el control de acceso basado
+     en roles. Alternativamente se pueden mantener y gestionar "roles"
+     y el control de acceso consultando los permisos del usuario
+     autenticado allí donde haga falta.
+   - Desde el panel de administración, los Admins deben poder cambiar
+     los roles de los usuarios.
+
+4. *Sistema de Comentarios*
+
+   - Habilitar a los usuarios para comentar en las publicaciones.
+     Asegurar que los comentarios se muestren en la página de vista de
+     la publicación.
+   - Implementar la lógica de backend para almacenar y recuperar
+     comentarios.
+
+5. *Pruebas (Obligatorias para los Puntos 1-4)*
+
+   - Escribir pruebas unitarias y de características para las
+     funcionalidades obligatorias introducidas en la aplicación.
+     Asegurar que las pruebas cubran múltiples escenarios y casos
+     límite.
+
+**** Requisitos Opcionales
+     :PROPERTIES:
+     :CUSTOM_ID: requisitos-opcionales
+     :END:
+
+5. *Funcionalidad de Etiquetado*
+
+   - Permitir al creador de la publicación etiquetar sus publicaciones.
+     Implementar un sistema de etiquetado donde las publicaciones pueden
+     ser etiquetadas con una o más etiquetas.
+   - Actualizar los formularios de creación y edición de publicaciones
+     para incluir la entrada de etiquetas.
+
+6. *Funcionalidad de Búsqueda*
+
+   - Implementar una característica de búsqueda que permita a los
+     usuarios buscar publicaciones por usuario, etiqueta, título o
+     contenido de la publicación.
+   - Asegurar que la funcionalidad de búsqueda sea eficiente y devuelva
+     resultados relevantes.
+
+7. *Caché*
+
+   - Implementar caché para el blog. Considerar el uso de Redis o
+     Memcached para cachear datos frecuentemente accedidos como
+     publicaciones, comentarios y resultados de búsqueda.
+   - Investigar y justificar cuál solución de caché (Redis o Memcached)
+     es más adecuada para la aplicación.
+
+**** Entregables
+     :PROPERTIES:
+     :CUSTOM_ID: entregables
+     :END:
+
+- Código fuente actualizado de la aplicación blog en Laravel incluyendo
+  todas las nuevas características (obligatorias y opcionales).
+- Un breve informe explicando la solución de caché elegida (Redis o
+  Memcached) y las razones de su selección (si se implementa caché).
+- Casos de prueba y sus resultados demostrando la corrección de las
+  características implementadas (obligatorio para los puntos 1-4).
+
+**** Criterios de Evaluación
+     :PROPERTIES:
+     :CUSTOM_ID: criterios-de-evaluación
+     :END:
+
+- Corrección y completitud de las características implementadas
+  (obligatorias y opcionales).
+- Adherencia a las mejores prácticas de Laravel para codificación y
+  arquitectura.
+- Calidad y cobertura de las pruebas escritas para las funcionalidades
+  obligatorias.
+- Claridad y justificación proporcionada en el informe de la solución de
+  caché (si aplica).
+
+**** Guías de Entrega
+     :PROPERTIES:
+     :CUSTOM_ID: guías-de-entrega
+     :END:
+
+- Entregar el código fuente del proyecto actualizado junto con los
+  archivos de migración de la base de datos.
+- Incluir un archivo README detallando los pasos para configurar y
+  ejecutar la aplicación actualizada.
+- Entregar el informe de la solución de caché como un documento separado
+  (si aplica).

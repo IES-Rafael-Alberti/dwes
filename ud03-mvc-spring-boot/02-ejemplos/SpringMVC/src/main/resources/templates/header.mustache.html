@@ -1,0 +1,13 @@
+<header>
+    <nav>
+        <a href="/tasks">Tareas</a>
+        <a href="/about">Acerca de</a>
+        <a href="/tasks/new">Nueva Tarea</a>
+        {{#authenticated}}
+        <a href="/logout">Cerrar Sesión</a>
+        {{/authenticated}}
+        {{^authenticated}}
+        <a href="/login">Iniciar Sesión</a>
+        {{/authenticated}}
+    </nav>
+</header>

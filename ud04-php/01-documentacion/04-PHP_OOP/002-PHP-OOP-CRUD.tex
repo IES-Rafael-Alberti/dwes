@@ -1,0 +1,266 @@
+% Created 2024-01-08 lun 09:21
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{CRUD Car Dealereship OOP}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={CRUD Car Dealereship OOP},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{CRUD Car Dealership in OOP PHP}
+\label{sec:org6935730}
+Rewriting the Car Dealership PHP CRUD application in an Object-Oriented
+Programming (OOP) style involves creating classes to represent entities
+like cars, clients, and purchases and encapsulating the CRUD operations
+within these classes. Below is a simplified example to demonstrate this
+approach.
+
+\subsection{Define the \texttt{Car} Class}
+\label{sec:orgaa6fa42}
+This class represents a car and includes methods for CRUD operations
+related to cars.
+
+\begin{minted}[]{php}
+<?=
+class Car {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function create($model, $price, $brand) {
+        // Insert a new car into the database
+    }
+
+    public function read($id) {
+        // Retrieve a car from the database by ID
+    }
+
+    public function update($id, $model, $price, $brand) {
+        // Update car details in the database
+    }
+
+    public function delete($id) {
+        // Delete a car from the database
+    }
+}
+\end{minted}
+
+\subsection{Implement CRUD Methods}
+\label{sec:org3333f36}
+Each method in the \texttt{Car} class should perform the corresponding database
+operation. For example, the \texttt{create} method could be implemented as
+follows:
+
+\begin{minted}[]{php}
+<?=
+public function create($model, $price, $brand) {
+    $stmt = $this->pdo->prepare("INSERT INTO cars (model, price, brand) VALUES (?, ?, ?)");
+    $stmt->execute([$model, $price, $brand]);
+}
+\end{minted}
+
+Similarly, you would implement the \texttt{read}, \texttt{update}, and \texttt{delete}
+methods.
+
+\subsection{Create Other Classes}
+\label{sec:org81caa48}
+Follow a similar pattern to create classes for other entities like
+\texttt{Client} and \texttt{Purchase}. Each class should have its own CRUD methods.
+
+\subsection{Use the Classes in Your Application}
+\label{sec:org3b71729}
+To use these classes in your application:
+
+\begin{enumerate}
+\item \textbf{Establish a Database Connection:} Create a PDO connection to your
+database and pass it to the constructor of your entity classes.
+
+\begin{minted}[]{php}
+<?=
+$pdo = new PDO("mysql:host=localhost;dbname=car_dealership", "username", "password");
+\end{minted}
+
+\item \textbf{Perform Operations:} Create instances of your classes and call their
+methods to perform operations.
+
+\begin{minted}[]{php}
+<?=
+ $car = new Car($pdo);
+ $car->create("Tesla Model S", 79900, "Tesla");
+
+ $carToUpdate = 1;
+ $car->update($carToUpdate, "Tesla Model S Plaid", 129990, "Tesla");
+
+ $carToDelete = 2;
+ $car->delete($carToDelete);
+\end{minted}
+\end{enumerate}
+
+\subsection{Conclusion}
+\label{sec:orgf0dda97}
+In this OOP approach, each class corresponds to an entity in your
+application, and the CRUD operations are methods within these classes.
+This structure leads to more organized and maintainable code, especially
+for larger applications. Each class is responsible for the operations
+related to a single aspect of the application, adhering to the Single
+Responsibility Principle, a key tenet of OOP.
+
+\section{Continuation}
+\label{sec:orgd1f4fb6}
+To complete the Car Dealership CRUD application in an OOP style, we'll
+create \texttt{Dealer} and \texttt{Purchase} classes. These classes will handle
+operations related to car dealers and purchases, respectively. We'll
+also outline the necessary HTML modifications for integrating these
+classes into the application.
+
+\subsection{\texttt{Dealer} Class}
+\label{sec:orgf537bd9}
+This class manages dealer-related operations.
+
+\begin{minted}[]{php}
+class Dealer {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function sellCar($carId, $clientId, $dealerId) {
+        // Assuming the method to register a car sale
+        // This could include reducing the inventory count for the car
+        // and adding an entry to the purchase history
+
+        // Example of adding an entry to a purchase table
+        $stmt = $this->pdo->prepare("INSERT INTO purchases (car_id, client_id, dealer_id) VALUES (?, ?, ?)");
+        $stmt->execute([$carId, $clientId, $dealerId]);
+    }
+
+    // Additional methods for dealer operations can be added here
+}
+\end{minted}
+
+\subsection{\texttt{Purchase} Class}
+\label{sec:org8935ce9}
+This class encapsulates operations related to purchases.
+
+\begin{minted}[]{php}
+class Purchase {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function getPurchaseDetails($purchaseId) {
+        $stmt = $this->pdo->prepare("SELECT * FROM purchases WHERE id = ?");
+        $stmt->execute([$purchaseId]);
+        return $stmt->fetch();
+    }
+
+    // Additional methods for handling purchase operations
+}
+\end{minted}
+
+\subsection{HTML Modifications}
+\label{sec:orgafbc99f}
+To integrate these new classes into your web application, you'll need to
+modify the HTML to allow for dealer operations like selling a car.
+Here's an example of how you might structure a simple form for a dealer
+to record a car sale:
+
+\subsubsection{HTML Form for Selling a Car (\texttt{sell\_car.html})}
+\label{sec:orgc1a2d11}
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sell a Car</title>
+</head>
+<body>
+    <h1>Sell a Car</h1>
+    <form action="sell_car.php" method="post">
+        Car ID: <input type="number" name="car_id"><br>
+        Client ID: <input type="number" name="client_id"><br>
+        Dealer ID: <input type="number" name="dealer_id"><br>
+        <input type="submit" value="Sell Car">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\subsubsection{PHP Script for Handling the Form (\texttt{sell\_car.php})}
+\label{sec:org5de82da}
+\begin{minted}[]{php}
+<?php
+require_once 'db_connect.php'; // Database connection
+require_once 'Dealer.php';
+
+$pdo = new PDO("mysql:host=localhost;dbname=car_dealership", "username", "password");
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $dealer = new Dealer($pdo);
+    $dealer->sellCar($_POST['car_id'], $_POST['client_id'], $_POST['dealer_id']);
+
+    echo "Car sold successfully.";
+}
+?>
+\end{minted}
+
+\subsection{Conclusion}
+\label{sec:orge6bff31}
+In the OOP version of your Car Dealership application, \texttt{Dealer} and
+\texttt{Purchase} classes encapsulate all the logic related to their respective
+domains. This makes your code more organized, modular, and easier to
+maintain.
+
+You'll need to adjust your HTML forms to work with these classes. The
+example above shows how you can create a form for a dealer to sell a
+car, which is then processed by a PHP script using the \texttt{Dealer} class.
+
+Remember, these are basic examples to demonstrate the concept. In a
+real-world application, you'd likely have more comprehensive error
+checking, input validation, and possibly more complex business logic
+incorporated into your class methods.
+\end{document}

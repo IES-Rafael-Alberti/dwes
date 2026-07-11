@@ -1,0 +1,7 @@
+# Perfil para activar la tabla game_jsonb con columnas JSONB en PostgreSQL.
+# Requiere PostgreSQL. Activar con: --spring.profiles.active=prod,jsonb
+spring:
+  flyway:
+    locations:
+      - classpath:db/migration
+      - classpath:db/jsonb-migrations

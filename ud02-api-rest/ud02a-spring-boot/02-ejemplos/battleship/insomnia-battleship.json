@@ -1,0 +1,277 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-05T19:44:00.000Z",
+  "__export_source": "opencode",
+  "resources": [
+    {
+      "_id": "wrk_battleship",
+      "_type": "workspace",
+      "name": "Battleship API",
+      "description": "API REST del juego Battleship — DWES Spring Boot 4 + Flyway + TDD"
+    },
+    {
+      "_id": "env_battleship",
+      "_type": "environment",
+      "parentId": "wrk_battleship",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8081",
+        "game_id": "1"
+      }
+    },
+    {
+      "_id": "grp_games",
+      "_type": "request_group",
+      "parentId": "wrk_battleship",
+      "name": "Games",
+      "description": "Gestión de partidas"
+    },
+    {
+      "_id": "grp_ships",
+      "_type": "request_group",
+      "parentId": "wrk_battleship",
+      "name": "Ships",
+      "description": "Colocación de barcos"
+    },
+    {
+      "_id": "grp_attacks",
+      "_type": "request_group",
+      "parentId": "wrk_battleship",
+      "name": "Attacks",
+      "description": "Ataques y validaciones"
+    },
+    {
+      "_type": "request",
+      "_id": "req_create_game",
+      "parentId": "grp_games",
+      "name": "Create Game",
+      "method": "POST",
+      "url": "{{base_url}}/api/games",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"boardSize\": 10\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_create_game_default",
+      "parentId": "grp_games",
+      "name": "Create Game (default 10)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"boardSize\": 10\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_list_games",
+      "parentId": "grp_games",
+      "name": "List Games",
+      "method": "GET",
+      "url": "{{base_url}}/api/games",
+      "body": {},
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -80,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_get_game",
+      "parentId": "grp_games",
+      "name": "Get Game by ID",
+      "method": "GET",
+      "url": "{{base_url}}/api/games/{{game_id}}",
+      "body": {},
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -70,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_place_ship",
+      "parentId": "grp_ships",
+      "name": "Place Ship (vertical)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/ships",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"shipName\": \"Submarino\",\n  \"length\": 3,\n  \"startX\": 2,\n  \"startY\": 3,\n  \"isHorizontal\": false\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -60,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_place_ship_horizontal",
+      "parentId": "grp_ships",
+      "name": "Place Ship (horizontal)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/ships",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"shipName\": \"Crucero\",\n  \"length\": 4,\n  \"startX\": 5,\n  \"startY\": 1,\n  \"isHorizontal\": true\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -50,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_miss",
+      "parentId": "grp_attacks",
+      "name": "Attack (miss)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": 0,\n  \"y\": 0\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -40,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_hit",
+      "parentId": "grp_attacks",
+      "name": "Attack (hit)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": 2,\n  \"y\": 3\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -30,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_hit2",
+      "parentId": "grp_attacks",
+      "name": "Attack (hit 2nd cell)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": 2,\n  \"y\": 4\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -20,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_sink",
+      "parentId": "grp_attacks",
+      "name": "Attack (sink ship)",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": 2,\n  \"y\": 5\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "authentication": {},
+      "metaSortKey": -10,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_out_of_bounds",
+      "parentId": "grp_attacks",
+      "name": "Error: Attack out of bounds",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": -1,\n  \"y\": 0\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "description": "Esperado: 400 VALIDATION_ERROR — x debe ser >= 0",
+      "authentication": {},
+      "metaSortKey": 0,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    },
+    {
+      "_type": "request",
+      "_id": "req_attack_duplicate",
+      "parentId": "grp_attacks",
+      "name": "Error: Repeat attack",
+      "method": "POST",
+      "url": "{{base_url}}/api/games/{{game_id}}/attacks",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"x\": 0,\n  \"y\": 0\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "description": "Esperado: 400 BAD_REQUEST — Position already attacked",
+      "authentication": {},
+      "metaSortKey": 10,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingEncodeUrl": true
+    }
+  ]
+}

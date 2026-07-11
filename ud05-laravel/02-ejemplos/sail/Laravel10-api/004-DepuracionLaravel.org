@@ -1,0 +1,250 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+* Depuración en Laravel con VSCode y PhpStorm
+Si estás usando **VSCode** y **PhpStorm**, aquí tienes varias herramientas y configuraciones para **depurar código paso a paso en Laravel**, incluyendo **breakpoints** y **logs avanzados**.
+
+** 1. Depuración con Xdebug
+Xdebug es la mejor opción para depurar código paso a paso en Laravel.
+
+*** 1.1 Instalar Xdebug
+Si usas **Laravel Sail** (Docker), activa Xdebug en el contenedor:
+
+#+begin_src bash
+sail artisan sail:publish
+#+end_src
+
+Edita `docker-compose.yml` y habilita Xdebug:
+
+#+begin_src yaml
+services:
+  laravel.test:
+    environment:
+      - XDEBUG_MODE=debug
+      - XDEBUG_CONFIG="client_host=host.docker.internal"
+#+end_src
+
+Luego reinicia Sail:
+
+#+begin_src bash
+sail down && sail up -d
+#+end_src
+
+Si usas PHP localmente, instala Xdebug:
+
+#+begin_src bash
+pecl install xdebug
+#+end_src
+
+Asegúrate de habilitarlo en `php.ini`:
+
+#+begin_src ini
+zend_extension=xdebug.so
+xdebug.mode=debug
+xdebug.start_with_request=yes
+xdebug.client_host=127.0.0.1
+xdebug.client_port=9003
+#+end_src
+
+*** 1.2 Configurar Xdebug en VSCode
+Instala la extensión **PHP Debug** en VSCode.
+
+Crea `.vscode/launch.json`:
+
+#+begin_src json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+        "/var/www/html": "${workspaceFolder}"
+      }
+    }
+  ]
+}
+#+end_src
+
+Luego inicia el **debugger en VSCode** (`F5`) y usa `sail up` para correr Laravel.
+
+Para **PhpStorm**, ve a `Preferences > PHP > Debug` y usa:
+- **Host**: `127.0.0.1`
+- **Port**: `9003`
+- **Path Mapping**: `/var/www/html` → `<tu-proyecto>`
+
+** 2. Breakpoints en Laravel
+Una vez configurado Xdebug, usa **breakpoints** (`F9` en VSCode) en:
+- **Controladores (`app/Http/Controllers`)**
+- **Middlewares (`app/Http/Middleware`)**
+- **Jobs y Listeners (`app/Jobs`, `app/Listeners`)**
+- **Modelos y Queries (`app/Models`)**
+- **Comandos Artisan (`app/Console/Commands`)**
+
+Si un breakpoint no se activa, asegúrate de que `xdebug.start_with_request=yes` esté en `php.ini`.
+
+** 3. Usar `dd()`, `dump()`, y `ray()`
+Laravel ofrece varias herramientas de depuración sin Xdebug.
+
+*** 3.1 `dd()` y `dump()`
+Para inspeccionar variables:
+
+#+begin_src php
+dd($variable); // Detiene ejecución y muestra datos
+dump($variable); // Muestra sin detener
+#+end_src
+
+*** 3.2 Ray: Debugging Visual
+Instala **Ray**, que muestra logs en una aplicación externa:
+
+#+begin_src bash
+composer require spatie/laravel-ray
+#+end_src
+
+Úsalo en cualquier parte del código:
+
+#+begin_src php
+ray($variable);
+#+end_src
+
+Esto abrirá una ventana con la variable.
+
+** 4. Registrar Logs Avanzados
+Laravel usa `Log::debug()`, útil para ver información sin detener la ejecución.
+
+Edita `config/logging.php` y usa el canal `daily`:
+
+#+begin_src php
+'stack' => [
+    'driver' => 'stack',
+    'channels' => ['daily'],
+],
+#+end_src
+
+Ahora, usa:
+
+#+begin_src php
+use Illuminate\Support\Facades\Log;
+
+Log::debug('Este es un mensaje de depuración', ['data' => $variable]);
+#+end_src
+
+Los logs aparecen en `storage/logs/laravel.log`.
+
+** 5. Profiler con Laravel Debugbar
+Si necesitas **ver queries, tiempos de ejecución y más**, instala Laravel Debugbar:
+
+#+begin_src bash
+composer require barryvdh/laravel-debugbar --dev
+#+end_src
+
+Ahora se mostrará un **panel flotante en el navegador** con queries, errores y eventos.
+
+** 6. Debug en JavaScript (Frontend con Vue)
+Si Vue no recibe datos de la API:
+1. Abre **DevTools (`F12`) > Network > XHR** en el navegador.
+2. Revisa la respuesta de la API.
+3. Usa `console.log()` en Vue:
+
+   #+begin_src javascript
+   console.log(response.data);
+   #+end_src
+
+4. Usa Vue DevTools en Chrome.
+
+** 7. Inspeccionar SQL con `DB::listen()`
+Si Laravel está ejecutando **consultas inesperadas**:
+
+#+begin_src php
+use Illuminate\Support\Facades\DB;
+
+DB::listen(function ($query) {
+    ray($query->sql, $query->bindings);
+});
+#+end_src
+
+Esto mostrará cada consulta SQL en **Ray** o en la terminal.
+
+** 8. Telescope: Panel de Depuración Avanzada
+Como ya tienes **Telescope**, úsalo para:
+- **Ver queries, jobs, eventos y errores** en tiempo real (`/telescope`).
+- **Filtrar logs de requests HTTP**.
+- **Revisar consultas SQL ejecutadas**.
+
+Si no ves datos en `/telescope`, asegúrate de ejecutarlo en modo local:
+
+#+begin_src bash
+php artisan telescope:install
+php artisan migrate
+php artisan telescope:publish
+#+end_src
+
+Y en `config/telescope.php`, habilita:
+
+#+begin_src php
+'enabled' => env('TELESCOPE_ENABLED', true),
+#+end_src
+
+Ahora accede a `http://localhost/telescope`.
+
+** 9. Inspeccionar Peticiones HTTP
+Si Laravel no recibe datos esperados:
+1. Usa **Insomnia o Postman** para probar manualmente las peticiones.
+2. Habilita logs de peticiones en `storage/logs/laravel.log`.
+
+Ejemplo en `app/Http/Middleware/LogRequests.php`:
+
+#+begin_src php
+use Illuminate\Support\Facades\Log;
+
+public function handle($request, Closure $next)
+{
+    Log::info('Request Data', ['url' => $request->fullUrl(), 'data' => $request->all()]);
+    return $next($request);
+}
+#+end_src
+
+Ahora, cada petición a la API se registrará en los logs.
+
+** Conclusión
+- **Para depurar paso a paso:** Usa **Xdebug** con **VSCode o PhpStorm**.
+- **Para inspeccionar variables:** Usa `dd()`, `dump()` o **Ray**.
+- **Para logs avanzados:** Usa `Log::debug()`, Laravel Debugbar o **Telescope**.
+- **Para SQL y consultas:** Usa `DB::listen()`.
+- **Para ver errores en Vue:** Usa `console.log()` y DevTools.
+
+Con esto puedes depurar y optimizar el código en Laravel al máximo.

@@ -1,0 +1,287 @@
+% Created 2024-01-08 lun 09:11
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{PHP Sessions and Cookies}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={PHP Sessions and Cookies},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{Sessions And Cookies}
+\label{sec:orge4e42ef}
+Managing sessions and cookies is an essential aspect of web development
+in PHP, as they allow you to maintain state across multiple page
+requests. Here's a guide to help you understand and use sessions and
+cookies effectively in PHP.
+
+\subsection{PHP Sessions}
+\label{sec:org9f1dfaa}
+Sessions in PHP are used to preserve certain data across subsequent
+accesses by the same user. This is useful for things like maintaining
+user state (e.g., ensuring a user is logged in) across different pages.
+
+\subsubsection{Starting a Session}
+\label{sec:orgf9c3620}
+To start a session, use \texttt{session\_start()}. This function must be called
+before any output is sent to the browser.
+
+\begin{minted}[]{php}
+session_start();
+\end{minted}
+
+\subsubsection{Storing Data in a Session}
+\label{sec:org9b417ed}
+Once a session is started, you can store data in the \texttt{\$\_SESSION}
+superglobal array.
+
+\begin{minted}[]{php}
+$_SESSION["username"] = "john_doe";
+\end{minted}
+
+\subsubsection{Accessing Session Data}
+\label{sec:org7af6b31}
+You can access session data stored in the \texttt{\$\_SESSION} array as long as
+the session is active.
+
+\begin{minted}[]{php}
+echo "Welcome, " . $_SESSION["username"];
+\end{minted}
+
+\subsubsection{Ending a Session}
+\label{sec:org89c14b4}
+To end a session and clear session data, use \texttt{session\_unset()} and
+\texttt{session\_destroy()}.
+
+\begin{minted}[]{php}
+session_unset(); // remove all session variables
+session_destroy(); // destroy the session
+\end{minted}
+
+\subsection{PHP Cookies}
+\label{sec:orgf9a2e25}
+Cookies are small files stored on the user's computer. They are
+typically used to remember information about users, such as login
+details or website preferences.
+
+\subsubsection{Setting Cookies}
+\label{sec:orgfe84655}
+Use the \texttt{setcookie()} function to set a cookie. This function must be
+called before any output is sent to the browser.
+
+\begin{minted}[]{php}
+setcookie("user", "john_doe", time() + 3600); // 3600 seconds = 1 hour
+\end{minted}
+
+\subsubsection{Accessing Cookies}
+\label{sec:org70d8ce5}
+Access cookies through the \texttt{\$\_COOKIE} superglobal array.
+
+\begin{minted}[]{php}
+if(isset($_COOKIE["user"])) {
+    echo "Welcome " . $_COOKIE["user"];
+}
+\end{minted}
+
+\subsubsection{Deleting Cookies}
+\label{sec:orgf5898fe}
+Delete a cookie by setting its expiration date in the past.
+
+\begin{minted}[]{php}
+setcookie("user", "", time() - 3600);
+\end{minted}
+
+\subsection{Best Practices and Security Considerations}
+\label{sec:org52bc7e4}
+\subsubsection{Sessions}
+\label{sec:org97fc87b}
+\begin{itemize}
+\item Regenerate session ID: Use \texttt{session\_regenerate\_id()} to prevent
+session fixation attacks.
+\item Secure session cookies: Set \texttt{session.cookie\_secure} and
+\texttt{session.cookie\_httponly} flags to true to enhance security.
+\item Session data is stored server-side, which is generally more secure
+than storing sensitive data in cookies.
+\end{itemize}
+
+\subsubsection{Cookies}
+\label{sec:org08a27a2}
+\begin{itemize}
+\item Sensitive data: Avoid storing sensitive data in cookies as they are
+stored client-side.
+\item Secure and HTTPOnly flags: Set these flags when setting cookies to
+enhance security (\texttt{secure} for HTTPS only, \texttt{HTTPOnly} to make them
+inaccessible to JavaScript).
+\item Expiration time: Be mindful of the expiration time of cookies,
+especially for sensitive information.
+\end{itemize}
+
+\subsubsection{General}
+\label{sec:orgae30cf7}
+\begin{itemize}
+\item Data validation: Always validate and sanitize any data received from
+cookies or sessions.
+\item HTTPS: Use HTTPS to encrypt cookies and session data transmitted over
+the network.
+\end{itemize}
+
+Using sessions and cookies appropriately can greatly enhance the user
+experience on your website by allowing for persistent, stateful
+interactions across multiple web pages. Remember to handle them securely
+to protect your users' data.
+
+\section{Sessions and cookies cont.}
+\label{sec:org8f2d84c}
+Certainly! Below are code examples to illustrate how to use cookies and
+sessions in PHP. These examples cover basic operations like setting,
+accessing, and deleting cookies, as well as starting a session, storing
+session data, and ending a session.
+
+\subsubsection{Using Cookies in PHP}
+\label{sec:org0825c7a}
+\begin{itemize}
+\item Setting a Cookie
+\label{sec:orgae862f4}
+To set a cookie, use the \texttt{setcookie()} function. This should be done
+before any output is sent to the browser.
+
+\begin{minted}[]{php}
+// Set a cookie that expires in 1 hour
+setcookie("username", "john_doe", time() + 3600, "/");
+
+// Secure and HTTPOnly flags
+setcookie("secure_user", "john_doe_secure", time() + 3600, "/", "", true, true);
+\end{minted}
+
+\item Accessing a Cookie
+\label{sec:org0ff0dc2}
+Access a cookie via the \texttt{\$\_COOKIE} superglobal array.
+
+\begin{minted}[]{php}
+if (isset($_COOKIE["username"])) {
+    echo "Welcome " . htmlspecialchars($_COOKIE["username"]);
+} else {
+    echo "Welcome guest!";
+}
+\end{minted}
+
+\item Deleting a Cookie
+\label{sec:orgec7c807}
+Delete a cookie by setting its expiration date to a past time.
+
+\begin{minted}[]{php}
+// Deleting a cookie by setting its expiration to one hour ago
+setcookie("username", "", time() - 3600, "/");
+\end{minted}
+\end{itemize}
+
+\subsubsection{Using Sessions in PHP}
+\label{sec:org957c1cd}
+\begin{itemize}
+\item Starting a Session
+\label{sec:org9362221}
+Start a session with \texttt{session\_start()}. This should be the first thing
+in your script.
+
+\begin{minted}[]{php}
+session_start();
+\end{minted}
+
+\item Storing Data in a Session
+\label{sec:orgf8e16eb}
+Store data in the \texttt{\$\_SESSION} superglobal array after starting the
+session.
+
+\begin{minted}[]{php}
+$_SESSION["username"] = "john_doe";
+\end{minted}
+
+\item Accessing Session Data
+\label{sec:org1b62024}
+Retrieve data from the session.
+
+\begin{minted}[]{php}
+session_start();
+if (isset($_SESSION["username"])) {
+    echo "Welcome " . htmlspecialchars($_SESSION["username"]);
+} else {
+    echo "Welcome guest!";
+}
+\end{minted}
+
+\item Ending a Session
+\label{sec:org9793bb9}
+End a session and clear its data.
+
+\begin{minted}[]{php}
+session_start();
+
+// Unset all session variables
+session_unset();
+
+// Destroy the session
+session_destroy();
+\end{minted}
+\end{itemize}
+
+\subsubsection{Important Notes}
+\label{sec:org415a6c0}
+\begin{itemize}
+\item \textbf{Cookie Security}: Remember that cookies are stored client-side. Avoid
+storing sensitive information in them. Use the \texttt{secure} and \texttt{HTTPOnly}
+flags for enhanced security, especially if using cookies for
+authentication.
+
+\item \textbf{Session Security}: PHP sessions are generally more secure as the
+session data is stored server-side. However, ensure to regenerate
+session IDs (\texttt{session\_regenerate\_id()}) during login to prevent
+session fixation attacks.
+
+\item \textbf{Output Buffering}: If you need to set cookies after sending output,
+use output buffering (\texttt{ob\_start()}) at the beginning of your script.
+\end{itemize}
+
+These examples cover fundamental uses of cookies and sessions in PHP.
+For more advanced features and security measures, consult the official
+PHP documentation and consider additional security practices relevant to
+your application's context.
+\end{document}

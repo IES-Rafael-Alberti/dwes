@@ -1,0 +1,414 @@
+% Created 2024-01-05 vie 20:26
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.12)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{Chapter 4: Loops in PHP}
+\label{sec:org7c729b7}
+Loops are a fundamental part of programming in PHP, allowing you to
+execute a block of code repeatedly under certain conditions. This
+ability to iterate over data or execute code multiple times is crucial
+in many programming scenarios. In this chapter, we will cover the four
+primary types of loops in PHP: \texttt{for}, \texttt{foreach}, \texttt{while}, and
+\texttt{do-while}, along with guidance on when to use each type for optimal
+results.
+
+\subsection{For Loop}
+\label{sec:org445c697}
+The \texttt{for} loop is ideal when you know in advance how many times you want
+to execute a statement or a block of statements.
+
+\subsubsection{Syntax}
+\label{sec:orgd817606}
+\begin{minted}[]{php}
+for (initialization; condition; increment) {
+    // Code to be executed
+}
+\end{minted}
+
+\subsubsection{Example}
+\label{sec:orgefe7679}
+For example, to print numbers from 1 to 10:
+
+\begin{minted}[]{php}
+for ($i = 0; $i < 10; $i++) {
+    echo $i . " ";
+}
+\end{minted}
+\begin{minted}[]{php}
+for ($i = 1; $i <= 10; $i++) {
+    echo $i . "\n";
+}
+\end{minted}
+
+\subsubsection{When to Use}
+\label{sec:org479e310}
+\begin{itemize}
+\item \textbf{Count-Controlled Iteration}: Ideal for looping a specific number of
+times.
+\item \textbf{Array Indexing}: Useful for iterating over array elements when the
+index is needed.
+\end{itemize}
+
+\subsection{Foreach Loop}
+\label{sec:orgc46f589}
+The =foreach=` loop is specifically designed for iterating over arrays
+or objects, making it simpler to work with elements without worrying
+about indexes or keys.
+
+\subsubsection{Syntax}
+\label{sec:org952f03f}
+\begin{minted}[]{php}
+foreach ($array as $value) {
+    // Code to be executed
+}
+\end{minted}
+
+Or, to access both the key and the value:
+
+\begin{minted}[]{php}
+foreach ($array as $key => $value) {
+    // Code to be executed
+}
+\end{minted}
+
+\subsubsection{Example}
+\label{sec:org1e4a04e}
+To print all elements of an array>
+\begin{minted}[]{php}
+$colors = ["red", "green", "blue"];
+
+foreach ($colors as $color) {
+    echo $color . " ";
+}
+\end{minted}
+
+
+To print all values of an associative array:
+
+\begin{minted}[]{php}
+$colors = ["red" => "#FF0000", "green" => "#00FF00", "blue" => "#0000FF"];
+
+foreach ($colors as $color) {
+    echo $color . "\n";
+}
+\end{minted}
+
+\subsubsection{When to Use}
+\label{sec:org8db14a5}
+\begin{itemize}
+\item \textbf{Array Iteration}: for iterating through arrays or objects where the
+order and number of elements are unknown or irrelevant.
+\item \textbf{Readable Code}: Offers clearer and more readable code when dealing
+with array or objects elements.
+\end{itemize}
+
+\subsection{While Loop}
+\label{sec:org25c57a9}
+The \texttt{while} loop is used when you want to execute a block of code as
+long as a specified condition is true.
+
+\subsubsection{Syntax}
+\label{sec:org3869f47}
+\begin{minted}[]{php}
+while (condition) {
+    // Code to be executed
+}
+\end{minted}
+
+\subsubsection{Example}
+\label{sec:org17e8aa8}
+\begin{minted}[]{php}
+$i = 0;
+while ($i < 10) {
+    echo $i . " ";
+    $i++;
+}
+\end{minted}
+
+\subsubsection{When to Use}
+\label{sec:org721c488}
+\begin{itemize}
+\item \textbf{Unknown Iterations}: Suitable when the number of iterations is not
+known in advance.
+\item \textbf{Conditional Control}: Useful when the continuation condition might be
+affected by processes within the loop.
+\end{itemize}
+
+\subsection{Do-While Loop}
+\label{sec:org22f33f4}
+The \texttt{do-while} loop is a variant of the while loop. This loop will
+execute the code block once before checking if the condition is true,
+then it will repeat the loop as long as the condition is true.
+
+\subsubsection{Syntax}
+\label{sec:orgfa2210b}
+\begin{minted}[]{php}
+do {
+    // Code to be executed
+} while (condition);
+\end{minted}
+
+\subsubsection{Example}
+\label{sec:orgd497704}
+\begin{minted}[]{php}
+$i = 0;
+do {
+    echo $i . " ";
+    $i++;
+} while ($i < 10);
+\end{minted}
+
+\subsubsection{When to Use}
+\label{sec:orgb797602}
+\begin{itemize}
+\item \textbf{Guaranteed Execution}: Ensures that the loop body is executed at
+least once.
+\item \textbf{Post-Condition Looping}: Ideal when the condition for continuation is
+determined at the end of each iteration.
+\end{itemize}
+
+\subsubsection{Conclusion}
+\label{sec:orga573b74}
+Understanding the different types of loops and their appropriate use
+cases is crucial for efficient PHP programming. While \texttt{for} loops are
+best for fixed iterations, \texttt{foreach} is optimal for array traversal
+without needing to know the array size. \texttt{while} loops suit scenarios
+where the number of iterations is not predetermined, and \texttt{do-while}
+loops guarantee at least one iteration, regardless of the condition. As
+you continue to develop your PHP skills, experiment with these loops to
+find the best fit for various coding challenges.
+
+\section{Loops alternative syntax}
+\label{sec:org455c5bf}
+In PHP, the alternative syntax for loops provides a way to write loops
+that is often more readable, especially when embedding PHP within HTML.
+This syntax is available in PHP 8 and earlier versions. The alternative
+syntax is particularly useful in templating where PHP is interspersed
+with HTML.
+
+\subsection{Alternative Syntax for \texttt{for} Loop}
+\label{sec:org215a965}
+Instead of using curly braces \texttt{\{\}}, you use \texttt{:} to start and \texttt{endfor;}
+to end the loop.
+
+\textbf{Standard Syntax:}
+
+\begin{minted}[]{php}
+for ($i = 0; $i < 10; $i++) {
+    // Code to execute
+}
+\end{minted}
+
+\textbf{Alternative Syntax:}
+
+\begin{minted}[]{php}
+for ($i = 0; $i < 10; $i++):
+    // Code to execute
+endfor;
+\end{minted}
+
+\subsection{Alternative Syntax for \texttt{foreach} Loop}
+\label{sec:org9c91092}
+Similar to the \texttt{for} loop, the \texttt{foreach} loop can use \texttt{endforeach;} in
+place of curly braces.
+
+\textbf{Standard Syntax:}
+
+\begin{minted}[]{php}
+foreach ($array as $element) {
+    // Code to execute
+}
+\end{minted}
+
+\textbf{Alternative Syntax:}
+
+\begin{minted}[]{php}
+foreach ($array as $element):
+    // Code to execute
+endforeach;
+\end{minted}
+
+\subsection{Alternative Syntax for \texttt{while} Loop}
+\label{sec:org76e70f1}
+The \texttt{while} loop can use \texttt{endwhile;} at the end instead of curly braces.
+
+\textbf{Standard Syntax:}
+
+\begin{minted}[]{php}
+while ($condition) {
+    // Code to execute
+}
+\end{minted}
+
+\textbf{Alternative Syntax:}
+
+\begin{minted}[]{php}
+while ($condition):
+    // Code to execute
+endwhile;
+\end{minted}
+
+\subsection{Alternative Syntax for \texttt{do-while} Loop}
+\label{sec:org6833352}
+The \texttt{do-while} loop can also be written using alternative syntax, though
+it's less common.
+
+\textbf{Standard Syntax:}
+
+\begin{minted}[]{php}
+do {
+    // Code to execute
+} while ($condition);
+\end{minted}
+
+\textbf{Alternative Syntax:}
+
+\begin{minted}[]{php}
+do:
+    // Code to execute
+while ($condition);
+\end{minted}
+
+\subsection{Example in an HTML Template}
+\label{sec:org56b8d1b}
+Here's how you might use the alternative syntax in an HTML template:
+
+\begin{minted}[]{php}
+<ul>
+<?php foreach ($items as $item): ?>
+    <li><?php echo htmlspecialchars($item); ?></li>
+<?php endforeach; ?>
+</ul>
+\end{minted}
+
+This example demonstrates how the alternative syntax can make PHP code
+embedded in HTML more readable.
+
+\subsection{Conclusion}
+\label{sec:org112aae7}
+The alternative syntax for loops in PHP doesn't change the functionality
+of the loops but offers a way to write code that can be easier to read
+and maintain, especially in the context of PHP/HTML templates. This
+syntax is a matter of preference and style, and its usage often depends
+on the coding standards of a particular project or team.
+
+\section{Break and Continue in PHP}
+\label{sec:org1b1f0c3}
+In PHP, \texttt{break} and \texttt{continue} are important control structures used
+within loops (\texttt{for}, \texttt{foreach}, \texttt{while}, \texttt{do-while}) to alter the normal
+flow of the loop. Understanding how to use them correctly can make your
+loops more efficient and powerful.
+
+\subsection{The \texttt{break} Statement}
+\label{sec:orgf1f1089}
+\texttt{break} is used to terminate the execution of a loop prematurely. When
+\texttt{break} is encountered inside a loop, the loop is immediately stopped,
+and the program control resumes at the next statement following the
+loop.
+
+\subsubsection{Use Case of \texttt{break}:}
+\label{sec:org5b9843f}
+\begin{itemize}
+\item To exit a loop when a certain condition is met.
+\item Commonly used in switch-case statements to terminate a case.
+\end{itemize}
+
+\subsubsection{Example:}
+\label{sec:orge69709b}
+\begin{verbatim}
+for ($i = 0; $i < 10; $i++) {
+    if ($i == 5) {
+        break; // Exit the loop when $i equals 5
+    }
+    echo $i . " ";
+}
+// Output: 0 1 2 3 4
+\end{verbatim}
+
+\subsection{The \texttt{continue} Statement}
+\label{sec:org1c6713a}
+\texttt{continue} is used to skip the rest of the current loop iteration and
+proceed with the next iteration. Unlike \texttt{break}, \texttt{continue} does not
+terminate the loop but just skips the remaining statements in the
+current iteration and continues with the next iteration.
+
+\subsubsection{Use Case of \texttt{continue}:}
+\label{sec:org4d1b647}
+\begin{itemize}
+\item To skip certain iterations based on a condition.
+\item Useful for avoiding nested if-else statements inside loops.
+\end{itemize}
+
+\subsubsection{Example:}
+\label{sec:orgffe7985}
+\begin{verbatim}
+for ($i = 0; $i < 10; $i++) {
+    if ($i % 2 == 0) {
+        continue; // Skip the rest of the loop for even numbers
+    }
+    echo $i . " ";
+}
+// Output: 1 3 5 7 9
+\end{verbatim}
+
+\subsection{Note on Using \texttt{break} and \texttt{continue}}
+\label{sec:orgd002053}
+\begin{itemize}
+\item \texttt{break} and \texttt{continue} only affect the innermost loop that encloses
+them.
+\item In nested loops, you can specify a numeric argument to indicate how
+many levels of enclosing loops should be broken out of or continued.
+For example, \texttt{break 2;} will break out of two levels of loops.
+\end{itemize}
+
+\subsection{Conclusion}
+\label{sec:orgbae73b6}
+\texttt{break} and \texttt{continue} are powerful tools for controlling the execution
+flow inside loops. They can make your code more readable and efficient
+by preventing unnecessary iterations or exiting a loop as soon as a
+certain condition is met. However, they should be used judiciously to
+keep the logic of your loops clear and understandable.
+\end{document}

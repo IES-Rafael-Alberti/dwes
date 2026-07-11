@@ -1,0 +1,206 @@
+#+TITLE: PHP Include, Require / CRUD II
+#+AUTHOR: José Manuel Sánchez Álvarez
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* CRUD Refactoring
+Creating a PHP CRUD application often involves repetitive code,
+especially for database connections and HTML structures. Using PHP's
+=include=, =include_once=, =require=, and =require_once= statements can
+streamline this process by allowing you to write common code in separate
+files and include them where needed. Here's a guide on how to use these
+statements effectively, along with tips for refactoring a CRUD
+application.
+
+** PHP include, include_once, require, require_once
+    :PROPERTIES:
+    :CUSTOM_ID: php-include-include_once-require-require_once
+    :END:
+
+1. *include*:
+   - Used to include and evaluate a specified file.
+   - If the file is not found, PHP issues a warning, but the script will
+     continue execution.
+
+   #+begin_src php
+     <?=
+     include 'filename.php';
+   #+end_src
+
+2. *include_once*:
+
+   - Similar to =include=, but it will only include the file once, even
+     if the statement appears multiple times.
+   - Useful to prevent re-declaring functions, classes, or variable
+     values.
+
+   #+begin_src php
+     <?=
+     include_once 'filename.php';
+   #+end_src
+
+3. *require*:
+
+   - Similar to =include=, but =require= will produce a fatal error
+     (halting script execution) if the file cannot be included.
+   - Use =require= when the file is essential for the application to
+     run.
+
+   #+begin_src php
+     <?=
+     require 'filename.php';
+   #+end_src
+
+4. *require_once*:
+
+   - Combines =require= and =include_once= behavior.
+   - Ensures that the file is included only once and execution stops if
+     the file can't be included.
+
+   #+begin_src php
+     <?=
+     require_once 'filename.php';
+   #+end_src
+
+** Refactoring CRUD Application Using Includes
+    :PROPERTIES:
+    :CUSTOM_ID: refactoring-crud-application-using-includes
+    :END:
+
+When refactoring your CRUD application, identify parts of your code that
+are common across multiple scripts. Typically, these include:
+
+- Database Connection Setup
+- Header/Footer HTML Code
+- Utility Functions
+
+*** Example Structure
+     :PROPERTIES:
+     :CUSTOM_ID: example-structure
+     :END:
+
+1. *Database Connection (=db_connect.php=)*:
+
+   #+begin_src php
+     <?=
+     // db_connect.php
+     $host = 'localhost';
+     $db   = 'car_dealership';
+     $user = 'username';
+     $pass = 'password';
+     $charset = 'utf8mb4';
+
+     $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+     try {
+         $pdo = new PDO($dsn, $user, $pass);
+         // Set error mode
+         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     } catch (\PDOException $e) {
+         throw new \PDOException($e->getMessage(), (int)$e->getCode());
+     }
+   #+end_src
+
+2. *Header/Footer HTML (=header.php= and =footer.php=)*:
+
+   #+begin_src html
+     // header.php
+     <!DOCTYPE html>
+     <html>
+     <head>
+         <title>Car Dealership</title>
+         <!-- Add other head elements -->
+     </head>
+     <body>
+   #+end_src
+
+   #+begin_src html
+     // footer.php
+         <!-- Footer content -->
+     </body>
+     </html>
+   #+end_src
+
+3. *Utility Functions (=utilities.php=)*:
+
+   #+begin_src php
+     <?=
+     // utilities.php
+     function sanitizeInput($data) {
+         return htmlspecialchars(stripslashes(trim($data)));
+     }
+   #+end_src
+
+*** Implementing Includes in CRUD Scripts
+     :PROPERTIES:
+     :CUSTOM_ID: implementing-includes-in-crud-scripts
+     :END:
+
+In your CRUD scripts, you can now include these files to avoid
+redundancy. For example, in a script where you list cars
+(=list_cars.php=):
+
+#+begin_src php
+  <?php
+  require_once 'db_connect.php';
+  include 'header.php';
+  // ... Rest of your code to list cars ...
+  include 'footer.php';
+#+end_src
+
+** Benefits of Using Includes
+    :PROPERTIES:
+    :CUSTOM_ID: benefits-of-using-includes
+    :END:
+
+- *Maintainability*: Changes in common elements like database
+  configuration or HTML structure can be made in one place.
+- *Readability*: Reduces clutter in your scripts, making them easier to
+  read and manage.
+- *Reusability*: Commonly used code can be reused across different
+  scripts.
+
+** Best Practices
+    :PROPERTIES:
+    :CUSTOM_ID: best-practices
+    :END:
+
+- Use =require_once= for critical files like database connections, where
+  the script should not proceed if the file is missing.
+- Use =include_once= for elements like headers and footers where the
+  inclusion is important but not critical.
+- Regularly review your scripts to identify opportunities for
+  modularizing your code with includes.
+
+By following this guide, you can refactor your PHP CRUD application to
+be more efficient, maintainable, and scalable.

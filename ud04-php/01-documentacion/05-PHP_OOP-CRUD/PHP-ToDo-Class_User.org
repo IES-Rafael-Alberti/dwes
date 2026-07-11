@@ -1,0 +1,226 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* User management
+Creating a =User= class in PHP involves implementing methods for user
+authentication, role-based authorization, and session management. Below
+is an outline of the =User= class, including methods for login,
+registration, role checking, and session handling. Additionally, I'll
+provide examples of corresponding HTML forms for user interaction.
+
+** PHP =User= Class
+    :PROPERTIES:
+    :CUSTOM_ID: php-user-class
+    :END:
+
+#+begin_src php
+  class User {
+      private $pdo;
+      private $userId;
+      private $username;
+      private $role;
+
+      public function __construct($pdo) {
+          $this->pdo = $pdo;
+          session_start();
+      }
+
+      public function login($username, $password) {
+          $stmt = $this->pdo->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+          $stmt->execute([$username]);
+          $user = $stmt->fetch();
+
+          if ($user && password_verify($password, $user['password'])) {
+              $_SESSION['user_id'] = $user['id'];
+              $_SESSION['username'] = $user['username'];
+              $_SESSION['role'] = $user['role'];
+              $this->userId = $user['id'];
+              $this->username = $user['username'];
+              $this->role = $user['role'];
+              return true;
+          }
+          return false;
+      }
+
+      public function register($username, $password) {
+          $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+          $stmt = $this->pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+          $stmt->execute([$username, $hashedPassword]);
+      }
+
+      public function logout() {
+          session_unset();
+          session_destroy();
+      }
+
+      public function isUserLoggedIn() {
+          return isset($_SESSION['user_id']);
+      }
+
+      public function getUsername() {
+          return $this->username;
+      }
+
+      public function getRole() {
+          return $this->role;
+      }
+
+      public function isAdmin() {
+          return $this->role === 'admin';
+      }
+  }
+#+end_src
+
+** Explanation
+    :PROPERTIES:
+    :CUSTOM_ID: explanation
+    :END:
+
+- *Constructor*: Initializes the database connection and starts the
+  session.
+- *Login*: Verifies user credentials and starts a session for the user.
+- *Register*: Registers a new user with a hashed password.
+- *Logout*: Ends the session.
+- *Session Checks*: Methods like =isUserLoggedIn= and =isAdmin= check
+  the user's login status and role.
+
+** HTML Forms
+    :PROPERTIES:
+    :CUSTOM_ID: html-forms
+    :END:
+
+*** Registration Form (=register.html=)
+     :PROPERTIES:
+     :CUSTOM_ID: registration-form-register.html
+     :END:
+
+#+begin_src php
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Register</title>
+  </head>
+  <body>
+      <h1>Register</h1>
+      <form action="register.php" method="post">
+          Username: <input type="text" name="username" required><br>
+          Password: <input type="password" name="password" required><br>
+          <input type="submit" value="Register">
+      </form>
+  </body>
+  </html>
+#+end_src
+
+*** Login Form (=login.html=)
+     :PROPERTIES:
+     :CUSTOM_ID: login-form-login.html
+     :END:
+
+#+begin_src html
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Login</title>
+  </head>
+  <body>
+      <h1>Login</h1>
+      <form action="login.php" method="post">
+          Username: <input type="text" name="username" required><br>
+          Password: <input type="password" name="password" required><br>
+          <input type="submit" value="Login">
+      </form>
+  </body>
+  </html>
+#+end_src
+
+** PHP Scripts for Forms
+    :PROPERTIES:
+    :CUSTOM_ID: php-scripts-for-forms
+    :END:
+
+*** Registration Script (=register.php=)
+     :PROPERTIES:
+     :CUSTOM_ID: registration-script-register.php
+     :END:
+
+#+begin_src php
+  <?php
+  require_once 'User.php';
+  require_once 'db_connect.php'; // PDO connection
+
+  $user = new User($pdo);
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      $user->register($_POST['username'], $_POST['password']);
+      // Redirect to login or display a success message
+  }
+#+end_src
+
+*** Login Script (=login.php=)
+     :PROPERTIES:
+     :CUSTOM_ID: login-script-login.php
+     :END:
+
+#+begin_src php
+  <?php
+  require_once 'User.php';
+  require_once 'db_connect.php'; // PDO connection
+
+  $user = new User($pdo);
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      if ($user->login($_POST['username'], $_POST['password'])) {
+          header("Location: dashboard.php"); // Redirect to a protected page
+      } else {
+          echo "Invalid credentials.";
+      }
+  }
+#+end_src
+
+** Security Considerations
+    :PROPERTIES:
+    :CUSTOM_ID: security-considerations
+    :END:
+
+- Always sanitize and validate user inputs.
+- Store hashed passwords in the database, never plain text.
+- Implement CSRF protection on forms.
+- Ensure secure session management, particularly on shared hosting
+  environments.
+
+This setup provides a foundational structure for user authentication and
+role-based authorization in your PHP application, integrating session
+management for maintaining user state across different pages.

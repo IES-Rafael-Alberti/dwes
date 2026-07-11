@@ -1,0 +1,395 @@
+% Created 2024-01-10 mié 16:07
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{PHP Functions, more advanced topics}
+\label{sec:org122bab2}
+Let's delve into the more advanced aspects of PHP functions, including
+anonymous functions, variable scope, and recursive functions. These
+concepts allow for more dynamic and flexible programming in PHP.
+
+\subsection{Anonymous Functions}
+\label{sec:orgf630a5a}
+Anonymous functions, are functions without a specified name. They are
+most useful as the value of callback parameters, but they have many
+other uses.
+
+\begin{itemize}
+\item \textbf{Syntax and Usage}
+\end{itemize}
+
+Anonymous functions are declared with the \texttt{function} keyword, followed
+by a set of parentheses to accept parameters and curly braces to define
+the function body.
+
+\begin{minted}[]{php}
+<?=
+$greet = function($name) {
+    echo "Hello, $name!";
+};
+
+$greet("World"); // Outputs: Hello, World!
+\end{minted}
+
+\begin{itemize}
+\item \textbf{Features of Anonymous Functions}
+\end{itemize}
+
+
+\begin{itemize}
+\item \textbf{Variable Inheritance}: Anonymous functions have the ability to
+inherit variables from the parent scope. This is achieved using the
+\texttt{use} keyword.
+
+\begin{minted}[]{php}
+<?=
+$message = 'Hello';
+$example = function() use ($message) {
+    echo $message;
+};
+$example(); // Outputs: Hello
+\end{minted}
+
+\item \textbf{Callbacks}: They are often used as callback functions in array
+operations, such as \texttt{array\_map} or \texttt{array\_filter}.
+
+\begin{minted}[]{php}
+<?=
+$numbers = [1, 2, 3, 4, 5];
+$squared = array_map(function($n) { return $n * $n; }, $numbers);
+print_r($squared); // Outputs: Array ( [0] => 1 [1] => 4 [2] => 9
+                   // [3] => 16 [4] => 25 )
+\end{minted}
+\end{itemize}
+
+\subsubsection{Closures}
+\label{sec:org877c9ee}
+A closure is an anonymous function that can capture variables local to the
+scope it was created in. In PHP, all anonymous functions are closures and
+they are implemented using the Closure class. They can specify variables
+to be captured with a use clause in the function header.
+\begin{minted}[]{php}
+<?=
+ $x = 1, $y = 2;
+ $myClosure = function($z) use ($x, $y)
+ {
+   return $x + $y + $z;
+ };
+ echo $myClosure(3); // "6"
+\end{minted}
+
+\subsection{Variable Scope}
+\label{sec:orge1662b3}
+\subsubsection{Definition}
+\label{sec:org110a01b}
+Variable scope determines the visibility and accessibility of a variable
+within a PHP program.
+\subsubsection{\emph{Basic} Scopes}
+\label{sec:orgb13e4c9}
+PHP has three basic scopes:
+
+\begin{itemize}
+\item \textbf{Local scope:} Variables declared within a function are local to that
+function and not accessible outside of the function. This means that
+the \texttt{sum} variable defined in the \texttt{calculateSum()} function cannot be
+accessed outside of the function.
+\end{itemize}
+
+\begin{minted}[]{php}
+<?=
+function calculateSum($num1, $num2) {
+    $sum = $num1 + $num2;
+    echo "The sum is: $sum";
+}
+
+$result = calculateSum(10, 20);
+echo $result;// This will output an error because 'sum'
+             // is not defined outside the function
+\end{minted}
+
+\begin{itemize}
+\item \textbf{Global scope:} Variables declared outside of any function are global
+and can be accessed from anywhere in the program. This means that the
+\texttt{age} variable declared outside of any functions can be accessed from
+within the \texttt{printAge()} function.
+\end{itemize}
+
+\begin{minted}[]{php}
+<?php
+$age = 30;
+
+function printAge() {
+    echo "Your age is: $age";
+}
+
+printAge(); // This will print "Your age is: 30"
+\end{minted}
+
+\begin{itemize}
+\item \textbf{Superglobal variables:} Superglobal variables are a special type of
+variable that is available globally, even within functions. They are
+used to retrieve data from the request sent by the client (browser) to
+the server. Some of the most common superglobal variables include:
+
+\begin{itemize}
+\item \texttt{\$\_GET}: Contains data from the \texttt{\$\_GET} superglobal variable, which
+is used to pass data to the script through the URL query string.
+\item \texttt{\$\_POST}: Contains data from the \texttt{\$\_POST} superglobal variable,
+which is used to pass data to the script through the form POST
+method.
+\item \texttt{\$\_REQUEST}: Contains data from both the \texttt{\$\_GET} and \texttt{\$\_POST}
+superglobal variables, as well as additional data from other methods
+such as PUT, DELETE, and PATCH.
+\item \texttt{\$\_SERVER}: Contains information about the server environment, such
+as the client's IP address, the request method, and the server's
+protocol.
+\item \texttt{\$\_FILES}: Contains information about uploaded files, such as the
+file name, file type, and file size.
+\item \texttt{\$\_COOKIE}: Contains data from cookies that are sent by the script
+to the client's browser and stored on the client's computer.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Advanced Scope Concepts}
+\label{sec:orgb31221e}
+In addition to the basic scopes, there are a few more advanced scope
+concepts in PHP:
+
+\begin{itemize}
+\item \textbf{Static scope:} Static variables maintain their value between function
+calls. They are declared within a function using the \texttt{static} keyword.
+\end{itemize}
+
+\begin{minted}[]{php}
+<?=
+function testStatic() {
+    static $z = 0;
+    $z++;
+    echo $z;
+}
+testStatic(); // Outputs: 1
+testStatic(); // Outputs: 2
+\end{minted}
+
+\begin{itemize}
+\item \textbf{Closure scope:} Closures are functions that can capture variables
+local to the scope they were created in. In PHP, all anonymous
+functions are closures and they are implemented using the Closure
+class. They can specify variables to be captured with a \texttt{use} clause
+in the function header.
+\end{itemize}
+
+\begin{minted}[]{php}
+<?=
+function testClosure() {
+    $x = 1, $y = 2;
+    $myClosure = function($z) use ($x, $y) {
+        return $x + $y + $z;
+    };
+    echo $myClosure(3); // "6"
+}
+testClosure();
+\end{minted}
+
+\begin{itemize}
+\item \textbf{Dynamic scope:} Dynamic scope is a feature of PHP that allows
+variables to be accessed from scopes other than their own. This is
+typically done with the \texttt{\$GLOBALS} array, but it can also be done with
+other techniques such as \texttt{eval()} and \texttt{extract()}. Dynamic scope can
+be dangerous because it can lead to unexpected behavior, so it is
+generally not recommended.
+\end{itemize}
+
+\subsubsection{Conclusion}
+\label{sec:org5546b0f}
+Understanding variable scope is essential for writing good, maintainable
+PHP code. It is important to be aware of the different scopes and how
+they interact with each other. By using the right scope for your
+variables, you can make your code more readable, reusable, and less
+prone to errors.
+
+\subsection{Recursive Functions}
+\label{sec:org5a77969}
+A recursive function is a function that calls itself during its
+execution. This technique is best used for solving problems that can be
+broken down into simpler, repetitive tasks.
+
+\subsubsection{Example of a Recursive Function}
+\label{sec:org4b081ce}
+A classic example is the calculation of the factorial of a number.
+
+\begin{minted}[]{php}
+<?=
+  function factorial($n) {
+      if ($n == 0) {
+          return 1;
+      } else {
+          return $n * factorial($n - 1);
+      }
+  }
+
+  echo factorial(5); // Outputs: 120
+\end{minted}
+
+In this example, \texttt{factorial()} calls itself with a decremented value
+until it reaches the base case (\texttt{\$n =} 0=).
+
+\subsubsection{Conclusion}
+\label{sec:org3556437}
+Understanding these advanced aspects of PHP functions opens up a myriad
+of possibilities for writing more efficient and effective code.
+Anonymous functions provide flexibility, especially in functional
+programming and event-driven programming. Understanding variable scope
+is crucial for managing data within and outside functions, while
+recursive functions are essential for solving certain types of iterative
+problems efficiently.
+
+With these tools in your PHP arsenal, you are well-equipped to tackle
+more complex programming challenges and to write code that is both
+powerful and elegant.
+
+\section{Functions other advanced topics}
+\label{sec:org4442172}
+In recent versions of PHP, two significant additions to the language are
+arrow functions and generators. These features enhance the functionality
+and readability of PHP code, particularly in scenarios involving
+callbacks and iterative operations.
+
+\subsection{Arrow Functions}
+\label{sec:org804841e}
+Introduced in PHP 7.4, arrow functions provide a more concise syntax for
+writing anonymous functions. They are similar to anonymous functions
+(closures) but with a simpler syntax that's useful for defining simple
+callback functions.
+
+\subsubsection{Syntax}
+\label{sec:orgaa648ae}
+Arrow functions use the \texttt{fn} keyword. The basic syntax is:
+
+\begin{minted}[]{php}
+<?=
+$arrowFunction = fn($arguments) => $expression;
+\end{minted}
+
+\subsubsection{Characteristics}
+\label{sec:org2c3fe58}
+\begin{itemize}
+\item \textbf{Concise Syntax}: Arrow functions allow for a more compact syntax
+compared to traditional anonymous functions.
+\item \textbf{Automatic Variable Inheritance}: Variables used inside the arrow
+function are automatically captured by value from the parent scope.
+\end{itemize}
+
+\subsubsection{Example}
+\label{sec:org9f7c66b}
+Using an arrow function to square numbers in an array:
+
+\begin{minted}[]{php}
+<?=
+$numbers = [1, 2, 3, 4, 5];
+$squared = array_map(fn($n) => $n * $n, $numbers);
+// $squared = [1, 4, 9, 16, 25]
+\end{minted}
+
+\subsection{Generators}
+\label{sec:orgb0f8693}
+Generators, introduced in PHP 5.5, are a special type of function that
+allow you to iterate through data without needing to create an array in
+memory. They are particularly useful for handling large datasets or
+streams of data.
+
+\subsubsection{Syntax}
+\label{sec:org3723843}
+A generator is defined like a regular function, but instead of returning
+a value, it yields values using the \texttt{yield} keyword.
+
+\begin{minted}[]{php}
+<?=
+function myGenerator() {
+    yield 'value1';
+    yield 'value2';
+    // ...
+}
+\end{minted}
+
+\subsubsection{Characteristics}
+\label{sec:org663b641}
+\begin{itemize}
+\item \textbf{Memory Efficiency}: Instead of loading an entire dataset into memory,
+a generator yields one value at a time, making it more
+memory-efficient.
+\item \textbf{State Preservation}: Generators remember their state between
+successive calls.
+\end{itemize}
+
+\subsubsection{Example}
+\label{sec:orgad15ad9}
+Using a generator to iterate over a range of numbers:
+
+\begin{minted}[]{php}
+<?=
+function generateNumbers($start, $end) {
+    for ($i = $start; $i <= $end; $i++) {
+        yield $i;
+    }
+}
+
+foreach (generateNumbers(1, 5) as $number) {
+    echo $number . ' ';
+}
+// Output: 1 2 3 4 5
+\end{minted}
+
+\subsection{Conclusion}
+\label{sec:org4618ad3}
+Arrow functions and generators are powerful additions to PHP, enhancing
+the language's capabilities for functional programming and data
+iteration. Arrow functions provide a more concise and readable syntax
+for small functions or callbacks, while generators offer an efficient
+way to handle large datasets or streams, conserving memory and
+processing power.
+\end{document}

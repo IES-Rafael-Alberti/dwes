@@ -1,0 +1,5 @@
+target/
+.env
+keys/*.pem
+keys/*.p12
+.git

@@ -1,0 +1,64 @@
+### Mini Tasks HTTP — V1..V4
+@base = http://localhost:8080
+
+### V1 - sin ResponseEntity
+GET {{base}}/v1/ping
+
+###
+GET {{base}}/v1/sample
+
+###
+GET {{base}}/v1/tasks
+
+###
+POST {{base}}/v1/tasks
+Content-Type: application/json
+
+{ "title": "Tarea V1" }
+
+### V2 - con ResponseEntity
+GET {{base}}/v2/sample
+
+###
+POST {{base}}/v2/tasks
+Content-Type: application/json
+
+{ "title": "Tarea V2" }
+
+### V3 - Repo directo
+GET {{base}}/v3/tasks
+
+###
+POST {{base}}/v3/tasks
+Content-Type: application/json
+
+{ "title": "Persistida V3" }
+
+###
+PATCH {{base}}/v3/tasks/1/toggle
+
+###
+DELETE {{base}}/v3/tasks/1
+
+### V4 - Service + extra
+# Caching
+GET {{base}}/v4/tasks
+
+### Intento 304 (ajusta el ETag con el que devuelva la petición anterior)
+GET {{base}}/v4/tasks
+If-None-Match: "tasks-2"
+
+### Paginado + búsqueda
+GET {{base}}/v4/tasks?page=0&size=2&sort=title,asc&q=spring
+
+### HEAD (sólo cabeceras)
+HEAD {{base}}/v4/tasks?page=0&size=10
+
+### PUT update
+PUT {{base}}/v4/tasks/1
+Content-Type: application/json
+
+{ "title": "Nueva V4", "done": true }
+
+### DELETE
+DELETE {{base}}/v4/tasks/9999

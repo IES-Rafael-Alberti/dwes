@@ -1,0 +1,501 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* Anotación @Fetch: Para guiar las consultas
+
+La anotación **@Fetch** en JPA es una extensión de **Hibernate** que
+permite especificar cómo se obtendrán las entidades relacionadas en
+una consulta. Esta anotación no es parte de JPA estándar, sino de
+Hibernate, por lo que solo funciona si tu proyecto está configurado
+para usar Hibernate como proveedor de persistencia.
+
+
+** ¿Qué es =@Fetch= y cuándo usarla?
+La anotación =@Fetch= de Hibernate se utiliza para ajustar el
+comportamiento de carga de las relaciones en las entidades,
+especialmente cuando necesitas controlar cómo se recuperan los datos
+relacionados en las relaciones de tipo =@OneToMany= o =@ManyToMany=.
+
+Existen tres estrategias principales que puedes definir con =@Fetch=:
+ - =FetchMode.SELECT=: Carga los elementos relacionados mediante
+   consultas SQL separadas.
+ - =FetchMode.JOIN=: Carga los elementos relacionados utilizando una
+   consulta SQL con =JOIN=.
+ - =FetchMode.SUBSELECT=: Carga los elementos relacionados utilizando
+   una subconsulta =SELECT= cuando se accede a ellos.
+
+Cada estrategia tiene su caso de uso ideal dependiendo de la cantidad
+de datos y la complejidad de la relación.
+
+** Ejemplos Prácticos de =@Fetch= en Spring Boot con JPA
+   A continuación, veremos cómo aplicar =@Fetch= en una relación
+   =@OneToMany=. Imaginemos que tenemos dos entidades: =Autor= y
+   =Libro=, donde un autor puede tener varios libros.
+
+*** Definición de entidades =Autor= y =Libro=
+
+**** =Autor.java=
+   #+BEGIN_SRC java
+   import jakarta.persistence.*;
+   import org.hibernate.annotations.Fetch;
+   import org.hibernate.annotations.FetchMode;
+   import java.util.List;
+
+   @Entity
+   public class Autor {
+
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+
+       private String nombre;
+
+       @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+       @Fetch(FetchMode.JOIN)  // Estrategia de carga
+       private List<Libro> libros;
+
+       // Getters y Setters
+   }
+   #+END_SRC
+
+**** =Libro.java=
+   #+BEGIN_SRC java
+   import jakarta.persistence.*;
+
+   @Entity
+   public class Libro {
+
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+
+       private String titulo;
+
+       @ManyToOne
+       @JoinColumn(name = "autor_id")
+       private Autor autor;
+
+       // Getters y Setters
+   }
+   #+END_SRC
+
+** Estrategias de =@Fetch= explicadas con ejemplos
+
+*** 1. =@Fetch(FetchMode.SELECT)=
+   Esta estrategia carga cada entidad relacionada con una consulta SQL separada. Es ideal cuando tienes pocas entidades relacionadas y deseas evitar una consulta con =JOIN= pesada.
+
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+   @Fetch(FetchMode.SELECT)
+   private List<Libro> libros;
+   #+END_SRC
+
+** Ejemplo de consultas generadas:
+   1. La primera consulta obtiene los datos de =Autor=.
+   2. Por cada =Autor=, Hibernate ejecuta una consulta adicional para obtener los =Libro= asociados.
+
+   #+BEGIN_SRC sql
+   SELECT * FROM Autor WHERE id = ?
+   SELECT * FROM Libro WHERE autor_id = ?
+   SELECT * FROM Libro WHERE autor_id = ?
+   #+END_SRC
+
+*** 2. =@Fetch(FetchMode.JOIN)=
+   Esta estrategia realiza una consulta =JOIN= única para obtener la
+   entidad principal y sus entidades relacionadas. Es útil cuando se
+   necesita cargar todas las entidades relacionadas al mismo tiempo y
+   se espera que haya una cantidad limitada de relaciones.
+
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+   @Fetch(FetchMode.JOIN)
+   private List<Libro> libros;
+   #+END_SRC
+
+** Ejemplo de consulta generada:
+   1. La consulta realiza un =JOIN= entre =Autor= y =Libro=.
+
+   #+BEGIN_SRC sql
+   SELECT a.*, l.* FROM Autor a
+   LEFT JOIN Libro l ON a.id = l.autor_id
+   WHERE a.id = ?
+   #+END_SRC
+
+   > **Nota**: Esta estrategia es útil cuando no hay una gran cantidad
+   de elementos en la relación. De lo contrario, el resultado podría
+   multiplicarse innecesariamente debido a la cantidad de datos
+   obtenidos en el =JOIN=.
+
+*** 3. =@Fetch(FetchMode.SUBSELECT)=
+   Esta estrategia utiliza una **subconsulta** para cargar todas las
+   entidades relacionadas en una única consulta cuando se accede a
+   ellas. Puede ser más eficiente que =FetchMode.SELECT= cuando se
+   recuperan varias entidades relacionadas al mismo tiempo.
+
+   #+BEGIN_SRC java
+   @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+   @Fetch(FetchMode.SUBSELECT)
+   private List<Libro> libros;
+   #+END_SRC
+
+** Ejemplo de consulta generada:
+   1. Hibernate ejecuta una consulta para recuperar los =Autor=.
+   2. Cuando se accede a los =Libro= de cada =Autor=, Hibernate
+      ejecuta una subconsulta para obtener todos los libros
+      relacionados.
+
+   #+BEGIN_SRC sql
+   SELECT * FROM Autor WHERE id IN (?, ?, ?)
+   SELECT * FROM Libro WHERE autor_id IN (1, 2, 3)
+   #+END_SRC
+
+** Comparación de los Modos de =@Fetch=
+
+| Estrategia            | Descripción                                         | Caso de Uso Ideal                    |
+|-----------------------+-----------------------------------------------------+--------------------------------------|
+| =FetchMode.SELECT=    | Ejecuta una consulta separada para cada entidad     | Relaciones pequeñas, o cuando no se  |
+|                       | relacionada.                                        | accede siempre.                      |
+|-----------------------+-----------------------------------------------------+--------------------------------------|
+| =FetchMode.JOIN=      | Realiza un =JOIN= para obtener la entidad principal | Relaciones con pocas entidades.      |
+|                       | y la relacionada en una consulta única.             |                                      |
+|-----------------------+-----------------------------------------------------+--------------------------------------|
+| =FetchMode.SUBSELECT= | Ejecuta una subconsulta para obtener las entidades  | Relación grande que se recupera solo |
+|                       | relacionadas cuando se accede a ellas.              | cuando se necesita.                  |
+|-----------------------+-----------------------------------------------------+--------------------------------------|
+
+** Consideraciones Importantes
+
+1. **Rendimiento**:
+   - Las estrategias de =@Fetch= afectan el rendimiento de las
+     consultas. =FetchMode.JOIN= es adecuado para pocas relaciones,
+     mientras que =FetchMode.SUBSELECT= puede ser mejor para
+     relaciones más grandes.
+
+2. **N+1 Problem**:
+   - El uso de =FetchMode.SELECT= puede conducir al problema de
+     **N+1** si no se gestiona adecuadamente. Esto sucede cuando se
+     ejecutan múltiples consultas adicionales para cada registro
+     relacionado, aumentando exponencialmente el número de consultas.
+
+3. **Compatibilidad**:
+   - =@Fetch= es una anotación específica de Hibernate y no es parte
+     de JPA estándar. Si decides cambiar el proveedor de persistencia,
+     las configuraciones de =@Fetch= no se aplicarán.
+
+** Conclusión
+   La anotación =@Fetch= en Hibernate te permite controlar el
+   comportamiento de carga de las relaciones de una entidad. Elegir la
+   estrategia correcta (=SELECT=, =JOIN=, =SUBSELECT=) depende del
+   tamaño de las relaciones y de cómo se acceden.
+
+   * Ejemplo práctico de **@OneToMany** con **@Fetch** en una relación
+     de entidades
+
+Vamos a trabajar con las entidades `Autor` y `Libro`, donde un
+**Autor** puede tener múltiples **Libros** (relación
+`@OneToMany`). Además, aplicaremos **@Fetch** para ajustar el modo de
+carga de los libros en función de nuestras necesidades.
+
+**Estructura del ejemplo**
+- **`Autor`**: Representa al autor de los libros. Cada autor puede
+  tener múltiples libros asociados.
+- **`Libro`**: Representa un libro que pertenece a un autor.
+
+**Configuración de las Entidades con `@OneToMany` y `@Fetch`**
+
+**1. Entidad `Autor`**
+
+En la entidad `Autor`, definimos una relación **@OneToMany** con
+`Libro` y aplicamos **@Fetch** para controlar el comportamiento de
+carga de los libros.
+
+#+begin_src java
+import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import java.util.List;
+
+@Entity
+public class Autor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+
+    @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)  // Cambia esto a FetchMode.SELECT o FetchMode.SUBSELECT según el caso
+    private List<Libro> libros;
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public List<Libro> getLibros() {
+        return libros;
+    }
+
+    public void setLibros(List<Libro> libros) {
+        this.libros = libros;
+    }
+}
+#+end_src
+
+**Explicación**:
+- **@OneToMany**: Declara la relación de un autor a múltiples libros.
+- **@Fetch(FetchMode.JOIN)**: Usamos `FetchMode.JOIN` para realizar
+  una consulta `JOIN` que recupere el autor y sus libros al mismo
+  tiempo. Esta estrategia es útil cuando queremos cargar la lista de
+  libros en una única consulta SQL.
+
+> Puedes cambiar `FetchMode.JOIN` a `FetchMode.SELECT` o
+`FetchMode.SUBSELECT` según la estrategia que prefieras.
+
+**2. Entidad `Libro`**
+
+La entidad `Libro` tiene una relación **@ManyToOne** con `Autor`, ya
+que cada libro tiene un único autor.
+
+#+begin_src java
+import jakarta.persistence.*;
+
+@Entity
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public Autor getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Autor autor) {
+        this.autor = autor;
+    }
+}
+#+end_src
+
+**Explicación**:
+- **@ManyToOne**: Indica que cada libro pertenece a un solo autor.
+- **@JoinColumn(name = "autor_id")**: Define la columna de la base de
+  datos que almacena la clave foránea para el autor en la tabla
+  `Libro`.
+
+*Uso de `@Fetch` en Diferentes Escenarios*
+
+**1. `FetchMode.JOIN`**
+
+Usar `FetchMode.JOIN` en el ejemplo de `Autor` generará una consulta
+`JOIN` entre `Autor` y `Libro`. Esto es útil cuando esperamos un
+número reducido de relaciones y queremos optimizar la consulta para
+obtener los datos relacionados en una sola ejecución.
+
+#+begin_src java
+@OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+@Fetch(FetchMode.JOIN)
+private List<Libro> libros;
+#+end_src
+
+*Consulta SQL generada*:
+#+begin_example sql
+SELECT a.*, l.* FROM Autor a
+LEFT JOIN Libro l ON a.id = l.autor_id
+WHERE a.id = ?
+#+end_example
+
+Esta consulta carga el autor y sus libros en una sola consulta. Sin
+embargo, si hay muchos libros por autor, el rendimiento puede verse
+afectado.
+
+**2. `FetchMode.SELECT`**
+
+Usar `FetchMode.SELECT` genera una consulta adicional para cada autor
+al acceder a sus libros. Es ideal si no accedemos a la lista de libros
+frecuentemente.
+
+#+begin_src java
+@OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+@Fetch(FetchMode.SELECT)
+private List<Libro> libros;
+#+end_src
+
+*Consultas SQL generadas*:
+1. La consulta inicial para obtener el autor:
+#+begin_example sql
+SELECT * FROM Autor WHERE id = ?
+#+end_example
+2. Una consulta separada para cada autor cuando accedemos a sus libros:
+#+begin_example sql
+SELECT * FROM Libro WHERE autor_id = ?
+#+end_example
+
+> **Nota**: `FetchMode.SELECT` puede causar el problema de **N+1** si
+tenemos una lista grande de autores y accedemos a los libros de cada
+uno, ya que se ejecutará una consulta adicional por cada autor.
+
+**3. `FetchMode.SUBSELECT`**
+
+Usar `FetchMode.SUBSELECT` es una buena opción cuando se cargan
+múltiples entidades principales al mismo tiempo. Hibernate ejecutará
+una sola subconsulta para cargar todas las entidades relacionadas
+cuando accedamos a ellas.
+
+#+begin_src java
+@OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+@Fetch(FetchMode.SUBSELECT)
+private List<Libro> libros;
+#+end_src
+
+*Consultas SQL generadas*:
+1. La consulta para cargar varios autores:
+#+begin_example sql
+SELECT * FROM Autor WHERE id IN (?, ?, ?)
+#+end_example
+2. Una subconsulta que recupera todos los libros para los autores cargados:
+#+begin_example sql
+SELECT * FROM Libro WHERE autor_id IN (1, 2, 3)
+#+end_example
+
+Esta estrategia es útil cuando necesitas cargar todas las relaciones
+en una sola consulta, pero solo después de haber cargado las entidades
+principales.
+
+*Ejemplo de Prueba en un Servicio o Controlador*
+
+**Método en el Servicio `AutorService`**
+
+#+begin_src java
+  import org.springframework.beans.factory.annotation.Autowired;
+  import org.springframework.stereotype.Service;
+  import org.springframework.transaction.annotation.Transactional;
+
+  @Service
+  public class AutorService {
+
+      @Autowired
+      private AutorRepository autorRepository;
+
+      @Transactional(readOnly = true)
+      public Autor obtenerAutorConLibros(Long autorId) {
+          return autorRepository.findById(autorId).orElseThrow(()
+                 -> new RuntimeException("Autor no encontrado"));
+      }
+  }
+#+end_src
+
+**Controlador `AutorController`**
+
+#+begin_src java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/autores")
+public class AutorController {
+
+    @Autowired
+    private AutorService autorService;
+
+    @GetMapping("/{id}/libros")
+    public Autor obtenerAutorConLibros(@PathVariable Long id) {
+        return autorService.obtenerAutorConLibros(id);
+    }
+}
+#+end_src
+
+Cuando accedes a `/autores/{id}/libros`, verás el comportamiento de
+`@Fetch` en acción. Según la estrategia (`JOIN`, `SELECT`, o
+`SUBSELECT`) configurada en la entidad `Autor`, Hibernate ejecutará
+las consultas de manera diferente.
+
+*Resumen de Estrategias de `@Fetch` en `@OneToMany`*
+
+| Estrategia de `@Fetch`    | Descripción                       | Escenario Ideal                     |
+|---------------------------+-----------------------------------+-------------------------------------|
+| **`FetchMode.JOIN`**      | Consulta única `JOIN` para cargar | Relación pequeña, acceso frecuente. |
+|                           | el autor y sus libros.            |                                     |
+|---------------------------+-----------------------------------+-------------------------------------|
+| **`FetchMode.SELECT`**    | Una consulta para cada relación   | Relación ocasionalmente accedida,   |
+|                           | cuando se accede a ella.          | para evitar grandes JOIN.           |
+|---------------------------+-----------------------------------+-------------------------------------|
+| **`FetchMode.SUBSELECT`** | Usa una subconsulta para cargar   | Relación grande con carga diferida. |
+|                           | todas las relaciones a la vez.    |                                     |
+|---------------------------+-----------------------------------+-------------------------------------|
+
+Cada estrategia tiene sus ventajas y desventajas, y su uso depende del
+contexto de la aplicación y la cantidad de datos relacionados. ¡Espero
+que este ejemplo te haya ayudado a entender cómo usar `@Fetch` en tus
+relaciones `@OneToMany` en JPA y Spring Boot!

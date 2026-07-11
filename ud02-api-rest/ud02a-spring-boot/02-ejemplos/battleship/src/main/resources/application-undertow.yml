@@ -1,0 +1,10 @@
+# Perfil para usar Undertow en lugar de Tomcat.
+# Requiere cambiar las dependencias en pom.xml (ver comentario en la dependencia webmvc).
+# Activar con: --spring.profiles.active=undertow o SPRING_PROFILES_ACTIVE=undertow
+server:
+  undertow:
+    threads:
+      io: 4
+      worker: 200
+    buffer-size: 16384
+    direct-buffers: true

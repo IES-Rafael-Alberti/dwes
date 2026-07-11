@@ -1,0 +1,173 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* Problema de respuestas JSON no estables:
+
+#+begin_src
+2024-10-27T02:17:42.828+02:00  WARN 71485 --- [nio-8080-exec-1] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+  	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+#+end_src
+
+ Este mensaje de advertencia indica que Spring no garantiza la
+ estructura JSON generada cuando se serializan directamente las
+ instancias de =PageImpl=, que es la implementación predeterminada de
+ la interfaz =Page= en Spring Data. Para obtener una estructura JSON
+ estable y consistente para respuestas paginadas, se recomienda usar
+ el soporte de Spring HATEOAS, o bien convertir la respuesta a una
+ estructura =PagedModel=.
+** ¿Por qué es un problema que en respuestas paginadas la estructura de la respuesta json no sea estable?
+
+La falta de estabilidad en la estructura de una respuesta JSON paginada puede generar problemas en varios escenarios, especialmente cuando otros sistemas, aplicaciones cliente o interfaces de usuario dependen de un formato de datos específico. Aquí están las principales razones:
+
+*** Compatibilidad con Clientes que Consumen la API
+   - Cuando una API REST es consumida por aplicaciones cliente (por
+     ejemplo, aplicaciones móviles, frontend en JavaScript, o sistemas
+     externos), estos suelen depender de una estructura JSON estable
+     para interpretar correctamente los datos.
+   - Si la estructura JSON cambia con frecuencia o inesperadamente,
+     puede romper la lógica en el cliente, haciendo que los datos no
+     se muestren correctamente, causando errores o forzando a los
+     clientes a actualizarse con cada cambio.
+
+*** Facilita el Mantenimiento y la Evolución de la API
+   - Mantener una estructura JSON estable en las respuestas permite
+     que la API evolucione de manera controlada. Cualquier cambio en
+     el formato JSON puede planificarse y documentarse, asegurando que
+     los clientes y desarrolladores conozcan las modificaciones.
+   - Si los desarrolladores de clientes conocen y confían en una
+     estructura estable, pueden mantener su código más fácilmente y
+     reducir la frecuencia de actualizaciones.
+
+*** Control en la Documentación y la Consistencia de la API
+   - Una estructura JSON estable es fundamental para documentar la API
+     correctamente. Cuando el formato de las respuestas es predecible,
+     la documentación puede ser precisa y confiable.
+   - La estabilidad asegura que, independientemente de los cambios
+     internos en el servidor (como el cambio de `PageImpl` a otro tipo
+     de `Page`), la estructura de la respuesta seguirá siendo la
+     misma.
+
+*** Minimiza Errores de Serialización y de Integración
+   - Serializar directamente `PageImpl` o clases que puedan variar en
+     su estructura puede generar respuestas JSON inconsistentes,
+     especialmente si Spring decide realizar cambios internos en la
+     implementación.
+   - Con `PagedModel` o el uso de un DTO estable, el formato y el
+     contenido de la respuesta están bajo control y no dependen de la
+     implementación interna de Spring Data.
+
+Una estructura JSON estable en respuestas paginadas
+asegura la compatibilidad a largo plazo y reduce el impacto de
+posibles cambios en la implementación interna del framework,
+beneficiando tanto a los desarrolladores de la API como a los
+consumidores externos.
+
+** Soluciones
+
+Hay dos formas de resolverlo:
+
+*** Opción 1: Usar =PagedResourcesAssembler= de Spring HATEOAS
+=PagedResourcesAssembler= transforma una =Page= en un modelo =PagedModel=, que ofrece una estructura JSON estable.
+
+1. **Añade la dependencia de Spring HATEOAS** en =pom.xml= (si aún no la tienes):
+
+   #+BEGIN_SRC xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-hateoas</artifactId>
+   </dependency>
+   #+END_SRC
+
+2. **Inyecta =PagedResourcesAssembler= en el controlador** y úsalo para convertir la respuesta =Page= a =PagedModel=:
+
+   #+BEGIN_SRC java
+   import org.springframework.data.web.PagedResourcesAssembler;
+   import org.springframework.hateoas.PagedModel;
+   import org.springframework.http.ResponseEntity;
+
+   @GetMapping
+   public ResponseEntity<PagedModel<Evento>> listarEvento(
+           @RequestParam(required = false) String nombre,
+           Pageable pageable,
+           PagedResourcesAssembler<Evento> assembler) {
+
+       Page<Evento> eventosPage = (nombre != null)
+               ? eventoRepository.findByNombreIgnoreCase(nombre, pageable)
+               : eventoRepository.findAll(pageable);
+
+       PagedModel<Evento> pagedModel = assembler.toModel(eventosPage);
+       return ResponseEntity.ok(pagedModel);
+   }
+   #+END_SRC
+
+*** Opción 2: Configurar =@EnableSpringDataWebSupport= para Serializar como DTO
+
+Otra opción es habilitar =@EnableSpringDataWebSupport= en la clase
+principal y configurar el modo de serialización de paginación para
+utilizar un DTO en lugar de =PageImpl=.
+
+1. **Configura =@EnableSpringDataWebSupport= en la clase principal**
+   de la aplicación:
+
+   #+BEGIN_SRC java
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.data.web.config.EnableSpringDataWebSupport;
+
+   @SpringBootApplication
+   @EnableSpringDataWebSupport(pageSerializationMode =
+                                    PageSerializationMode.VIA_DTO)
+   public class GestionEventosApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(GestionEventosApplication.class,
+                                 args);
+       }
+   }
+   #+END_SRC
+
+** ¿Cuál Opción Elegir?
+
+- **Si necesitas estabilidad y un formato JSON específico** en las
+  respuestas, la opción 1 es preferible con =PagedResourcesAssembler=.
+- **Si buscas una solución rápida sin cambios en el controlador**, usa
+  la opción 2 para configurar la serialización de =Page= con un DTO
+  globalmente.
+
+Ambas opciones resolverán la advertencia y garantizarán una estructura
+JSON estable en las respuestas paginadas.

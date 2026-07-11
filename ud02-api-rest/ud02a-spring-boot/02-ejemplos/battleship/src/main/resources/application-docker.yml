@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/battleship
+    username: battleship
+    password: ${DB_PASSWORD}
+
+app:
+  security:
+    jwt:
+      private-key: ${JWT_PRIVATE_KEY}
+      public-key: ${JWT_PUBLIC_KEY}
+
+logging:
+  level:
+    com.example.battleship: INFO

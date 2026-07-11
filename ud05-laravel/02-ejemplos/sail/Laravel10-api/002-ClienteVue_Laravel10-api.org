@@ -1,0 +1,600 @@
+#+TITLE: Cliente Vue para API Rest con Laravel 10
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+
+* Cliente en Vue.js para API REST de Laravel 10
+
+Este documento describe los pasos necesarios para crear un cliente en
+Vue.js que consuma la API REST de Laravel 10 con autenticación JWT.
+
+** El servidor
+Primero hay que tener en cuenta que el servidor, después de hacer:ç
+#+begin_src bash
+sail up -d
+#+end_src
+tenemos que hacer
+#+begin_src bash
+sail artisan serve
+#+end_src
+** Instalación y Configuración del Proyecto Vue
+
+*** 1.1 Crear un nuevo proyecto Vue con Vite
+Ejecuta el siguiente comando para generar un proyecto Vue:
+
+#+BEGIN_SRC bash
+npm create vite@latest laravel-client --template vue
+cd laravel-client
+npm install
+#+END_SRC
+
+*** 1.2 Instalar Axios y Vuex para manejo de estado
+Axios se usará para realizar peticiones HTTP y Vuex para manejar la autenticación:
+
+#+BEGIN_SRC bash
+npm install axios vuex@4
+#+END_SRC
+
+*** 1.3 Configurar las variables de entorno
+Crea un archivo ~.env~ en la raíz del proyecto Vue y agrega la URL de la API Laravel:
+
+#+BEGIN_SRC env
+VITE_API_URL=http://localhost/api/v1
+#+END_SRC
+** Configurar App.vue
+Configurar App.vue
+
+Sustituye el contenido de src/App.vue por lo siguiente para integrar
+Vue Router y mostrar las rutas correctamente:
+#+begin_src html
+<template>
+  <div>
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/login">Login</router-link>
+      <router-link to="/create-post">Crear Post</router-link>
+    </nav>
+    <router-view />
+  </div>
+</template>
+
+<script>
+export default {
+  name: "App",
+};
+</script>
+
+<style>
+nav {
+  margin-bottom: 20px;
+}
+nav a {
+  margin-right: 10px;
+}
+</style>
+
+#+end_src
+
+**  Configurar la Conexión con la API
+
+*** 2.1 Crear una instancia de Axios
+Crea un archivo ~src/services/api.js~:
+
+#+BEGIN_SRC javascript
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+});
+
+export default api;
+#+END_SRC
+
+** Manejo de Autenticación con Vuex
+
+*** 3.1 Configurar el Store de Vuex
+Crea un archivo ~src/store/index.js~:
+
+#+BEGIN_SRC javascript
+import { createStore } from 'vuex';
+import api from '@/services/api';
+
+export default createStore({
+    state: {
+        user: null,
+        token: localStorage.getItem('token') || null
+    },
+    mutations: {
+        setUser(state, user) {
+            state.user = user;
+        },
+        setToken(state, token) {
+            state.token = token;
+            localStorage.setItem('token', token);
+            api.defaults.headers['Authorization'] = `Bearer ${token}`;
+        },
+        logout(state) {
+            state.user = null;
+            state.token = null;
+            localStorage.removeItem('token');
+            delete api.defaults.headers['Authorization'];
+        }
+    },
+    actions: {
+        async login({ commit }, credentials) {
+            const response = await api.post('/auth/login', credentials);
+            commit('setToken', response.data.access_token);
+            commit('setUser', await api.post('/auth/me'));
+        },
+        async logout({ commit }) {
+            await api.post('/auth/logout');
+            commit('logout');
+        },
+        async fetchUser({ commit }) {
+            const response = await api.post('/auth/me');
+            commit('setUser', response.data);
+        }
+    }
+});
+#+END_SRC
+
+** Crear Componentes para los Posts
+
+*** 4.1 Componente de Lista de Posts
+Crea ~src/components/PostList.vue~:
+
+#+BEGIN_SRC javascript
+<template>
+  <div>
+    <h1>Lista de Posts</h1>
+    <transition name="fade">
+      <div v-if="flashMessage" class="flash-message" @click="flashMessage = ''">
+        {{ flashMessage }}
+      </div>
+    </transition>
+    <ul>
+      <li v-for="post in posts" :key="post.id">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description }}</p>
+        <img v-if="post.photo" :src="post.photo" alt="Imagen del post" class="post-image" />
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import api from '@/services/api';
+
+export default {
+  data() {
+    return {
+      posts: [],
+      flashMessage: localStorage.getItem('flashMessage') || ''
+    };
+  },
+  async mounted() {
+    try {
+      const response = await api.get('/posts');
+      this.posts = response.data.data;
+      if (this.flashMessage) {
+        setTimeout(() => {
+          this.flashMessage = '';
+          localStorage.removeItem('flashMessage');
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error al cargar los posts', error);
+    }
+  }
+};
+</script>
+
+<style>
+.post-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
+.flash-message {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+</style>
+#+END_SRC
+
+** Agregar Vista para Crear un Post
+
+*** 4.1 Crear el Componente CreatePost.vue
+Crea un archivo src/components/CreatePost.vue:
+#+begin_src java
+<template>
+  <div>
+    <h1>Crear Nuevo Post</h1>
+    <form @submit.prevent="submitPost" enctype="multipart/form-data">
+      <input v-model="title" type="text" placeholder="Título" required />
+      <textarea v-model="description" placeholder="Descripción" required></textarea>
+      <input type="file" @change="handleFileUpload" required />
+      <button type="submit">Publicar</button>
+      <p v-if="message" :class="{'error': isError, 'success': !isError}">{{ message }}</p>
+    </form>
+  </div>
+</template>
+
+<script>
+import api from '@/services/api';
+
+export default {
+  data() {
+    return {
+      title: '',
+      description: '',
+      image: null,
+      message: '',
+      isError: false
+    };
+  },
+  methods: {
+    handleFileUpload(event) {
+      this.image = event.target.files[0];
+    },
+ async submitPost() {
+  try {
+    const formData = new FormData();
+    formData.append('title', this.title);
+    formData.append('description', this.description);
+    formData.append('image', this.image);
+
+    const response = await api.post('/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    localStorage.setItem('flashMessage', response.data.message || 'Post creado con éxito!');
+    this.$router.push('/');
+  } catch (error) {
+    console.error('Error al crear el post', error);
+  }
+}
+  }
+};
+</script>
+
+<style>
+.error {
+  color: red;
+}
+.success {
+  color: green;
+}
+</style>
+#+end_src
+
+** Configurar Rutas con Vue Router
+
+*** 5.1 Instalar Vue Router
+#+BEGIN_SRC bash
+npm install vue-router@4
+#+END_SRC
+
+*** 5.2 Configurar las Rutas
+Crea el archivo ~src/router/index.js~:
+
+#+BEGIN_SRC javascript
+import { createRouter, createWebHistory } from 'vue-router';
+import PostList from '@/components/PostList.vue';
+import Login from '@/components/Login.vue';
+import CreatePost from '@/components/CreatePost.vue';
+
+const routes = [
+    { path: '/', component: PostList },
+    { path: '/login', component: Login }
+    { path: '/create-post', component: CreatePost }
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+});
+
+export default router;
+#+END_SRC
+
+Modifica ~src/main.js~ para usar Vue Router y Vuex:
+
+#+BEGIN_SRC javascript
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+
+const app = createApp(App);
+app.use(router);
+app.use(store);
+app.mount('#app');
+#+END_SRC
+
+** Crear un Componente de Login
+
+Crea ~src/components/Login.vue~:
+
+#+BEGIN_SRC javascript
+<template>
+ <div>
+  <h1>Iniciar Sesión</h1>
+  <form @submit.prevent="handleLogin">
+    <input v-model="email" type="email" placeholder="Correo" required>
+    <input v-model="password" type="password" placeholder="Contraseña" required>
+    <button type="submit">Ingresar</button>
+  </form>
+ </div>
+</template>
+
+<script>
+import { mapActions } from 'vuex';
+
+export default {
+ data() {
+     return {
+         email: '',
+         password: ''
+     };
+ },
+ methods: {
+   ...mapActions(['login']),
+   async handleLogin() {
+   try {
+       await this.login({ email: this.email, password: this.password });
+       this.$router.push('/');
+   } catch (error) {
+       console.error('Error en el login', error);
+   }
+   }
+ }
+};
+</script>
+#+END_SRC
+
+** Ejecutar el Proyecto
+Para iniciar el servidor Vue, ejecuta:
+
+#+BEGIN_SRC bash
+npm run dev
+#+END_SRC
+
+Esto iniciará el frontend en ~http://localhost:5174~.  Y el =80= para
+ producción.
+
+** Consideraciones para Nginx como Reverse Proxy
+
+Si el frontend Vue está en una máquina separada de Laravel detrás de
+Nginx, asegúrate de que la configuración de Nginx permite solicitudes
+CORS correctamente. Agrega esta configuración al bloque del servidor
+en nginx.con
+#+begin_src java
+location /api/ {
+    proxy_pass http://backend-server:8000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+#+end_src
+Si el frontend y backend están en el mismo servidor, asegúrate de que
+el reverse proxy esté configurado para servir ambos correctamente.
+
+Con esta actualización, el cliente Vue.js puede interactuar con el
+backend Laravel detrás de Nginx sin problemas.
+
+** Mejoras Futuras
+*** DONE Agregar un formulario para crear posts.
+CLOSED: [2025-02-17 lun 01:28]
+*** Implementar edición y eliminación de posts.
+*** DONE Agregar middleware en rutas para restringir acceso si no está autenticado.
+CLOSED: [2025-02-17 lun 01:28] (lo hace el servidor)
+
+
+----
+* Usar Laravel Sail para Crear una Aplicación Front-end con Vue.js (Alternativa)
+
+Puedes usar Laravel Sail para crear tu aplicación front-end con
+Vue.js. Aquí te dejo los pasos que puedes seguir para hacerlo:
+
+** 1. Inicia Laravel Sail
+
+Asegúrate de que tu aplicación Laravel Sail esté en funcionamiento:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail up -d
+#+END_SRC
+
+** 2. Crear la Aplicación Vue con Vite
+
+Utiliza el contenedor de Laravel Sail para crear la aplicación Vue.js
+usando Vite:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail npm create vite@latest laravel-client --template vue
+#+END_SRC
+
+** 3. Navegar al Directorio del Cliente Vue
+
+Después de crear la aplicación Vue, navega al directorio del proyecto:
+
+#+BEGIN_SRC sh
+cd laravel-client
+#+END_SRC
+
+** 4. Instalar Dependencias
+
+Instala las dependencias necesarias utilizando npm dentro del
+contenedor de Sail:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail npm install
+#+END_SRC
+
+** 5. Configurar el Proxy en Vite
+
+Para que Vite pueda comunicarse con tu API Laravel, configura un proxy en ~vite.config.js~:
+
+#+BEGIN_SRC js
+export default {
+  server: {
+    proxy: {
+      '/api': 'http://localhost', // o la dirección donde se ejecuta tu aplicación Laravel
+    },
+  },
+};
+#+END_SRC
+
+** 6. Ejecutar la Aplicación Vue
+
+Para ejecutar la aplicación Vue dentro del contenedor de Sail, usa el
+siguiente comando:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail npm run dev
+#+END_SRC
+
+Esto debería iniciar el servidor de desarrollo de Vite y permitirte
+ver tu aplicación Vue en tu navegador.
+
+** Resumen de Comandos
+
+#+BEGIN_SRC sh
+# Iniciar Laravel Sail
+./vendor/bin/sail up -d
+
+# Crear la aplicación Vue
+./vendor/bin/sail npm create vite@latest laravel-client --template vue
+
+# Navegar al directorio del cliente Vue
+cd laravel-client
+
+# Instalar dependencias
+./vendor/bin/sail npm install
+
+# Configurar proxy en vite.config.js
+# (Editar el archivo vite.config.js y agregar el proxy)
+
+# Ejecutar la aplicación Vue
+./vendor/bin/sail npm run dev
+#+END_SRC
+
+Siguiendo estos pasos, podrás integrar una aplicación front-end Vue.js
+con tu API REST Laravel utilizando Sail.
+
+----
+* Comparación entre Laravel Sail y Configuración Independiente
+
+Ambas opciones tienen sus ventajas y desventajas. Aquí te dejo algunos
+puntos a considerar para cada una:
+
+** Usar Laravel Sail
+
+*** Ventajas
+- **Entorno Consistente**: Sail proporciona un entorno de desarrollo
+  consistente utilizando Docker, lo que puede reducir problemas de
+  configuración entre diferentes entornos de desarrollo.
+- **Simplicidad**: Configurar y administrar servicios como MySQL,
+  Redis, y otros es más sencillo con Sail, ya que todo está
+  preconfigurado.
+- **Facilidad de Uso**: Puedes aprovechar comandos simples de Sail
+  para ejecutar tareas comunes como la instalación de dependencias,
+  ejecutar pruebas, y más.
+
+*** Desventajas
+- **Restricciones de Docker**: Algunas veces, trabajar con Docker
+  puede introducir problemas específicos de contenedores, como temas
+  de rendimiento y configuración de red.
+- **Curva de Aprendizaje**: Si no estás familiarizado con Docker,
+  puede haber una pequeña curva de aprendizaje inicial.
+
+** Hacerlo de Forma Independiente
+
+*** Ventajas
+- **Flexibilidad**: Puedes personalizar tu entorno de desarrollo según
+  tus necesidades específicas sin las restricciones de un contenedor
+  Docker.
+- **Rendimiento**: En algunos casos, un entorno no acoplado a Docker
+  puede tener un mejor rendimiento, especialmente en sistemas de
+  archivos y acceso a red.
+
+*** Desventajas
+- **Configuración Manual**: Necesitarás configurar manualmente
+  servicios como bases de datos, colas, etc., lo que puede ser tedioso
+  y propenso a errores.
+- **Inconsistencias**: Podrías encontrarte con problemas de
+  consistencia entre diferentes entornos de desarrollo y producción si
+  no tienes cuidado.
+
+** Recomendación
+
+Si ya estás utilizando Sail para tu API con Laravel, podría ser
+conveniente seguir utilizando Sail para crear y gestionar tu
+aplicación Vue, ya que te proporcionará un entorno de desarrollo
+consistente y simplificará la configuración inicial. Usar Sail también
+facilita la administración de dependencias y la integración continua.
+
+Por otro lado, si prefieres un enfoque más flexible y personalizado, o
+si ya tienes experiencia configurando entornos de desarrollo sin
+Docker, podrías optar por crear la aplicación Vue de forma
+independiente.
+
+En resumen:
+- **Si la simplicidad y la consistencia son importantes para ti**,
+  sigue con Sail.
+- **Si necesitas más flexibilidad y rendimiento**, considera hacerlo
+  de forma independiente.

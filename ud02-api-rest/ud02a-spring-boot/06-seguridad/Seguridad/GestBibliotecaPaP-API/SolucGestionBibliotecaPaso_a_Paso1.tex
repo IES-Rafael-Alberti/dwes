@@ -1,0 +1,3660 @@
+% Created 2024-11-04 lun 12:34
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\renewcommand{\contentsname}{Tabla de contenidos}
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{Gestión de Biblioteca}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={Gestión de Biblioteca},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.6.18)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+\section{Vamos a desarrollar el proyecto paso a paso}
+\label{sec:org522c0f1}
+
+\subsection{1. Modelo Entidad/Relación}
+\label{sec:org4749b78}
+El modelo entidad/relación ya lo hemos desarrollado en pasos anteriores, así que lo damos por completado. Queda claro que vamos a trabajar con las siguientes entidades:
+
+\begin{itemize}
+\item \textbf{\textbf{Autor}}
+\item \textbf{\textbf{Libro}}
+\item \textbf{\textbf{Usuario}}
+\item \textbf{\textbf{Préstamo}}
+\end{itemize}
+
+Relaciones principales:
+\begin{itemize}
+\item \textbf{\textbf{Un autor puede tener muchos libros}}.
+\item \textbf{\textbf{Un libro pertenece a un autor}}.
+\item \textbf{\textbf{Un usuario puede realizar muchos préstamos}}.
+\item \textbf{\textbf{Cada préstamo está relacionado con un solo libro y un solo usuario}}.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.9\linewidth]{diagrama_entidad_relacion.png}
+\caption{Diagrama E/R generado.}
+\end{figure}
+
+\subsection{2. Crear el proyecto Spring Boot con Spring Initializr}
+\label{sec:org447a93e}
+Para crear el proyecto, vamos a utilizar \textbf{\textbf{Spring Initializr}}. Estos son los pasos:
+
+\subsubsection{2.1. Configurar Spring Initializr}
+\label{sec:orga793900}
+\begin{enumerate}
+\item Ve a \href{https://start.spring.io/}{Spring Initializr}.
+\item Configura el proyecto con los siguientes parámetros:
+\begin{itemize}
+\item \textbf{\textbf{Project}}: Maven Project
+\item \textbf{\textbf{Language}}: Java
+\item \textbf{\textbf{Spring Boot Version}}: 3.0.0 (o la versión estable más reciente).
+\item \textbf{\textbf{Group}}: `com.biblioteca`
+\item \textbf{\textbf{Artifact}}: `gestion-biblioteca`
+\item \textbf{\textbf{Name}}: `gestion-biblioteca`
+\item \textbf{\textbf{Description}}: API REST para la gestión de una biblioteca.
+\item \textbf{\textbf{Package name}}: `com.biblioteca.gestion`
+\item \textbf{\textbf{Packaging}}: Jar
+\item \textbf{\textbf{Java Version}}: 17 (si usas una versión más reciente de JDK).
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{2.2. Dependencias a seleccionar}
+\label{sec:org7f52a9f}
+Selecciona las siguientes dependencias:
+\begin{itemize}
+\item \textbf{\textbf{Spring Web}}: Para desarrollar la API REST.
+\item \textbf{\textbf{Spring Data JPA}}: Para la persistencia con JPA.
+\item \textbf{\textbf{H2 Database}}: Base de datos en memoria para el desarrollo.
+\item \textbf{\textbf{Spring Security}}: Para la autenticación y autorización.
+\item \textbf{\textbf{Spring Boot DevTools}} (opcional): Para autorecarga durante el desarrollo.
+\item \textbf{\textbf{Lombok}}: Para reducir la cantidad de código repetitivo (como getters, setters y constructores).
+\end{itemize}
+
+Descarga el proyecto generado y descomprímelo si es necesario.
+
+\subsection{3. Abrir el proyecto en el IDE y configurar la base de datos H2}
+\label{sec:orgce61b18}
+
+\subsubsection{3.1. Abrir el proyecto en IntelliJ IDEA o Eclipse}
+\label{sec:orgd30923e}
+\begin{itemize}
+\item Abre tu IDE preferido (IntelliJ o Eclipse).
+\item Importa el proyecto \textbf{\textbf{Maven}} que has descargado, elige la carpeta del proyecto y deja que el IDE configure las dependencias automáticamente.
+\end{itemize}
+
+\subsubsection{3.2. Configurar la base de datos H2}
+\label{sec:org2a217dd}
+Vamos a usar \textbf{\textbf{H2}} como base de datos en memoria para el desarrollo inicial. La configuración básica de \textbf{\textbf{H2}} debe estar en el archivo `application.properties` o `application.yml`.
+
+Aquí tienes cómo configurarlo en \textbf{\textbf{`application.properties`}}:
+
+\begin{minted}[]{properties}
+# Configuración H2
+#spring.datasource.url=jdbc:h2:file:./data/biblioteca
+spring.datasource.url=jdbc:h2:mem:biblioteca
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.h2.console.enabled=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+\end{minted}
+
+\begin{itemize}
+\item \textbf{\textbf{spring.h2.console.enabled=true}}: habilita la consola H2 en el navegador en `\url{http://localhost:8080/h2-console}`.
+\item \textbf{\textbf{spring.jpa.hibernate.ddl-auto=update}}: Hibernate actualizará las tablas según el modelo definido en las entidades.
+\end{itemize}
+
+\subsection{4. Crear la estructura del proyecto (paquetes)}
+\label{sec:orgd1e95a0}
+Vamos a definir una estructura de paquetes clara y organizada. En proyectos Spring Boot, la estructura es flexible, pero sigue un patrón común para dividir las responsabilidades. Vamos a crear los siguientes paquetes:
+
+\begin{minted}[]{text}
+src/main/java/com/biblioteca/gestion/
+    ├── config
+    ├── controllers
+    ├── services
+    ├── repositories
+    ├── entities
+    └── security
+\end{minted}
+
+\subsubsection{Explicación de la estructura:}
+\label{sec:orgfe89c70}
+
+\begin{itemize}
+\item \textbf{\textbf{config}}: Aquí colocaremos las clases de configuración, como la configuración de seguridad, CORS, JWT, etc.
+\item \textbf{\textbf{controllers}}: Aquí ubicamos los controladores REST que manejarán las peticiones HTTP (GET, POST, PUT, DELETE).
+\item \textbf{\textbf{services}}: Aunque inicialmente no los usaremos mucho, colocaremos la lógica de negocio aquí al hacer la refactorización. Los servicios permiten separar la lógica del controlador.
+\item \textbf{\textbf{repositories}}: Aquí irán las interfaces de repositorios JPA, que interactúan directamente con la base de datos.
+\item \textbf{\textbf{entities}}: Aquí estarán las clases de las entidades JPA que representan las tablas de la base de datos.
+\item \textbf{\textbf{security}}: Aquí colocaremos las clases relacionadas con la seguridad, como JWT y las configuraciones de autenticación.
+\end{itemize}
+
+\subsubsection{Alternativas:}
+\label{sec:org0da4c9e}
+Otra estructura que podría usarse es agrupar por funcionalidades (modular):
+\begin{minted}[]{text}
+src/main/java/com/biblioteca/gestion/
+    ├── libros
+    ├── autores
+    ├── prestamos
+    ├── usuarios
+    └── security
+\end{minted}
+
+En esta alternativa, cada funcionalidad tiene su propio paquete con entidades, repositorios, servicios y controladores correspondientes. Esto es útil en proyectos más grandes donde necesitas un mayor nivel de modularidad.
+
+\subsection{5. Crear las entidades y explicar Lombok y JPA}
+\label{sec:org5cc7c8f}
+Ahora vamos a crear las entidades \textbf{\textbf{Autor}}, \textbf{\textbf{Libro}}, \textbf{\textbf{Usuario}} y \textbf{\textbf{Préstamo}} en el paquete `entities`, usando \textbf{\textbf{Lombok}} para simplificar el código.
+
+\subsubsection{5.1. Explicación de Lombok:}
+\label{sec:orge60a6da}
+\begin{itemize}
+\item \textbf{\textbf{Lombok}} es una librería que permite reducir el código repetitivo, como getters, setters, constructores, etc.
+\item Algunas anotaciones comunes:
+\begin{itemize}
+\item `@Getter` y `@Setter`: Generan automáticamente los métodos getter y setter para los atributos.
+\item `@NoArgsConstructor`: Crea un constructor sin parámetros.
+\item `@AllArgsConstructor`: Crea un constructor con todos los parámetros.
+\item `@Builder`: Permite la creación de objetos usando el patrón \textbf{builder}.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{5.2. Crear las entidades}
+\label{sec:orgd8ebe46}
+
+\begin{itemize}
+\item Entidad `Autor`:
+\label{sec:org930ee0c}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.entities;
+
+import lombok.*;
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Autor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String nacionalidad;
+
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private List<Libro> libros;
+}
+\end{minted}
+
+\item Entidad `Libro`:
+\label{sec:orgda2d925}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.entities;
+
+import lombok.*;
+import jakarta.persistence.*;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;  // "disponible" o "prestado"
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+}
+\end{minted}
+
+\item Entidad `Usuario`:
+\label{sec:org8cc6458}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.entities;
+
+import lombok.*;
+import jakarta.persistence.*;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String email;
+    private String password;
+    private String rol;  // "usuario" o "bibliotecario"
+}
+\end{minted}
+
+\item Entidad `Préstamo`:
+\label{sec:orgf9a92b6}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.entities;
+
+import lombok.*;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Prestamo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "libro_id")
+    private Libro libro;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    private LocalDate fechaPrestamo;
+    private LocalDate fechaDevolucion;
+}
+\end{minted}
+
+---
+\end{itemize}
+
+
+\subsubsection{Vamos a profundizar en las anotaciones más importantes que hemos usado en las \textbf{\textbf{entidades}}.}
+\label{sec:orge186382}
+Estas anotaciones son fundamentales en la interacción con \textbf{\textbf{JPA}} (Java Persistence API) y nos permiten definir cómo se comportan nuestras clases cuando se mapean a tablas de la base de datos.
+
+\begin{itemize}
+\item Anotaciones en las Entidades JPA
+\label{sec:orgfb1a252}
+
+\begin{itemize}
+\item 1. \textbf{\textbf{@Entity}}
+\label{sec:orgb6893b9}
+\begin{itemize}
+\item Esta anotación indica que una clase es una \textbf{\textbf{entidad}} y será mapeada a una tabla en la base de datos.
+\item Cada clase anotada con `@Entity` representará una tabla en la base de datos.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Entity
+public class Libro {
+    // ...
+}
+\end{minted}
+\end{itemize}
+
+\item 2. \textbf{\textbf{@Id}}
+\label{sec:orgc114966}
+\begin{itemize}
+\item Indica el \textbf{\textbf{campo clave primaria}} (Primary Key) de la entidad.
+\item Este campo será el identificador único de cada registro en la tabla correspondiente.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+\end{minted}
+\end{itemize}
+
+\item 3. \textbf{\textbf{@GeneratedValue(strategy = GenerationType.IDENTITY)}}
+\label{sec:orge1ace18}
+\begin{itemize}
+\item Esta anotación se usa junto con `@Id` para indicar que el valor de la clave primaria será \textbf{\textbf{autogenerado}} por la base de datos.
+\item El parámetro `strategy = GenerationType.IDENTITY` especifica que la base de datos será responsable de generar el valor único de la clave primaria, generalmente mediante un campo \textbf{\textbf{auto-increment}}.
+
+\textbf{\textbf{Tipos de estrategias de generación de clave primaria}}:
+\begin{itemize}
+\item `GenerationType.IDENTITY`: Usa la funcionalidad de auto-incremento de la base de datos para generar un valor único.
+\item `GenerationType.SEQUENCE`: Usa una secuencia especial de la base de datos para generar el valor. (Más común en bases de datos como PostgreSQL o Oracle).
+\item `GenerationType.TABLE`: Usa una tabla específica para almacenar la secuencia de valores generados.
+\item `GenerationType.AUTO`: Deja que JPA elija la estrategia según el dialecto de la base de datos.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+\end{minted}
+En este caso, cuando se inserta un nuevo libro en la tabla `Libro`, la base de datos generará automáticamente el valor para la columna `id`.
+\end{itemize}
+
+\item 4. \textbf{\textbf{@ManyToOne}}
+\label{sec:orge77ccfe}
+\begin{itemize}
+\item Define una relación de \textbf{\textbf{muchos-a-uno}} entre entidades.
+\item En términos de base de datos, esto implica que muchos registros de una tabla pueden estar relacionados con un solo registro en otra tabla.
+
+\textbf{\textbf{Ejemplo clásico}}:
+\begin{itemize}
+\item Muchos \textbf{\textbf{libros}} pueden ser escritos por un solo \textbf{\textbf{autor}}. Esto representa una relación muchos-a-uno entre la entidad `Libro` y la entidad `Autor`.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@ManyToOne
+@JoinColumn(name = "autor_id")
+private Autor autor;
+\end{minted}
+En este caso:
+\begin{itemize}
+\item Muchos libros pueden estar asociados a un solo autor.
+\item El campo `autor\_id` será una \textbf{\textbf{clave foránea}} en la tabla `Libro` que apuntará a la tabla `Autor`.
+\end{itemize}
+\end{itemize}
+
+\item 5. \textbf{\textbf{@OneToMany}}
+\label{sec:org299c601}
+\begin{itemize}
+\item Define una relación de \textbf{\textbf{uno-a-muchos}} entre entidades.
+\item Esto significa que un solo registro de una tabla puede estar relacionado con varios registros en otra tabla.
+
+\textbf{\textbf{Ejemplo clásico}}:
+\begin{itemize}
+\item Un \textbf{\textbf{autor}} puede escribir muchos \textbf{\textbf{libros}}. Esta es una relación uno-a-muchos entre la entidad `Autor` y la entidad `Libro`.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+private List<Libro> libros;
+\end{minted}
+Aquí:
+\begin{itemize}
+\item `mappedBy = "autor"` indica que la propiedad `autor` en la entidad `Libro` es la que define la relación.
+\item `cascade = CascadeType.ALL` especifica que cualquier operación en la entidad \textbf{\textbf{Autor}} (como eliminar o actualizar) también afectará a los libros asociados.
+\end{itemize}
+\end{itemize}
+
+\item 6. \textbf{\textbf{@JoinColumn(name = "usuario\_id")}}
+\label{sec:org4dfde5a}
+\begin{itemize}
+\item Define la \textbf{\textbf{columna de unión}} para relaciones entre tablas.
+\item Esta anotación se usa en relaciones como `@ManyToOne` y `@OneToOne` para especificar qué columna en la tabla hija (la entidad que tiene la relación) será usada como la \textbf{\textbf{clave foránea}} para referenciar a la tabla principal.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@ManyToOne
+@JoinColumn(name = "usuario_id")
+private Usuario usuario;
+\end{minted}
+En este ejemplo:
+\begin{itemize}
+\item La tabla `Prestamo` tendrá una columna llamada `usuario\_id` que será una clave foránea, apuntando a la columna `id` de la tabla `Usuario`.
+\end{itemize}
+\end{itemize}
+
+\item 7. \textbf{\textbf{@ManyToMany}}
+\label{sec:org99938e7}
+\begin{itemize}
+\item Define una relación de \textbf{\textbf{muchos-a-muchos}} entre entidades.
+\item En una base de datos, una relación muchos-a-muchos se representa con una \textbf{\textbf{tabla intermedia}} que contiene las claves foráneas de ambas tablas relacionadas.
+
+\textbf{\textbf{Ejemplo clásico}}:
+\begin{itemize}
+\item Un \textbf{\textbf{libro}} puede tener varios \textbf{\textbf{autores}}, y un \textbf{\textbf{autor}} puede haber escrito varios \textbf{\textbf{libros}}. Esto sería una relación muchos-a-muchos entre `Autor` y `Libro`.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@ManyToMany
+@JoinTable(
+  name = "autor_libro",
+  joinColumns = @JoinColumn(name = "libro_id"),
+  inverseJoinColumns = @JoinColumn(name = "autor_id")
+)
+private List<Autor> autores;
+\end{minted}
+En este ejemplo:
+\begin{itemize}
+\item La anotación `@JoinTable` define la \textbf{\textbf{tabla intermedia}} llamada `autor\_libro`.
+\item La columna `libro\_id` de la tabla intermedia apuntará a la tabla `Libro`, y la columna `autor\_id` apuntará a la tabla `Autor`.
+\end{itemize}
+
+Aunque en nuestro proyecto actual no tenemos un escenario de muchos-a-muchos, es útil entender cómo funciona esta relación.
+\end{itemize}
+\end{itemize}
+
+\item Recapitulación
+\label{sec:org109a3e2}
+Estas anotaciones son fundamentales en el desarrollo con \textbf{\textbf{JPA}} porque definen cómo se mapearán nuestras clases de entidad a las tablas de la base de datos y las relaciones entre ellas.
+
+\begin{itemize}
+\item \textbf{\textbf{@Entity}}: Marca una clase como una entidad (tabla en la base de datos).
+\item \textbf{\textbf{@Id}}: Define el identificador único o clave primaria.
+\item \textbf{\textbf{@GeneratedValue}}: Especifica cómo se generará el valor de la clave primaria (ej. auto-incremento).
+\item \textbf{\textbf{@ManyToOne}} y \textbf{\textbf{@OneToMany}}: Definen las relaciones entre entidades.
+\item \textbf{\textbf{@JoinColumn}}: Define la columna de unión (clave foránea) en las relaciones entre tablas.
+\item \textbf{\textbf{@ManyToMany}}: Se usa para relaciones muchos-a-muchos, normalmente junto con `@JoinTable`.
+\end{itemize}
+
+Hemos cubierto las principales anotaciones que necesitas para manejar las relaciones entre las entidades en un proyecto Spring Boot con JPA.
+
+
+
+ Continuemos con los siguientes pasos en el desarrollo de nuestro
+proyecto: los \textbf{\textbf{repositorios}} y los \textbf{\textbf{controladores}}.  Vamos a
+hacerlo paso a paso, explicando todo en detalle para entender la
+lógica detrás de cada componente.
+\end{itemize}
+
+\subsection{5.1. Repositorios JPA}
+\label{sec:org9e264fa}
+
+\subsubsection{¿Qué es un repositorio en Spring Data JPA?}
+\label{sec:org3c94414}
+En Spring Data JPA, un \textbf{\textbf{repositorio}} es una interfaz que proporciona métodos para interactuar con la base de datos (CRUD: Create, Read, Update, Delete). Los repositorios extienden una interfaz de JPA llamada `JpaRepository`, lo que nos permite acceder a varias operaciones comunes sin necesidad de escribir SQL manualmente.
+
+El repositorio se encarga de la capa de persistencia, facilitando las operaciones con la base de datos. Spring Data JPA genera automáticamente la implementación de los métodos, reduciendo el código que necesitamos escribir.
+
+\subsubsection{Crear los repositorios}
+\label{sec:orge786563}
+Vamos a crear un repositorio para cada una de las entidades principales: \textbf{\textbf{Autor}}, \textbf{\textbf{Libro}}, \textbf{\textbf{Usuario}}, y \textbf{\textbf{Préstamo}}.
+
+\begin{enumerate}
+\item Crea una carpeta llamada `repositories` en el paquete `com.biblioteca.gestion`.
+
+\item Dentro de este paquete, vamos a crear las interfaces de los repositorios.
+\end{enumerate}
+
+\begin{itemize}
+\item Repositorio `AutorRepository`
+\label{sec:org9bd2f96}
+Este repositorio se encargará de manejar las operaciones relacionadas con los autores.
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.repositories;
+
+import com.biblioteca.gestion.entities.Autor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AutorRepository extends JpaRepository<Autor, Long> {
+    // Aquí podemos agregar métodos de consulta personalizados si es necesario
+}
+\end{minted}
+
+\item Repositorio `LibroRepository`
+\label{sec:org8d48629}
+Este repositorio manejará las operaciones con libros, y además añadiremos algunos métodos para búsquedas con filtros.
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.repositories;
+
+import com.biblioteca.gestion.entities.Libro;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+
+    // Búsqueda por título
+    Page<Libro> findByTituloContaining(String titulo, Pageable pageable);
+
+    // Búsqueda por género
+    Page<Libro> findByGenero(String genero, Pageable pageable);
+}
+\end{minted}
+
+Aquí hemos añadido dos métodos de búsqueda personalizados:
+\begin{itemize}
+\item `findByTituloContaining`: Busca libros cuyo título contiene una cadena de texto.
+\item `findByGenero`: Filtra libros por género.
+\end{itemize}
+
+Spring Data JPA generará automáticamente estas consultas.
+
+\item Repositorio `UsuarioRepository`
+\label{sec:orgc26a59e}
+Este repositorio se encargará de las operaciones con los usuarios. Agregamos un método para buscar un usuario por su correo electrónico, lo cual será útil para la autenticación.
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.repositories;
+
+import com.biblioteca.gestion.entities.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    // Buscar usuario por correo electrónico
+    Optional<Usuario> findByEmail(String email);
+}
+\end{minted}
+
+\item Repositorio `PrestamoRepository`
+\label{sec:org3ec911f}
+Finalmente, el repositorio para los préstamos de libros:
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.repositories;
+
+import com.biblioteca.gestion.entities.Prestamo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PrestamoRepository extends JpaRepository<Prestamo, Long> {
+
+    // Obtener préstamos de un usuario específico
+    List<Prestamo> findByUsuarioId(Long usuarioId);
+
+    // Obtener préstamos para un libro específico
+    List<Prestamo> findByLibroId(Long libroId);
+}
+\end{minted}
+\end{itemize}
+
+\subsection{Explicación de los Repositorios}
+\label{sec:orgf848aef}
+\begin{itemize}
+\item \textbf{\textbf{`JpaRepository<T, ID>`}}: Esta interfaz nos da acceso a
+operaciones CRUD y paginación para las entidades que manejamos. `T`
+es la entidad, y `ID` es el tipo del identificador (en nuestro caso,
+`Long`).
+\item Los métodos de búsqueda personalizados como `findByTituloContaining`
+son generados automáticamente por Spring Data JPA al analizar los
+nombres de los métodos.
+\item \textbf{\textbf{Paginación}}: El tipo de retorno `Page<T>` soporta la paginación,
+permitiendo manejar grandes conjuntos de datos eficientemente.
+\end{itemize}
+
+---
+
+
+
+\subsection{6. Controladores (REST Controllers)}
+\label{sec:orgf0b1fdc}
+Los \textbf{\textbf{controladores}} en Spring Boot son los componentes que manejan
+las solicitudes HTTP (GET, POST, PUT, DELETE) y devuelven las
+respuestas correspondientes. Cada controlador se asocia a una entidad
+o grupo de funcionalidades y expone varios \textbf{\textbf{endpoints}}.
+
+\subsubsection{Crear los controladores}
+\label{sec:orgf076557}
+Vamos a crear un controlador para cada entidad principal: \textbf{\textbf{Autor}}, \textbf{\textbf{Libro}}, \textbf{\textbf{Usuario}}, y \textbf{\textbf{Préstamo}}.
+
+\begin{itemize}
+\item 6.1. Controlador para Libros (`LibroController`)
+\label{sec:orgd4baa81}
+Este controlador manejará la gestión de libros: listar, crear, actualizar, eliminar y filtrar libros.
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/libros")
+public class LibroController {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    // Listar todos los libros con paginación y filtros opcionales
+    @GetMapping
+    public Page<Libro> listarLibros(@RequestParam(required = false) String titulo,
+                                    @RequestParam(required = false) String genero,
+                                    Pageable pageable) {
+        if (titulo != null) {
+            return libroRepository.findByTituloContaining(titulo, pageable);
+        } else if (genero != null) {
+            return libroRepository.findByGenero(genero, pageable);
+        } else {
+            return libroRepository.findAll(pageable);
+        }
+    }
+
+    // Obtener los detalles de un libro específico
+    @GetMapping("/{id}")
+    public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+        return libroRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Crear un nuevo libro (solo bibliotecarios)
+    @PostMapping
+    public ResponseEntity<Libro> crearLibro(@RequestBody @Valid Libro libro) {
+        return ResponseEntity.ok(libroRepository.save(libro));
+    }
+
+    // Actualizar un libro existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Libro> actualizarLibro(@PathVariable Long id, @RequestBody Libro libroActualizado) {
+        return libroRepository.findById(id)
+                .map(libro -> {
+                    libro.setTitulo(libroActualizado.getTitulo());
+                    libro.setGenero(libroActualizado.getGenero());
+                    libro.setAñoPublicacion(libroActualizado.getAñoPublicacion());
+                    libro.setEstado(libroActualizado.getEstado());
+                    libro.setAutor(libroActualizado.getAutor());
+                    return ResponseEntity.ok(libroRepository.save(libro));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Eliminar un libro
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarLibro(@PathVariable Long id) {
+        return libroRepository.findById(id)
+                .map(libro -> {
+                    libroRepository.delete(libro);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
+\end{minted}
+
+\item Explicación del controlador:
+\label{sec:orgda450c6}
+\begin{itemize}
+\item \textbf{\textbf{`@RestController`}}: Marca esta clase como un controlador REST. Los métodos devuelven directamente los datos (en formato JSON o similar) y no vistas de HTML.
+\item \textbf{\textbf{`@RequestMapping("/libros")`}}: Define la ruta base para los endpoints de libros.
+\item \textbf{\textbf{Endpoints}}:
+\begin{itemize}
+\item `GET /libros`: Lista todos los libros con paginación y filtrado opcional por título o género.
+\item `GET /libros/\{id\}`: Obtiene un libro específico por su ID.
+\item `POST /libros`: Crea un nuevo libro.
+\item `PUT /libros/\{id\}`: Actualiza un libro existente.
+\item `DELETE /libros/\{id\}`: Elimina un libro por su ID.
+\end{itemize}
+\end{itemize}
+
+\item 6.2. Controlador para Autores (`AutorController`)
+\label{sec:org0d2ebc0}
+Este controlador permitirá gestionar los autores.
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Autor;
+import com.biblioteca.gestion.repositories.AutorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping("/autores")
+public class AutorController {
+
+    @Autowired
+    private AutorRepository autorRepository;
+
+    // Listar todos los autores
+    @GetMapping
+    public List<Autor> listarAutores() {
+        return autorRepository.findAll();
+    }
+
+    // Crear un nuevo autor
+    @PostMapping
+    public ResponseEntity<Autor> crearAutor(@RequestBody @Valid Autor autor) {
+        return ResponseEntity.ok(autorRepository.save(autor));
+    }
+
+    // Actualizar un autor
+    @PutMapping("/{id}")
+    public ResponseEntity<Autor> actualizarAutor(@PathVariable Long id, @RequestBody Autor autorActualizado) {
+        return autorRepository.findById(id)
+                .map(autor -> {
+                    autor.setNombre(autorActualizado.getNombre());
+                    autor.setNacionalidad(autorActualizado.getNacionalidad());
+                    return ResponseEntity.ok(autorRepository.save(autor));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Eliminar un autor
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarAutor(@PathVariable Long id) {
+        return autorRepository.findById(id)
+                .map(autor -> {
+                    autorRepository.delete(autor);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
+\end{minted}
+
+
+¡Perfecto! Ahora que ya tenemos los controladores de \textbf{\textbf{Libros}} y \textbf{\textbf{Autores}}, vamos a continuar con los controladores para \textbf{\textbf{Usuarios}} y \textbf{\textbf{Préstamos}}, siguiendo una estructura similar. Explicaré cada uno de estos controladores y sus endpoints.
+
+\item 6.3. Controlador para Usuarios (`UsuarioController`)
+\label{sec:org71ba784}
+Este controlador permitirá gestionar los \textbf{\textbf{usuarios}}, su registro y obtención de la información de perfil.
+
+\textbf{Controlador `UsuarioController`:}
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/usuarios")
+public class UsuarioController {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Registrar un nuevo usuario
+    @PostMapping
+    public ResponseEntity<Usuario> registrarUsuario(
+@RequestBody @Valid Usuario usuario) {
+        // Encriptar la contraseña antes de guardar
+        usuario.setPassword(passwordEncoder
+                            .encode(usuario.getPassword()));
+        return ResponseEntity.ok(usuarioRepository.save(usuario));
+    }
+
+    // Obtener el perfil del usuario autenticado
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> obtenerMiPerfil(
+@RequestParam("email") String email) {
+        return usuarioRepository.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
+\end{minted}
+
+\item Explicación del controlador:
+\label{sec:org6343d36}
+\begin{itemize}
+\item \textbf{\textbf{`@RestController`}}: Marca la clase como un controlador REST, que devuelve datos en formato JSON o similar.
+\item \textbf{\textbf{`@RequestMapping("/usuarios")`}}: Define la ruta base para los endpoints relacionados con usuarios.
+\item \textbf{\textbf{`@PostMapping`}}: Permite el \textbf{\textbf{registro}} de un nuevo usuario. Antes de guardar el usuario, encriptamos su contraseña utilizando un `PasswordEncoder`.
+\item \textbf{\textbf{`@GetMapping("/me")`}}: Devuelve el perfil del usuario autenticado (buscamos por correo electrónico).
+\end{itemize}
+
+\item Endpoints del `UsuarioController`:
+\label{sec:org60f898f}
+\begin{itemize}
+\item `POST /usuarios`: Registra un nuevo usuario.
+\item `GET /usuarios/me`: Obtiene el perfil del usuario autenticado basado en su email.
+\end{itemize}
+
+---
+
+\item 6.4. Controlador para Préstamos (`PrestamoController`)
+\label{sec:orgad9011b}
+Este controlador manejará las operaciones relacionadas con los \textbf{\textbf{préstamos de libros}}: solicitar un préstamo, listar los préstamos de un usuario, y devolver libros.
+
+\textbf{Controlador `PrestamoController`:}
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Prestamo;
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.repositories.PrestamoRepository;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+
+@RestController
+@RequestMapping("/prestamos")
+public class PrestamoController {
+
+    @Autowired
+    private PrestamoRepository prestamoRepository;
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // Solicitar un préstamo de libro
+    @PostMapping
+    public ResponseEntity<Prestamo> solicitarPrestamo(@RequestParam("libroId") Long libroId, @RequestParam("usuarioId") Long usuarioId) {
+        // Verificar que el libro esté disponible
+        return libroRepository.findById(libroId)
+                .filter(libro -> libro.getEstado().equals("disponible"))
+                .flatMap(libro -> usuarioRepository.findById(usuarioId)
+                        .map(usuario -> {
+                            libro.setEstado("prestado");
+                            libroRepository.save(libro);
+                            Prestamo prestamo = Prestamo.builder()
+                                    .libro(libro)
+                                    .usuario(usuario)
+                                    .fechaPrestamo(LocalDate.now())
+                                    .build();
+                            return ResponseEntity.ok(prestamoRepository.save(prestamo));
+                        }))
+                .orElse(ResponseEntity.badRequest().build());
+    }
+
+    // Listar los préstamos de un usuario
+    @GetMapping
+    public ResponseEntity<List<Prestamo>> listarPrestamosUsuario(@RequestParam("usuarioId") Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
+                .map(usuario -> ResponseEntity.ok(prestamoRepository.findByUsuarioId(usuarioId)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Devolver un libro prestado
+    @PutMapping("/{id}/devolver")
+    public ResponseEntity<Void> devolverLibro(@PathVariable Long id) {
+        return prestamoRepository.findById(id)
+                .map(prestamo -> {
+                    Libro libro = prestamo.getLibro();
+                    libro.setEstado("disponible");
+                    libroRepository.save(libro);
+                    prestamo.setFechaDevolucion(LocalDate.now());
+                    prestamoRepository.save(prestamo);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
+\end{minted}
+
+\item Explicación del controlador:
+\label{sec:org93c443a}
+\begin{itemize}
+\item \textbf{\textbf{`@RestController`}}: Marca la clase como un controlador REST.
+\item \textbf{\textbf{`@RequestMapping("/prestamos")`}}: Define la ruta base para los endpoints relacionados con préstamos.
+\item \textbf{\textbf{`@PostMapping`}}: Solicita un préstamo. Se verifica que el libro esté disponible antes de realizar el préstamo.
+\item \textbf{\textbf{`@GetMapping`}}: Lista todos los préstamos realizados por un usuario.
+\item \textbf{\textbf{`@PutMapping("/\{id\}/devolver")`}}: Permite devolver un libro, cambiando su estado a "disponible" y actualizando la fecha de devolución.
+\end{itemize}
+
+\item Endpoints del `PrestamoController`:
+\label{sec:orge3669e1}
+\begin{itemize}
+\item `POST /prestamos`: Solicita un préstamo de un libro (requiere los parámetros `libroId` y `usuarioId`).
+\item `GET /prestamos`: Lista los préstamos del usuario autenticado (se pasa el `usuarioId`).
+\item `PUT /prestamos/\{id\}/devolver`: Permite devolver un libro prestado.
+\end{itemize}
+
+---
+\end{itemize}
+
+\subsubsection{Resumen de los Controladores}
+\label{sec:orge586bbf}
+Con los controladores completados, ahora tenemos la funcionalidad básica de la API REST para la \textbf{\textbf{gestión de una biblioteca}}, que incluye:
+\begin{enumerate}
+\item \textbf{\textbf{Libros}}:
+\begin{itemize}
+\item Listar, crear, actualizar, eliminar, filtrar por título o género.
+\end{itemize}
+\item \textbf{\textbf{Autores}}:
+\begin{itemize}
+\item Listar, crear, actualizar y eliminar.
+\end{itemize}
+\item \textbf{\textbf{Usuarios}}:
+\begin{itemize}
+\item Registro de usuarios, y obtener la información del usuario autenticado.
+\end{itemize}
+\item \textbf{\textbf{Préstamos}}:
+\begin{itemize}
+\item Solicitar préstamos, listar los préstamos del usuario, y devolver libros.
+\end{itemize}
+\end{enumerate}
+
+Cada controlador utiliza las mejores prácticas de \textbf{\textbf{RESTful}} y está alineado con la arquitectura de capas de Spring Boot. Estos controladores permiten que los usuarios puedan interactuar con la aplicación de la biblioteca, realizando operaciones CRUD y gestionando préstamos.
+
+\subsection{Próximos pasos}
+\label{sec:org094eaa8}
+\begin{itemize}
+\item Ahora que tenemos los controladores, podemos proceder a implementar \textbf{\textbf{pruebas unitarias e integración}} para asegurarnos de que la API funcione correctamente.
+\item También falta la \textbf{\textbf{autenticación con JWT}} y roles para usuarios y bibliotecarios, que será un paso importante para garantizar la seguridad de la aplicación.
+\end{itemize}
+
+
+\section{Implementación de Pruebas Unitarias en Spring Boot}
+\label{sec:orgdb75674}
+
+Vamos a proceder con las \textbf{\textbf{pruebas unitarias}} en nuestro proyecto Spring Boot. Las pruebas unitarias son cruciales para asegurar que cada componente de la aplicación funcione correctamente y que los controladores, servicios, y repositorios interactúen como se espera.
+
+\subsection{1. Configurar el entorno de pruebas}
+\label{sec:org4a64a47}
+
+Antes de comenzar con las pruebas, necesitamos asegurarnos de tener las dependencias necesarias en el archivo \textbf{\textbf{`pom.xml`}} para realizar pruebas unitarias.
+
+\subsubsection{Añadir dependencias de JUnit y Mockito en `pom.xml`:}
+\label{sec:org3e00681}
+
+\begin{minted}[]{xml}
+<dependencies>
+    <!-- Dependencias para pruebas unitarias -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+
+    <!-- Dependencia para Mockito -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+\end{minted}
+
+Con \textbf{\textbf{`spring-boot-starter-test`}}, ya tenemos todo lo necesario para trabajar con \textbf{\textbf{JUnit 5}} y \textbf{\textbf{Mockito}}.
+
+---
+
+\subsection{2. Escribir pruebas unitarias para los controladores}
+\label{sec:orgd9aa713}
+
+Ahora que tenemos todo listo, vamos a escribir las pruebas unitarias para nuestros \textbf{\textbf{controladores}}. En estas pruebas, utilizaremos \textbf{\textbf{Mockito}} para simular las dependencias (como los repositorios) y verificar el comportamiento de los controladores.
+
+\subsubsection{2.1. Pruebas para el `LibroController`}
+\label{sec:org6bd4eb3}
+
+Vamos a probar las principales funciones del controlador de \textbf{\textbf{Libros}}: listar libros, obtener un libro por ID, crear un libro y eliminar un libro.
+
+\begin{itemize}
+\item `LibroControllerTest.java`:
+\label{sec:org2aeb6e3}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class LibroControllerTest {
+
+    @Mock
+    private LibroRepository libroRepository;
+
+    @InjectMocks
+    private LibroController libroController;
+
+    private Libro libro;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        libro = new Libro(1L, "Cien años de soledad",
+                  "Novela", 1967, "disponible", null);
+    }
+
+    @Test
+    void listarLibros() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Libro> page = new PageImpl<>(Arrays.asList(libro));
+        when(libroRepository.findAll(pageable)).thenReturn(page);
+
+        Page<Libro> result = libroController.listarLibros(null, null, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(libroRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    void obtenerLibro() {
+        when(libroRepository.findById(1L)).thenReturn(Optional.of(libro));
+
+        ResponseEntity<Libro> response = libroController.obtenerLibro(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(libro, response.getBody());
+        verify(libroRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void crearLibro() {
+        when(libroRepository.save(libro)).thenReturn(libro);
+
+        ResponseEntity<Libro> response = libroController.crearLibro(libro);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(libro, response.getBody());
+        verify(libroRepository, times(1)).save(libro);
+    }
+
+    @Test
+    void eliminarLibro() {
+        when(libroRepository.findById(1L)).thenReturn(Optional.of(libro));
+        doNothing().when(libroRepository).delete(libro);
+
+        ResponseEntity<Void> response = libroController.eliminarLibro(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(libroRepository, times(1)).findById(1L);
+        verify(libroRepository, times(1)).delete(libro);
+    }
+}
+\end{minted}
+
+\item Explicación de la prueba:
+\label{sec:org3e99c68}
+\begin{itemize}
+\item \textbf{\textbf{`@Mock`}}: Utilizamos Mockito para simular el comportamiento del `LibroRepository`. En este caso, simulamos el acceso a la base de datos sin interactuar realmente con una base de datos.
+\item \textbf{\textbf{`@InjectMocks`}}: Inyectamos el mock del `LibroRepository` en el `LibroController` para probar los métodos del controlador.
+\item \textbf{\textbf{`@BeforeEach`}}: Antes de cada prueba, inicializamos los mocks y creamos un objeto `Libro` de ejemplo que será utilizado en las pruebas.
+\item \textbf{\textbf{`verify()`}}: Verificamos que los métodos del repositorio sean llamados el número correcto de veces, garantizando que los métodos del controlador funcionan como se espera.
+\end{itemize}
+
+\item Pruebas incluidas:
+\label{sec:orgcfb1378}
+\begin{itemize}
+\item \textbf{\textbf{`listarLibros()`}}: Verifica que la lista de libros se obtiene correctamente.
+\item \textbf{\textbf{`obtenerLibro()`}}: Verifica que se puede obtener un libro por ID y que devuelve el estado correcto.
+\item \textbf{\textbf{`crearLibro()`}}: Verifica que se puede crear un libro y que se guarda en el repositorio.
+\item \textbf{\textbf{`eliminarLibro()`}}: Verifica que un libro puede eliminarse correctamente.
+\end{itemize}
+
+---
+\end{itemize}
+
+\subsubsection{2.2. Pruebas para el `PrestamoController`}
+\label{sec:org46fd572}
+
+Vamos a probar el controlador de \textbf{\textbf{Préstamos}}, específicamente las funciones de solicitar un préstamo, listar los préstamos de un usuario y devolver un libro.
+
+\begin{itemize}
+\item `PrestamoControllerTest.java`:
+\label{sec:orga572716}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.entities.Prestamo;
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import com.biblioteca.gestion.repositories.PrestamoRepository;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class PrestamoControllerTest {
+
+    @Mock
+    private PrestamoRepository prestamoRepository;
+
+    @Mock
+    private LibroRepository libroRepository;
+
+    @Mock
+    private UsuarioRepository usuarioRepository;
+
+    @InjectMocks
+    private PrestamoController prestamoController;
+
+    private Libro libro;
+    private Usuario usuario;
+    private Prestamo prestamo;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        libro = new Libro(1L, "Cien años de soledad", "Novela", 1967, "disponible", null);
+        usuario = new Usuario(1L, "Usuario1", "usuario1@example.com", "password", "usuario");
+        prestamo = new Prestamo(1L, libro, usuario, LocalDate.now(), null);
+    }
+
+    @Test
+    void solicitarPrestamo() {
+        when(libroRepository.findById(1L)).thenReturn(Optional.of(libro));
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(prestamoRepository.save(any(Prestamo.class))).thenReturn(prestamo);
+
+        ResponseEntity<Prestamo> response = prestamoController.solicitarPrestamo(1L, 1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(prestamoRepository, times(1)).save(any(Prestamo.class));
+    }
+
+    @Test
+    void devolverLibro() {
+        when(prestamoRepository.findById(1L)).thenReturn(Optional.of(prestamo));
+        when(libroRepository.save(libro)).thenReturn(libro);
+
+        ResponseEntity<Void> response = prestamoController.devolverLibro(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(prestamoRepository, times(1)).findById(1L);
+        verify(libroRepository, times(1)).save(libro);
+    }
+}
+\end{minted}
+
+\item Explicación de la prueba:
+\label{sec:orgffcea95}
+\begin{itemize}
+\item Simulamos las operaciones de préstamo y devolución de libros.
+\item Verificamos que el libro cambia su estado correctamente y que el préstamo es creado o actualizado según corresponda.
+\end{itemize}
+
+---
+\end{itemize}
+
+\subsection{Pruebas Unitarias para el resto de controladores}
+\label{sec:org8268752}
+
+\subsubsection{1. Pruebas para el `UsuarioController`}
+\label{sec:org881d701}
+
+En el controlador de \textbf{\textbf{Usuarios}}, tenemos dos funcionalidades principales:
+\begin{itemize}
+\item Registrar un nuevo usuario.
+\item Obtener la información del perfil del usuario autenticado.
+\end{itemize}
+
+\begin{itemize}
+\item `UsuarioControllerTest.java`
+\label{sec:org9a79e2f}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class UsuarioControllerTest {
+
+    @Mock
+    private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private UsuarioController usuarioController;
+
+    private Usuario usuario;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        usuario = new Usuario(1L, "Usuario1", "usuario1@example.com", "123456", "usuario");
+    }
+
+    @Test
+    void registrarUsuario() {
+        when(passwordEncoder.encode("123456")).thenReturn("encodedPassword");
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        usuario.setPassword("123456");
+        ResponseEntity<Usuario> response = usuarioController.registrarUsuario(usuario);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(usuario, response.getBody());
+        assertEquals("encodedPassword", response.getBody().getPassword());
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+        verify(passwordEncoder, times(1)).encode("123456");
+    }
+
+    @Test
+    void obtenerMiPerfil() {
+        when(usuarioRepository.findByEmail("usuario1@example.com")).thenReturn(Optional.of(usuario));
+
+        ResponseEntity<Usuario> response = usuarioController.obtenerMiPerfil("usuario1@example.com");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(usuario, response.getBody());
+        verify(usuarioRepository, times(1)).findByEmail("usuario1@example.com");
+    }
+}
+\end{minted}
+
+\begin{itemize}
+\item Explicación de la prueba:
+\label{sec:orgd3e57ee}
+\begin{itemize}
+\item \textbf{\textbf{`registrarUsuario()`}}: Verificamos que el controlador encripta la contraseña correctamente y guarda el usuario en la base de datos.
+\item \textbf{\textbf{`obtenerMiPerfil()`}}: Verificamos que el controlador devuelve el perfil del usuario por su correo electrónico.
+\end{itemize}
+
+---
+\end{itemize}
+\end{itemize}
+
+\subsubsection{2. Pruebas para el `AutorController`}
+\label{sec:org338ea09}
+
+El controlador de \textbf{\textbf{Autores}} tiene las siguientes funciones principales:
+\begin{itemize}
+\item Listar todos los autores.
+\item Crear un nuevo autor.
+\item Actualizar un autor.
+\item Eliminar un autor.
+\end{itemize}
+
+\begin{itemize}
+\item `AutorControllerTest.java`
+\label{sec:org9e43154}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.controllers;
+
+import com.biblioteca.gestion.entities.Autor;
+import com.biblioteca.gestion.repositories.AutorRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+class AutorControllerTest {
+
+    @Mock
+    private AutorRepository autorRepository;
+
+    @InjectMocks
+    private AutorController autorController;
+
+    private Autor autor;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        autor = new Autor(1L, "Gabriel García Márquez", "Colombiana", null);
+    }
+
+    @Test
+    void listarAutores() {
+        List<Autor> autores = Arrays.asList(autor);
+        when(autorRepository.findAll()).thenReturn(autores);
+
+        List<Autor> result = autorController.listarAutores();
+
+        assertEquals(1, result.size());
+        verify(autorRepository, times(1)).findAll();
+    }
+
+    @Test
+    void crearAutor() {
+        when(autorRepository.save(autor)).thenReturn(autor);
+
+        ResponseEntity<Autor> response = autorController.crearAutor(autor);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(autor, response.getBody());
+        verify(autorRepository, times(1)).save(autor);
+    }
+
+    @Test
+    void actualizarAutor() {
+        when(autorRepository.findById(1L)).thenReturn(Optional.of(autor));
+        when(autorRepository.save(autor)).thenReturn(autor);
+
+        ResponseEntity<Autor> response = autorController.actualizarAutor(1L, autor);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(autor, response.getBody());
+        verify(autorRepository, times(1)).findById(1L);
+        verify(autorRepository, times(1)).save(autor);
+    }
+
+    @Test
+    void eliminarAutor() {
+        when(autorRepository.findById(1L)).thenReturn(Optional.of(autor));
+        doNothing().when(autorRepository).delete(autor);
+
+        ResponseEntity<Void> response = autorController.eliminarAutor(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(autorRepository, times(1)).findById(1L);
+        verify(autorRepository, times(1)).delete(autor);
+    }
+}
+\end{minted}
+
+\begin{itemize}
+\item Explicación de la prueba:
+\label{sec:orgc6b890e}
+\begin{itemize}
+\item \textbf{\textbf{`listarAutores()`}}: Verifica que el controlador obtiene correctamente la lista de autores.
+\item \textbf{\textbf{`crearAutor()`}}: Verifica que el autor se crea y se guarda en el repositorio.
+\item \textbf{\textbf{`actualizarAutor()`}}: Verifica que el autor existente se puede actualizar correctamente.
+\item \textbf{\textbf{`eliminarAutor()`}}: Verifica que el autor se elimina correctamente.
+\end{itemize}
+
+---
+\end{itemize}
+\end{itemize}
+
+\subsection{3. Ejecutar todas las pruebas}
+\label{sec:orgc91cecd}
+
+Al finalizar las pruebas unitarias de los controladores, puedes ejecutar todas las pruebas con:
+
+\begin{minted}[]{sh}
+mvn test
+\end{minted}
+
+
+Esto ejecutará todas las pruebas unitarias para los controladores de \textbf{\textbf{Libros}}, \textbf{\textbf{Autores}}, \textbf{\textbf{Usuarios}} y \textbf{\textbf{Préstamos}}.
+
+\begin{MDFRAMED}
+\textbf{Nota}:
+En el IDE podemos ejecutarlas directamente o usar Maven en el menú correspondiente.
+\end{MDFRAMED}
+---
+
+\subsubsection{Conclusión}
+\label{sec:org3a1b0cf}
+
+Con esto, hemos cubierto las pruebas unitarias de los controladores para \textbf{\textbf{Libros}}, \textbf{\textbf{Autores}}, \textbf{\textbf{Usuarios}} y \textbf{\textbf{Préstamos}}, utilizando \textbf{\textbf{JUnit 5}} y \textbf{\textbf{Mockito}} para simular los repositorios. Estas pruebas aseguran que las funcionalidades principales de la API funcionan como se espera, lo que es crucial para mantener la estabilidad de la aplicación mientras se añaden nuevas características o se realizan cambios.
+
+
+---
+
+
+\section{Anexo I: Anotaciones en detalle}
+\label{sec:org2b56ebd}
+
+\textbf{\textbf{Controladores}} explicación en detalle las anotaciones que usamos comúnmente en los controladores de \textbf{\textbf{Spring Boot}}.
+También vamos a profundizar en el concepto de \textbf{\textbf{beans}} y la \textbf{\textbf{inyección de dependencias}}, dos pilares fundamentales en el desarrollo con Spring.
+
+\subsection{Controladores en Spring Boot}
+\label{sec:org937cbbe}
+Los controladores en \textbf{\textbf{Spring Boot}} son componentes responsables de gestionar las solicitudes HTTP y devolver las respuestas correspondientes. En una API REST, los controladores procesan solicitudes como \textbf{\textbf{GET}}, \textbf{\textbf{POST}}, \textbf{\textbf{PUT}} y \textbf{\textbf{DELETE}}, que son las operaciones básicas del protocolo HTTP.
+
+Vamos a ver un ejemplo básico de un controlador, y luego detallaremos cada una de las anotaciones utilizadas.
+
+\subsubsection{Ejemplo de controlador básico:}
+\label{sec:orga19c866}
+\begin{minted}[]{java}
+@RestController
+@RequestMapping("/libros")
+public class LibroController {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @GetMapping
+    public List<Libro> listarLibros() {
+        return libroRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+        return libroRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<Libro> crearLibro(@RequestBody Libro libro) {
+        return ResponseEntity.ok(libroRepository.save(libro));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Libro> actualizarLibro(@PathVariable Long id, @RequestBody Libro libroActualizado) {
+        return libroRepository.findById(id)
+                .map(libro -> {
+                    libro.setTitulo(libroActualizado.getTitulo());
+                    libro.setGenero(libroActualizado.getGenero());
+                    libro.setAñoPublicacion(libroActualizado.getAñoPublicacion());
+                    return ResponseEntity.ok(libroRepository.save(libro));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarLibro(@PathVariable Long id) {
+        return libroRepository.findById(id)
+                .map(libro -> {
+                    libroRepository.delete(libro);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
+\end{minted}
+
+\subsection{Anotaciones usadas en los controladores}
+\label{sec:org454fa60}
+
+\subsubsection{1. \textbf{\textbf{`@RestController`}}}
+\label{sec:org89bc9d5}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Marca la clase como un \textbf{\textbf{controlador REST}}.
+\item \textbf{\textbf{Descripción}}: Combina dos anotaciones: `@Controller` y `@ResponseBody`. Esto significa que todos los métodos dentro de la clase devolverán directamente los datos (generalmente en formato JSON) en lugar de devolver vistas HTML (lo que haría un controlador tradicional en aplicaciones web).
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@RestController
+public class LibroController {
+    // Métodos REST aquí
+}
+\end{minted}
+
+\textbf{\textbf{Equivalente a}}:
+\begin{minted}[]{java}
+@Controller
+@ResponseBody
+public class LibroController {
+    // Métodos REST aquí
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{2. \textbf{\textbf{`@RequestMapping`}} (a nivel de clase)}
+\label{sec:orgcd28d6c}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Define la \textbf{\textbf{ruta base}} o el \textbf{\textbf{contexto}} bajo el cual se agruparán todos los endpoints de ese controlador.
+\item \textbf{\textbf{Descripción}}: Se puede usar a nivel de clase y/o método. A nivel de clase, establece un prefijo para todos los métodos de la clase. A nivel de método, se usa para mapear solicitudes HTTP específicas a métodos del controlador.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@RestController
+@RequestMapping("/libros")
+public class LibroController {
+    // Todas las rutas dentro de esta clase empezarán con "/libros"
+}
+\end{minted}
+
+Si después tenemos un método como este:
+
+\begin{minted}[]{java}
+@GetMapping("/{id}")
+public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+    return libroRepository.findById(id)
+              .map(ResponseEntity::ok)
+              .orElse(ResponseEntity.notFound().build());
+}
+\end{minted}
+
+La ruta completa de este endpoint será \textbf{\textbf{`/libros/\{id\}`}}.
+\end{itemize}
+
+\subsubsection{3. \textbf{\textbf{`@GetMapping`}}}
+\label{sec:orgb6c305a}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Maneja las solicitudes HTTP \textbf{\textbf{GET}}.
+\item \textbf{\textbf{Descripción}}: Se utiliza para definir un método que se activará cuando se realice una solicitud HTTP GET en la ruta especificada.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@GetMapping("/{id}")
+public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+    return libroRepository.findById(id)
+              .map(ResponseEntity::ok)
+              .orElse(ResponseEntity.notFound().build());
+}
+\end{minted}
+
+En este caso, la ruta es \textbf{\textbf{`/libros/\{id\}`}} y se espera un \textbf{\textbf{id}} en la URL.
+\end{itemize}
+
+\subsubsection{4. \textbf{\textbf{`@PostMapping`}}}
+\label{sec:orgfa1c8f1}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Maneja las solicitudes HTTP \textbf{\textbf{POST}}.
+\item \textbf{\textbf{Descripción}}: Se utiliza para definir un método que se activará cuando se realice una solicitud HTTP POST, generalmente para crear un nuevo recurso.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@PostMapping
+public ResponseEntity<Libro> crearLibro(@RequestBody Libro libro) {
+    return ResponseEntity.ok(libroRepository.save(libro));
+}
+\end{minted}
+
+Aquí, el cliente envía un nuevo libro en el cuerpo de la solicitud HTTP y el método lo guarda en la base de datos.
+\end{itemize}
+
+\subsubsection{5. \textbf{\textbf{`@PutMapping`}}}
+\label{sec:orga60bef2}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Maneja las solicitudes HTTP \textbf{\textbf{PUT}}.
+\item \textbf{\textbf{Descripción}}: Se utiliza para definir un método que se activará cuando se realice una solicitud HTTP PUT, típicamente para \textbf{\textbf{actualizar}} un recurso existente.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@PutMapping("/{id}")
+public ResponseEntity<Libro> actualizarLibro(@PathVariable Long id, @RequestBody Libro libroActualizado) {
+    return libroRepository.findById(id)
+              .map(libro -> {
+                  libro.setTitulo(libroActualizado.getTitulo());
+                  libro.setGenero(libroActualizado.getGenero());
+                  libro.setAñoPublicacion(libroActualizado.getAñoPublicacion());
+                  return ResponseEntity.ok(libroRepository.save(libro));
+              })
+              .orElse(ResponseEntity.notFound().build());
+}
+\end{minted}
+
+Aquí, el cliente envía una versión actualizada del libro y este método actualiza el recurso correspondiente.
+\end{itemize}
+
+\subsubsection{6. \textbf{\textbf{`@DeleteMapping`}}}
+\label{sec:org2682cb7}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Maneja las solicitudes HTTP \textbf{\textbf{DELETE}}.
+\item \textbf{\textbf{Descripción}}: Se utiliza para definir un método que se activará cuando se realice una solicitud HTTP DELETE, normalmente para eliminar un recurso existente.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> eliminarLibro(@PathVariable Long id) {
+    return libroRepository.findById(id)
+              .map(libro -> {
+                  libroRepository.delete(libro);
+                  return ResponseEntity.noContent().build();
+              })
+              .orElse(ResponseEntity.notFound().build());
+}
+\end{minted}
+
+Aquí se elimina un libro existente, identificado por su ID.
+\end{itemize}
+
+\subsubsection{7. \textbf{\textbf{`@Autowired`}}}
+\label{sec:org3e5ea38}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Permite la \textbf{\textbf{inyección de dependencias}} automáticamente en Spring.
+\item \textbf{\textbf{Descripción}}: Spring usa esta anotación para inyectar \textbf{\textbf{beans}} (componentes gestionados por Spring) en otras clases. En el caso de un controlador, inyectamos el repositorio correspondiente para interactuar con la base de datos.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Autowired
+private LibroRepository libroRepository;
+\end{minted}
+
+En este caso, Spring inyecta automáticamente una instancia del `LibroRepository` en el controlador cuando la aplicación se inicia. Esto sigue el patrón de \textbf{\textbf{Inversión de Control (IoC)}}.
+\end{itemize}
+
+\subsubsection{8. \textbf{\textbf{`@RequestBody`}}}
+\label{sec:orga775a59}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Marca el parámetro de un método para que se mapee al \textbf{\textbf{cuerpo de la solicitud HTTP}}.
+\item \textbf{\textbf{Descripción}}: Se utiliza cuando el cliente envía datos en el cuerpo de la solicitud, típicamente en una solicitud \textbf{\textbf{POST}} o \textbf{\textbf{PUT}}. Los datos se convierten automáticamente a la clase Java correspondiente (por ejemplo, un objeto `Libro`).
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@PostMapping
+public ResponseEntity<Libro> crearLibro(@RequestBody Libro libro) {
+    return ResponseEntity.ok(libroRepository.save(libro));
+}
+\end{minted}
+
+En este caso, Spring convierte el cuerpo de la solicitud (en formato JSON) en un objeto de tipo `Libro`.
+\end{itemize}
+
+\subsubsection{9. \textbf{\textbf{`@PathVariable`}}}
+\label{sec:org4474add}
+\begin{itemize}
+\item \textbf{\textbf{¿Qué hace?}}: Marca un parámetro para que sea extraído de la \textbf{\textbf{ruta de la URL}}.
+\item \textbf{\textbf{Descripción}}: Se usa en los métodos para extraer variables de la ruta de la solicitud. Por ejemplo, en una ruta como `/libros/\{id\}`, el `\{id\}` se mapea al parámetro del método.
+
+\textbf{\textbf{Ejemplo}}:
+\end{itemize}
+
+
+\begin{minted}[]{java}
+@GetMapping("/{id}")
+public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+    return libroRepository.findById(id)
+              .map(ResponseEntity::ok)
+              .orElse(ResponseEntity.notFound().build());
+}
+\end{minted}
+
+Aquí, `id` es extraído directamente de la URL.
+
+---
+
+\subsection{Beans en Spring y la Inyección de Dependencias}
+\label{sec:orga6e2e13}
+\subsubsection{¿Qué es un Bean?}
+\label{sec:org158cf82}
+En Spring, un \textbf{\textbf{bean}} es simplemente un \textbf{\textbf{objeto}} que es gestionado por el contenedor de Spring. Cuando un objeto es declarado como un \textbf{\textbf{bean}}, Spring se encarga de crearlo, configurarlo, y gestionarlo durante el ciclo de vida de la aplicación.
+
+\textbf{\textbf{Ejemplo}} de declaración de un bean usando una clase de configuración:
+\begin{minted}[]{java}
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public LibroService libroService() {
+        return new LibroService();
+    }
+}
+\end{minted}
+
+\subsubsection{Inyección de Dependencias (Dependency Injection)}
+\label{sec:org75aee1c}
+La \textbf{\textbf{Inyección de Dependencias (DI)}} es un patrón que permite que un objeto reciba sus dependencias (otros objetos de los que depende) desde el exterior en lugar de crearlas internamente. En lugar de que una clase se encargue de crear sus propias dependencias, el \textbf{\textbf{contenedor de Spring}} se encarga de proporcionarlas.
+
+\textbf{\textbf{Tipos de Inyección de Dependencias:}}
+\begin{enumerate}
+\item \textbf{\textbf{Inyección por Constructor}}: Las dependencias se pasan a través del constructor.
+\item \textbf{\textbf{Inyección por Setter}}: Las dependencias se pasan a través de métodos setter.
+\item \textbf{\textbf{Inyección por Campo}}: Usamos la anotación `@Autowired` en los atributos.
+\end{enumerate}
+
+\textbf{\textbf{Ejemplo de inyección por constructor:}}
+\begin{minted}[]{java}
+@Service
+public class LibroService {
+    private final LibroRepository libroRepository;
+
+    @Autowired
+    public LibroService(LibroRepository libroRepository) {
+        this.libroRepository = libroRepository;
+    }
+}
+\end{minted}
+
+\subsubsection{¿Cómo maneja Spring los beans?}
+\label{sec:org852bc64}
+\begin{itemize}
+\item \textbf{\textbf{Contenedor IoC (Inversión de Control)}}: Spring se encarga de la creación, configuración y gestión de beans a través del \textbf{\textbf{contenedor IoC}}. Cuando un bean es necesario en alguna parte de la aplicación, el contenedor lo proporciona.
+\item \textbf{\textbf{Ciclo de vida de los beans}}: Spring se encarga del ciclo completo de los beans, desde su creación (instanciación) hasta su destrucción. Los beans pueden tener distintos alcances (`singleton`, `prototype`, etc.), lo que define si se crea una única instancia o múltiples instancias cada vez que se solicitan.
+\end{itemize}
+
+\textbf{\textbf{Inversión de Control (IoC)}}: Significa que en lugar de que el código controle las dependencias, el \textbf{\textbf{contenedor IoC de Spring}} se encarga de gestionar esas dependencias y proporciona automáticamente los beans que necesitamos.
+
+---
+
+\subsection{Conclusión}
+\label{sec:org2b5b32e}
+Las \textbf{\textbf{anotaciones}} que hemos visto (`@RestController`, `@RequestMapping`, `@GetMapping`, `@PostMapping`, `@Autowired`, etc.) son fundamentales para desarrollar controladores en Spring Boot y permiten mapear solicitudes HTTP a métodos específicos de forma sencilla. Además, la \textbf{\textbf{inyección de dependencias}} y el uso de \textbf{\textbf{beans}} en Spring permiten separar responsabilidades, facilitando el mantenimiento y escalabilidad de las aplicaciones.
+
+
+
+\section{Anexo II  Métodos derivados en los repositorios JPA}
+\label{sec:org91befe6}
+Vamos a profundizar en los \textbf{\textbf{métodos de consultas derivadas}} o \textbf{\textbf{Derived Query Methods}} en \textbf{*Spring Data JPA}.*
+Esto es una característica muy útil que simplifica las consultas a la base de datos sin necesidad de escribir consultas SQL explícitas.
+
+\subsection{¿Qué son los Derived Query Methods en Spring Data JPA?}
+\label{sec:orge217bc8}
+Los \textbf{\textbf{Derived Query Methods}} son métodos de consulta que Spring Data JPA genera automáticamente basándose en los nombres de los métodos definidos en las interfaces de repositorio. Spring analiza el nombre del método y lo traduce en una consulta SQL correspondiente, sin que el desarrollador tenga que escribir SQL manualmente.
+
+Estos métodos permiten realizar consultas personalizadas de una manera muy declarativa y legible, usando convenciones de nombres.
+
+\subsection{Cómo funcionan los Derived Query Methods}
+\label{sec:org31d8b95}
+El nombre del método está compuesto por el prefijo de consulta seguido por el campo o los campos en los que quieres realizar la consulta. Algunos de los prefijos más comunes son:
+
+\begin{itemize}
+\item `findBy`: Busca un conjunto de entidades según las condiciones especificadas.
+\item `countBy`: Cuenta cuántas entidades cumplen con una condición.
+\item `deleteBy`: Elimina las entidades que cumplan con una condición.
+\item `existsBy`: Verifica si existe una entidad que cumpla con una condición.
+\end{itemize}
+
+El resto del nombre del método después del prefijo especifica las condiciones de la consulta, como los nombres de los campos y las operaciones de comparación (por ejemplo, `Equals`, `Like`, `Between`, etc.).
+
+\subsection{Ejemplos de Derived Query Methods}
+\label{sec:org3de36d0}
+Vamos a ver algunos ejemplos comunes para entender cómo funcionan:
+
+\subsubsection{1. Buscar por un campo específico: `findBy`}
+\label{sec:org07ffb25}
+Imagina que tenemos la entidad `Libro` con el campo `titulo`. Queremos encontrar todos los libros que tengan un título específico.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Encuentra todos los libros por título exacto
+    List<Libro> findByTitulo(String titulo);
+}
+\end{minted}
+
+Spring generará automáticamente la consulta correspondiente:
+
+\begin{minted}[]{sql}
+SELECT * FROM libro WHERE titulo = ?;
+\end{minted}
+
+\subsubsection{2. Búsqueda por un campo con coincidencia parcial: `findBy` con `Containing`}
+\label{sec:orgbfb348b}
+Si quieres encontrar libros cuyo título contenga una cierta cadena de texto, puedes usar `Containing`, que se traduce a un `LIKE` en SQL.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Encuentra todos los libros cuyo título contenga una cadena específica
+    List<Libro> findByTituloContaining(String substring);
+}
+\end{minted}
+
+Esto generará la siguiente consulta SQL:
+
+\begin{minted}[]{sql}
+SELECT * FROM libro WHERE titulo LIKE %substring%;
+\end{minted}
+
+\subsubsection{3. Buscar por varios campos con operadores lógicos: `AND` y `OR`}
+\label{sec:org1799228}
+Puedes combinar varios campos en una consulta utilizando los operadores `And` y `Or`.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Encuentra libros por título y género (AND lógico)
+    List<Libro> findByTituloAndGenero(String titulo, String genero);
+
+    // Encuentra libros por título o género (OR lógico)
+    List<Libro> findByTituloOrGenero(String titulo, String genero);
+}
+\end{minted}
+
+Esto generará consultas SQL como las siguientes:
+
+\begin{minted}[]{sql}
+-- AND lógico
+SELECT * FROM libro WHERE titulo = ? AND genero = ?;
+
+-- OR lógico
+SELECT * FROM libro WHERE titulo = ? OR genero = ?;
+\end{minted}
+
+\subsubsection{4. Contar registros: `countBy`}
+\label{sec:orgc974c9c}
+Si necesitas contar cuántas entidades cumplen una determinada condición, puedes usar `countBy`.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Cuenta cuántos libros hay por un determinado estado
+    long countByEstado(String estado);
+}
+\end{minted}
+
+Esto generará una consulta como:
+
+\begin{minted}[]{sql}
+SELECT COUNT(*) FROM libro WHERE estado = ?;
+\end{minted}
+
+\subsubsection{5. Eliminar registros: `deleteBy`}
+\label{sec:orgd4197ed}
+Si necesitas eliminar registros que cumplan con una condición específica, puedes usar `deleteBy`.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Elimina todos los libros por un estado dado
+    void deleteByEstado(String estado);
+}
+\end{minted}
+
+Esto generará una consulta SQL como:
+
+\begin{minted}[]{sql}
+DELETE FROM libro WHERE estado = ?;
+\end{minted}
+
+\subsubsection{6. Comprobar si existe una entidad: `existsBy`}
+\label{sec:orgf8cf346}
+A veces solo quieres saber si existe una entidad que cumpla con una condición específica. Para ello, puedes usar `existsBy`.
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Verifica si existe un libro por título
+    boolean existsByTitulo(String titulo);
+}
+\end{minted}
+
+Esto se traduce a una consulta SQL como:
+
+\begin{minted}[]{sql}
+SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM libro WHERE titulo = ?;
+\end{minted}
+
+\subsubsection{7. Búsquedas complejas: `Between`, `LessThan`, `GreaterThan`, etc.}
+\label{sec:org04ee214}
+También puedes hacer consultas más complejas utilizando operadores de comparación. Por ejemplo, si quisieras buscar libros publicados entre dos años:
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Encuentra libros publicados entre dos años específicos
+    List<Libro> findByAñoPublicacionBetween(int startYear, int endYear);
+}
+\end{minted}
+
+Esto se traduce a la siguiente consulta SQL:
+
+\begin{minted}[]{sql}
+SELECT * FROM libro WHERE año_publicacion BETWEEN ? AND ?;
+\end{minted}
+
+Otros ejemplos de operadores que puedes usar:
+\begin{itemize}
+\item \textbf{\textbf{`LessThan`}}: Menor que.
+\item \textbf{\textbf{`GreaterThan`}}: Mayor que.
+\item \textbf{\textbf{`Before`}}: Para fechas anteriores.
+\item \textbf{\textbf{`After`}}: Para fechas posteriores.
+\end{itemize}
+
+\subsubsection{8. Paginación y Ordenación}
+\label{sec:org6e9aad7}
+Además, puedes combinar estas consultas con la paginación y la ordenación utilizando los objetos `Pageable` o `Sort`.
+
+Por ejemplo, si quisieras encontrar libros de un determinado género y paginar los resultados:
+
+\begin{minted}[]{java}
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Encuentra libros por género con paginación
+    Page<Libro> findByGenero(String genero, Pageable pageable);
+}
+\end{minted}
+
+Esto generará una consulta SQL como:
+
+\begin{minted}[]{sql}
+SELECT * FROM libro WHERE genero = ? ORDER BY ? LIMIT ? OFFSET ?;
+\end{minted}
+
+\subsection{Ventajas de los Derived Query Methods}
+\label{sec:org25ae34c}
+\begin{enumerate}
+\item \textbf{\textbf{Simplificación del código}}: No necesitas escribir consultas SQL manualmente para la mayoría de las operaciones, lo que reduce el código y la complejidad.
+\item \textbf{\textbf{Legibilidad}}: Los nombres de los métodos son descriptivos y fáciles de entender, lo que hace que el código sea más legible.
+\item \textbf{\textbf{Automatización}}: Spring genera las consultas SQL automáticamente, lo que ahorra tiempo en el desarrollo.
+\item \textbf{\textbf{Flexibilidad}}: Puedes crear consultas personalizadas complejas utilizando los operadores lógicos y de comparación proporcionados por Spring Data JPA.
+\end{enumerate}
+
+\subsection{Conclusión}
+\label{sec:org1fb701e}
+Los \textbf{\textbf{Derived Query Methods}} de \textbf{\textbf{Spring Data JPA}} son una herramienta poderosa para realizar consultas simples y complejas sin necesidad de escribir SQL manualmente. Esto hace que el desarrollo sea más rápido y el código más mantenible. Puedes manejar desde búsquedas simples hasta operaciones complejas como paginación, filtrado, conteo, y eliminación, todo usando convenciones de nombres.
+
+Este enfoque es especialmente útil cuando trabajas con consultas comunes, aunque para casos más específicos o complicados puedes recurrir a \textbf{\textbf{JPQL (Java Persistence Query Language)}} o consultas nativas.
+
+
+\section{Anexo III: JPQL}
+\label{sec:org1f84c67}
+
+¡Perfecto! Vamos a profundizar en \textbf{\textbf{JPQL (Java Persistence Query Language)}}, una herramienta muy poderosa para realizar consultas personalizadas en \textbf{\textbf{Spring Data JPA}}.
+JPQL es similar a SQL, pero trabaja a nivel de entidades en lugar de directamente con tablas de la base de datos. Esto lo convierte en una opción flexible para escribir consultas personalizadas más complejas o específicas que no pueden resolverse fácilmente con los \textbf{\textbf{Derived Query Methods}}.
+
+\subsection{¿Qué es JPQL?}
+\label{sec:org16174d1}
+\textbf{\textbf{JPQL}} (Java Persistence Query Language) es un lenguaje de consultas orientado a objetos que se usa en \textbf{\textbf{JPA}} para realizar consultas sobre entidades gestionadas. A diferencia de SQL, que opera directamente sobre tablas y columnas de la base de datos, \textbf{\textbf{JPQL}} opera sobre las entidades de la aplicación y sus propiedades.
+
+JPQL permite consultas más personalizadas, como:
+\begin{itemize}
+\item \textbf{\textbf{Uniones}} (joins) entre entidades.
+\item \textbf{\textbf{Consultas más complejas}} con múltiples condiciones.
+\item \textbf{\textbf{Agrupaciones}} y \textbf{\textbf{agregaciones}} (funciones como `COUNT`, `SUM`, etc.).
+\item Consultas que implican \textbf{\textbf{subconsultas}}.
+\end{itemize}
+
+\subsection{Diferencias entre SQL y JPQL}
+\label{sec:org47bf307}
+\begin{enumerate}
+\item \textbf{\textbf{JPQL trabaja con entidades y atributos}} en lugar de tablas y columnas de la base de datos.
+\item \textbf{\textbf{JPQL usa el nombre de las clases y los atributos}} definidos en las entidades, mientras que SQL utiliza nombres de tablas y columnas.
+\item JPQL puede navegar por las relaciones entre entidades (como `@ManyToOne`, `@OneToMany`, etc.) usando la sintaxis de objetos.
+\end{enumerate}
+
+\subsection{Sintaxis básica de JPQL}
+\label{sec:orgb9e3ff7}
+Las consultas en JPQL siguen una estructura similar a SQL, con la diferencia de que utilizan los nombres de las entidades y sus atributos.
+
+\begin{itemize}
+\item \textbf{\textbf{SELECT}}: Para seleccionar entidades o atributos.
+\item \textbf{\textbf{FROM}}: Para indicar la entidad de la que se extraerán los datos.
+\item \textbf{\textbf{WHERE}}: Para establecer las condiciones de filtrado.
+\item \textbf{\textbf{JOIN}}: Para unir entidades relacionadas.
+\item \textbf{\textbf{ORDER BY}}: Para ordenar los resultados.
+\item \textbf{\textbf{GROUP BY}}: Para agrupar resultados.
+\item \textbf{\textbf{HAVING}}: Para filtrar sobre agregaciones.
+\end{itemize}
+
+\subsection{Ejemplo básico de JPQL}
+\label{sec:org056dd68}
+Supongamos que tenemos una entidad `Libro` y queremos obtener todos los libros escritos por un autor con un nombre específico. Con JPQL, se podría escribir algo como:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l WHERE l.autor.nombre = :nombreAutor")
+List<Libro> findLibrosByAutorNombre(@Param("nombreAutor") String nombreAutor);
+\end{minted}
+
+Esta consulta se traduce a SQL como:
+
+\begin{minted}[]{sql}
+SELECT * FROM libro l
+INNER JOIN autor a ON l.autor_id = a.id
+WHERE a.nombre = ?;
+\end{minted}
+
+\subsection{Cómo escribir consultas JPQL en Spring Data JPA}
+\label{sec:orge297767}
+En Spring Data JPA, puedes usar JPQL a través de la anotación \textbf{\textbf{`@Query`}}. Esta anotación te permite escribir tus propias consultas JPQL en los repositorios.
+
+\subsubsection{Sintaxis de la anotación @Query}
+\label{sec:orgef40819}
+\begin{minted}[]{java}
+@Query("JPQL_QUERY")
+\end{minted}
+
+\subsection{Ejemplos de consultas JPQL}
+\label{sec:orgdcad3a8}
+\subsubsection{1. Consulta básica con filtro `WHERE`}
+\label{sec:org53dabc5}
+Supongamos que queremos encontrar todos los libros cuyo título contenga una cadena de texto específica:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l WHERE l.titulo LIKE %:titulo%")
+List<Libro> findLibrosByTitulo(@Param("titulo") String titulo);
+\end{minted}
+
+Aquí usamos `LIKE` para hacer una búsqueda parcial (similar a `Containing` en los métodos de consulta derivados), y el parámetro `:titulo` será sustituido por el valor que se pase.
+
+\subsubsection{2. Uso de `JOIN` para relaciones entre entidades}
+\label{sec:orgdc38230}
+Imagina que quieres obtener todos los libros escritos por un autor de una determinada nacionalidad. Para hacer esto, necesitas una \textbf{\textbf{unión}} (join) entre las entidades `Libro` y `Autor`.
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l JOIN l.autor a WHERE a.nacionalidad = :nacionalidad")
+List<Libro> findLibrosByAutorNacionalidad(@Param("nacionalidad") String nacionalidad);
+\end{minted}
+
+Esta consulta realiza una \textbf{\textbf{unión interna}} entre `Libro` y `Autor`, donde la entidad `Libro` tiene una relación de \textbf{\textbf{@ManyToOne}} con `Autor`. El parámetro `:nacionalidad` filtra por la nacionalidad del autor.
+
+\subsubsection{3. Consultas con funciones de agregación (`COUNT`, `SUM`, `AVG`, etc.)}
+\label{sec:org5d266d1}
+Si quieres contar cuántos libros hay por cada autor, puedes usar la función de agregación `COUNT` y agrupar los resultados por el autor.
+
+\begin{minted}[]{java}
+@Query("SELECT a.nombre, COUNT(l) FROM Libro l JOIN l.autor a GROUP BY a.nombre")
+List<Object[]> countLibrosByAutor();
+\end{minted}
+
+En este ejemplo:
+\begin{itemize}
+\item \textbf{\textbf{`COUNT(l)`}} cuenta cuántos libros hay por cada autor.
+\item \textbf{\textbf{`GROUP BY a.nombre`}} agrupa los resultados por el nombre del autor.
+\end{itemize}
+
+El resultado es una lista de arreglos de objetos (`Object[]`), donde el primer elemento es el nombre del autor y el segundo es la cantidad de libros.
+
+\subsubsection{4. Consulta con `ORDER BY` para ordenar resultados}
+\label{sec:org35304de}
+Para ordenar los libros por año de publicación en orden descendente, podemos usar `ORDER BY`:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l ORDER BY l.añoPublicacion DESC")
+List<Libro> findAllLibrosOrderedByAñoPublicacion();
+\end{minted}
+
+Aquí la consulta devolverá todos los libros ordenados por el campo `añoPublicacion` de forma descendente.
+
+\subsubsection{5. Consulta con múltiples condiciones (`AND`, `OR`)}
+\label{sec:orgdf47aa4}
+Si quieres buscar libros publicados después de un cierto año y que además pertenezcan a un género específico, puedes usar múltiples condiciones en la consulta:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l WHERE l.añoPublicacion > :año AND l.genero = :genero")
+List<Libro> findLibrosByAñoAndGenero(@Param("año") int año, @Param("genero") String genero);
+\end{minted}
+
+Esto generará una consulta que busca libros con año de publicación mayor a un valor específico y con un género específico.
+
+\subsubsection{6. Uso de subconsultas en JPQL}
+\label{sec:org7823dde}
+JPQL también permite el uso de \textbf{\textbf{subconsultas}}, que son consultas dentro de otras consultas. Por ejemplo, supongamos que queremos encontrar libros cuyo autor haya publicado más de 5 libros:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l WHERE l.autor IN (SELECT a FROM Autor a JOIN a.libros libros GROUP BY a HAVING COUNT(libros) > 5)")
+List<Libro> findLibrosByAutoresConMasDe5Libros();
+\end{minted}
+
+Aquí:
+\begin{itemize}
+\item La subconsulta selecciona autores que han escrito más de 5 libros (`HAVING COUNT(libros) > 5`).
+\item Luego, la consulta principal selecciona todos los libros cuyo autor esté en ese grupo de autores.
+\end{itemize}
+
+\subsubsection{7. Consultas con parámetros nombrados}
+\label{sec:org9da1de9}
+En todos los ejemplos anteriores hemos utilizado parámetros \textbf{\textbf{nombrados}} en las consultas JPQL. Esto es útil para hacer las consultas más legibles y flexibles. Los parámetros nombrados se indican con el símbolo `:` seguido del nombre del parámetro, y luego se pasan usando la anotación `@Param` en los métodos de los repositorios.
+
+\textbf{\textbf{Ejemplo}}:
+
+\begin{minted}[]{java}
+@Query("SELECT l FROM Libro l WHERE l.genero = :genero")
+List<Libro> findLibrosByGenero(@Param("genero") String genero);
+\end{minted}
+
+\subsection{Consultas Nativas (Native Queries)}
+\label{sec:org1550154}
+Si necesitas ejecutar una consulta directamente en SQL (sin pasar por JPQL), puedes usar consultas nativas con la anotación `@Query`. Esto puede ser útil cuando necesitas hacer uso de funciones específicas de tu base de datos o si la consulta es muy compleja y JPQL no es suficiente.
+
+\textbf{\textbf{Ejemplo de consulta nativa}}:
+
+\begin{minted}[]{java}
+@Query(value = "SELECT * FROM libro WHERE año_publicacion > :año", nativeQuery = true)
+List<Libro> findLibrosByAñoPublicacionNative(@Param("año") int año);
+\end{minted}
+
+Aquí, estamos usando una consulta SQL directa (`nativeQuery = true`) en lugar de una consulta JPQL. Esta consulta es ejecutada directamente en la base de datos subyacente.
+
+\subsection{Ventajas de JPQL}
+\label{sec:orga11f69d}
+\begin{enumerate}
+\item \textbf{\textbf{Portabilidad}}: Como JPQL trabaja a nivel de entidades y no de tablas, es más portable entre distintas bases de datos.
+\item \textbf{\textbf{Orientación a objetos}}: JPQL se ajusta al paradigma de la programación orientada a objetos, permitiendo trabajar con entidades y sus relaciones de manera natural.
+\item \textbf{\textbf{Simplicidad}}: Para muchas consultas, JPQL es más simple y fácil de leer que SQL, ya que usa los nombres de las clases y atributos de la aplicación.
+\item \textbf{\textbf{Integración con Spring Data JPA}}: JPQL se integra de manera fluida con Spring Data JPA, lo que permite una mayor flexibilidad al definir consultas personalizadas.
+\end{enumerate}
+
+\subsection{Cuándo usar JPQL en lugar de Derived Query Methods}
+\label{sec:org248729b}
+\begin{enumerate}
+\item \textbf{\textbf{Consultas complejas}}: Cuando la consulta involucra condiciones complejas, agregaciones, subconsultas o uniones, es mejor usar JPQL.
+\item \textbf{\textbf{Consultas sobre relaciones}}: JPQL permite hacer uniones explíc
+\end{enumerate}
+
+itas (`JOIN`) entre entidades relacionadas, algo que puede ser difícil de hacer con los métodos de consulta derivados.
+\begin{enumerate}
+\item \textbf{\textbf{Personalización}}: Si necesitas una mayor personalización que la que ofrecen los métodos derivados, JPQL te da un control más fino sobre cómo se ejecuta la consulta.
+\end{enumerate}
+
+\subsection{Conclusión}
+\label{sec:org4def051}
+\textbf{\textbf{JPQL}} es una herramienta poderosa que extiende las capacidades de Spring Data JPA permitiéndonos escribir consultas personalizadas de manera declarativa. Aunque los \textbf{\textbf{Derived Query Methods}} son útiles para consultas simples, JPQL te permite manejar casos más avanzados, como uniones entre entidades, subconsultas, y agregaciones, lo que proporciona una flexibilidad mayor en el acceso a datos.
+
+Con este conocimiento, ya tienes una base sólida para manejar consultas tanto simples como complejas en Spring Data JPA. ¿Te gustaría que sigamos con la implementación de los \textbf{\textbf{controladores}} ahora?
+
+
+\section{Anexo IV: Beans}
+\label{sec:org7c71e22}
+
+ Los \textbf{\textbf{beans}} en Spring son objetos que el contenedor de \textbf{\textbf{Inversión de Control (IoC)}} de Spring gestiona.
+Cuando declaramos un bean, Spring se encarga de crear su instancia, gestionar su ciclo de vida, y proporcionar sus dependencias en toda la aplicación cuando sea necesario.
+Los \textbf{\textbf{tipos de beans}} se definen principalmente según el \textbf{\textbf{alcance (scope)}}, es decir, cómo y cuándo el contenedor crea y gestiona las instancias de esos beans.
+
+\subsection{Tipos de Beans según el Alcance (Scope)}
+\label{sec:org417ad24}
+Spring define varios tipos de \textbf{\textbf{alcances}} o \textbf{\textbf{scopes}} para los beans, lo que determina cuántas instancias de un bean se crean y cómo se gestionan esas instancias a lo largo del ciclo de vida de la aplicación.
+
+\subsubsection{1. \textbf{\textbf{`singleton`}} (por defecto)}
+\label{sec:org123ff90}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{singleton}} es creado \textbf{\textbf{una sola vez}} por el contenedor de Spring durante toda la ejecución de la aplicación. Esa única instancia es compartida y reutilizada en todas las dependencias donde se necesite el bean.
+\item \textbf{\textbf{Es el alcance por defecto}}: Si no especificas un alcance, Spring asume que el bean es `singleton`.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("singleton")
+public LibroService libroService() {
+    return new LibroService();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Se mejora la eficiencia y el uso de recursos al reutilizar la misma instancia.
+\item \textbf{\textbf{Caso de uso}}: Es útil cuando el bean no mantiene estado o el estado puede ser compartido entre múltiples componentes de la aplicación.
+\item \textbf{\textbf{Nota}}: Aunque es singleton dentro del contexto de Spring, no es un singleton en el sentido tradicional de diseño de software, ya que Spring puede gestionar múltiples contextos con sus propios "singletones".
+\end{itemize}
+
+\subsubsection{2. \textbf{\textbf{`prototype`}}}
+\label{sec:orgf6c7f1e}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{prototype}} crea una \textbf{\textbf{nueva instancia cada vez que se solicita}} el bean. A diferencia del `singleton`, este bean no es reutilizado, sino que se genera una nueva copia cuando se lo inyecta o se llama al contenedor.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("prototype")
+public LibroService libroService() {
+    return new LibroService();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Se evita compartir estado entre las distintas instancias del bean, lo que es útil cuando cada instancia necesita mantener un estado independiente.
+\item \textbf{\textbf{Caso de uso}}: Es útil cuando el bean necesita mantener estado independiente para cada usuario o cada operación, como en casos de formularios web o sesiones de usuario.
+\item \textbf{\textbf{Nota}}: Los beans `prototype` no son gestionados completamente por Spring en términos de ciclo de vida (por ejemplo, no se invocan automáticamente los métodos de destrucción). Esto implica que tú serás responsable de manejar el ciclo de vida completo del bean si lo necesitas.
+\end{itemize}
+
+\subsubsection{3. \textbf{\textbf{`request`}} (Solo para aplicaciones web)}
+\label{sec:orgd582e09}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{request}} se crea \textbf{\textbf{una vez por cada solicitud HTTP}}. Cada vez que una nueva solicitud HTTP llega a la aplicación, se crea una nueva instancia del bean, y esa instancia está disponible durante el tiempo de vida de esa solicitud. Después de completarse la solicitud, el bean es destruido.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("request")
+public LibroService libroService() {
+    return new LibroService();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Permite tener beans específicos para una solicitud HTTP. Estos beans pueden contener datos que son relevantes solo durante la duración de esa solicitud.
+\item \textbf{\textbf{Caso de uso}}: Es útil para mantener datos específicos de una solicitud, como información del cliente, validaciones, etc.
+\item \textbf{\textbf{Nota}}: Este scope solo está disponible en aplicaciones que tienen un contexto web.
+\end{itemize}
+
+\subsubsection{4. \textbf{\textbf{`session`}} (Solo para aplicaciones web)}
+\label{sec:org75e43cf}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{session}} se crea \textbf{\textbf{una vez por sesión de usuario HTTP}}. Mientras dure la sesión del usuario (es decir, entre la primera solicitud y el cierre de sesión), el mismo bean será reutilizado. Una vez que la sesión termina, el bean se destruye.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("session")
+public UserPreferences userPreferences() {
+    return new UserPreferences();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Permite almacenar datos específicos de la sesión de un usuario, como las preferencias del usuario o el carrito de compras en una tienda online.
+\item \textbf{\textbf{Caso de uso}}: Es útil cuando necesitas guardar información de un usuario a lo largo de varias solicitudes HTTP en una misma sesión.
+\item \textbf{\textbf{Nota}}: Como `request`, este scope solo está disponible en aplicaciones web.
+\end{itemize}
+
+\subsubsection{5. \textbf{\textbf{`application`}}}
+\label{sec:org835bf50}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{application}} es similar al `singleton`, pero se crea \textbf{\textbf{una vez por ciclo de vida de toda la aplicación}} y está disponible durante todo el tiempo de vida de la aplicación. Es compartido por todas las solicitudes y todos los componentes.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("application")
+public AppConfiguration appConfiguration() {
+    return new AppConfiguration();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Como el `singleton`, proporciona una única instancia del bean, pero su ciclo de vida está asociado al ciclo de vida de la aplicación entera.
+\item \textbf{\textbf{Caso de uso}}: Es útil cuando un bean debe estar disponible para todos los componentes y solicitudes a lo largo del tiempo que dure la aplicación.
+\end{itemize}
+
+\subsubsection{6. \textbf{\textbf{`websocket`}} (Solo para aplicaciones con WebSockets)}
+\label{sec:org95f33ae}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Un bean con alcance \textbf{\textbf{websocket}} se crea \textbf{\textbf{una vez por sesión de WebSocket}}. Es útil cuando trabajas con aplicaciones que usan WebSockets para la comunicación en tiempo real.
+
+\item \textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Scope("websocket")
+public WebSocketHandler webSocketHandler() {
+    return new WebSocketHandler();
+}
+\end{minted}
+
+\item \textbf{\textbf{Ventaja}}: Proporciona una instancia del bean por cada sesión de WebSocket.
+\item \textbf{\textbf{Caso de uso}}: Es útil para gestionar la comunicación de WebSockets, donde cada conexión tiene su propia sesión y datos específicos.
+\end{itemize}
+
+---
+
+\subsection{Configurando el Scope de un Bean}
+\label{sec:orgbdedc8b}
+El \textbf{\textbf{alcance}} (scope) de un bean se define mediante la anotación `@Scope` en la definición del bean o en las clases que contienen beans (`@Component`, `@Service`, etc.).
+
+\subsubsection{Ejemplo con la anotación `@Scope`:}
+\label{sec:org560040b}
+\begin{minted}[]{java}
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+@Service
+@Scope("prototype")
+public class LibroService {
+    // Clase de servicio con alcance prototype
+}
+\end{minted}
+
+\subsubsection{Alternativa con configuración en XML (obsoleta en muchos casos)}
+\label{sec:org111ee6a}
+Si prefieres usar configuración basada en XML (no es muy común en proyectos actuales que usan configuración Java), puedes hacerlo así:
+
+\begin{minted}[]{xml}
+<bean id="libroService" class="com.biblioteca.servicios.LibroService" scope="prototype"/>
+\end{minted}
+
+---
+
+\subsection{Inyección de Dependencias y Alcances}
+\label{sec:orgfaf67ef}
+El alcance de un bean afecta la forma en que Spring lo gestiona durante la \textbf{\textbf{inyección de dependencias}}:
+
+\begin{itemize}
+\item En un bean con alcance \textbf{\textbf{singleton}}, se inyectará siempre la \textbf{\textbf{misma instancia}} en todas las partes de la aplicación.
+\item En un bean con alcance \textbf{\textbf{prototype}}, se inyectará una \textbf{\textbf{nueva instancia}} en cada parte de la aplicación donde se necesite.
+\end{itemize}
+
+Esto permite tener un control muy granular sobre la forma en que los objetos (beans) se comportan dentro de la aplicación, garantizando que ciertas clases compartan estado (en el caso de `singleton`) o mantengan estado independiente (en el caso de `prototype`, `request`, `session`).
+
+\subsection{Alcance Predeterminado: Singleton}
+\label{sec:org3982784}
+Como mencioné antes, si no especificas un alcance, Spring tratará tu bean como un \textbf{\textbf{singleton}} por defecto, lo que significa que \textbf{\textbf{solo se creará una instancia única}} durante el ciclo de vida de la aplicación. Esto es ideal para servicios que no tienen estado y que pueden ser compartidos entre varias partes de la aplicación.
+
+---
+
+\subsection{Conclusión}
+\label{sec:orge40aae1}
+Los \textbf{\textbf{scopes}} en Spring permiten un control avanzado sobre cómo y cuándo se crean y gestionan los beans en una aplicación. Puedes elegir el alcance que mejor se ajuste a tus necesidades:
+\begin{itemize}
+\item \textbf{\textbf{Singleton}} para beans que pueden compartirse en toda la aplicación.
+\item \textbf{\textbf{Prototype}} para crear nuevas instancias de un bean cada vez que se necesita.
+\item \textbf{\textbf{Request}}, \textbf{\textbf{Session}} y \textbf{\textbf{Application}} son útiles en aplicaciones web para manejar el ciclo de vida de los beans en función del ciclo de vida de las solicitudes o sesiones de usuario.
+\end{itemize}
+
+Esto te permite escribir aplicaciones más flexibles y escalables al ajustar el ciclo de vida de los objetos de manera adecuada.
+
+En Spring, los \textbf{\textbf{beans}} son componentes gestionados por el \textbf{\textbf{contenedor de Inversión de Control (IoC)}}.
+Los beans son instancias de clases que Spring crea y gestiona a lo largo del ciclo de vida de la aplicación. Para que una clase sea registrada como un bean, Spring proporciona varias anotaciones que permiten declarar y configurar esos beans de forma automática.
+
+\subsection{Anotaciones que dan lugar a Beans en Spring}
+\label{sec:org296274c}
+Aquí te dejo una lista de las anotaciones más comunes que dan lugar a beans en Spring:
+
+---
+
+\subsubsection{1. \textbf{\textbf{@Component}}}
+\label{sec:orgff614fb}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Marca una clase como un componente gestionado por Spring. Es una anotación genérica y puede ser usada para cualquier clase que deba ser registrada como un bean en el contenedor IoC.
+\item \textbf{\textbf{Uso típico}}: Se usa cuando una clase no encaja específicamente en ninguna otra categoría como `@Service`, `@Repository`, o `@Controller`.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Component
+public class MiComponente {
+    // Lógica de la clase
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{2. \textbf{\textbf{@Service}}}
+\label{sec:orgc9a6de3}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Es una especialización de `@Component`. Se utiliza para marcar clases que contienen lógica de negocio y que deben ser gestionadas por Spring como beans.
+\item \textbf{\textbf{Uso típico}}: Para clases de la capa de \textbf{\textbf{servicios}} (que contienen lógica de negocio).
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+public class LibroService {
+    // Lógica de negocio
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{3. \textbf{\textbf{@Repository}}}
+\label{sec:org52617f6}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Es otra especialización de `@Component`. Indica que la clase es responsable de acceder y gestionar datos, generalmente interactuando con una base de datos.
+\item \textbf{\textbf{Uso típico}}: Para las clases de la \textbf{\textbf{capa de persistencia}}, como los \textbf{\textbf{repositorios}} de acceso a la base de datos.
+\item \textbf{\textbf{Características adicionales}}: Proporciona mecanismos de tratamiento de excepciones automáticos para las excepciones relacionadas con la persistencia.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Repository
+public interface LibroRepository extends JpaRepository<Libro, Long> {
+    // Métodos de consulta
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{4. \textbf{\textbf{@Controller}}}
+\label{sec:org4defc11}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Es una especialización de `@Component`. Se utiliza para marcar las clases que gestionan las \textbf{\textbf{solicitudes HTTP}} y responden con vistas (en aplicaciones web MVC tradicionales).
+\item \textbf{\textbf{Uso típico}}: Para clases de la capa de \textbf{\textbf{controladores}} en aplicaciones web MVC.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Controller
+public class LibroController {
+    // Métodos que manejan solicitudes HTTP y devuelven vistas
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{5. \textbf{\textbf{@RestController}}}
+\label{sec:orgd6105a2}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Es una combinación de `@Controller` y `@ResponseBody`. Indica que la clase maneja las solicitudes HTTP pero, en lugar de devolver vistas HTML, devuelve \textbf{\textbf{datos}} (generalmente en formato JSON o XML).
+\item \textbf{\textbf{Uso típico}}: Para controladores de \textbf{\textbf{APIs RESTful}}.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@RestController
+public class LibroRestController {
+    // Métodos que manejan solicitudes HTTP y devuelven datos en formato JSON
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{6. \textbf{\textbf{@Configuration}}}
+\label{sec:org55230df}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Indica que una clase es una \textbf{\textbf{clase de configuración}}. Las clases anotadas con `@Configuration` contienen métodos `@Bean` que declaran beans dentro del contenedor IoC.
+\item \textbf{\textbf{Uso típico}}: Para definir beans manualmente dentro de un archivo de configuración de Spring.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public LibroService libroService() {
+        return new LibroService();
+    }
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{7. \textbf{\textbf{@Bean}}}
+\label{sec:org3c2e231}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Se utiliza dentro de una clase anotada con `@Configuration` para declarar un \textbf{\textbf{bean manualmente}}. Spring invocará este método y lo registrará como un bean en el contenedor.
+\item \textbf{\textbf{Uso típico}}: Para declarar beans explícitamente cuando no puedes o no quieres usar las anotaciones como `@Component` o `@Service`.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+public LibroService libroService() {
+    return new LibroService();
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{8. \textbf{\textbf{@Scope}}}
+\label{sec:org761f64c}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: No crea un bean por sí misma, pero define el \textbf{\textbf{alcance}} de un bean. Se utiliza en combinación con otras anotaciones de beans (`@Component`, `@Service`, etc.) o en métodos `@Bean` dentro de clases `@Configuration`.
+\item \textbf{\textbf{Uso típico}}: Para controlar el ciclo de vida de un bean (`singleton`, `prototype`, `request`, `session`, etc.).
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+@Scope("prototype")
+public class MiServicio {
+    // Lógica de negocio
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{9. \textbf{\textbf{@Lazy}}}
+\label{sec:org00c32a7}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Indica que un bean debe ser \textbf{\textbf{cargado perezosamente}} (lazy initialization), es decir, se creará solo cuando sea necesario, no al inicio de la aplicación.
+\item \textbf{\textbf{Uso típico}}: Para reducir el uso de memoria y mejorar el tiempo de arranque de la aplicación.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+@Lazy
+public class MiServicio {
+    // Lógica de negocio
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{10. \textbf{\textbf{@Primary}}}
+\label{sec:org86c1fc8}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Indica que un bean debe tener prioridad sobre otros cuando hay \textbf{\textbf{múltiples beans del mismo tipo}} disponibles para la inyección de dependencias.
+\item \textbf{\textbf{Uso típico}}: Cuando tienes varios beans del mismo tipo y quieres especificar cuál debe ser el predeterminado.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Bean
+@Primary
+public LibroService libroServicePrincipal() {
+    return new LibroService();
+}
+
+@Bean
+public LibroService libroServiceSecundario() {
+    return new LibroService();
+}
+\end{minted}
+\end{itemize}
+
+\subsubsection{11. \textbf{\textbf{@Qualifier}}}
+\label{sec:org18b11db}
+\begin{itemize}
+\item \textbf{\textbf{Descripción}}: Se utiliza para diferenciar entre múltiples beans del mismo tipo cuando se inyectan. Esto es útil cuando tienes varios beans del mismo tipo y necesitas especificar cuál debe ser inyectado.
+\item \textbf{\textbf{Uso típico}}: Para resolver conflictos de inyección cuando hay múltiples implementaciones de la misma interfaz.
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+@Qualifier("libroServiceSecundario")
+public class LibroService {
+    // Lógica del servicio
+}
+\end{minted}
+\end{itemize}
+
+---
+
+\subsection{Resumen de las principales anotaciones que generan Beans}
+\label{sec:orgd04cc74}
+
+\begin{center}
+\begin{tabular}{ll}
+Anotación & Propósito\\[0pt]
+\hline
+\textbf{\textbf{@Component}} & Clase genérica gestionada como bean por el contenedor Spring.\\[0pt]
+\textbf{\textbf{@Service}} & Clase que contiene lógica de negocio, especializada de `@Component`.\\[0pt]
+\textbf{\textbf{@Repository}} & Clase que gestiona acceso a datos (capa de persistencia).\\[0pt]
+\textbf{\textbf{@Controller}} & Clase que gestiona solicitudes HTTP (vistas en aplicaciones web MVC).\\[0pt]
+\textbf{\textbf{@RestController}} & Controlador REST que maneja solicitudes HTTP y devuelve datos JSON/XML.\\[0pt]
+\textbf{\textbf{@Configuration}} & Clase que define beans y configuraciones.\\[0pt]
+\textbf{\textbf{@Bean}} & Define un bean manualmente dentro de una clase de configuración.\\[0pt]
+\textbf{\textbf{@Scope}} & Define el ciclo de vida (alcance) de un bean.\\[0pt]
+\textbf{\textbf{@Lazy}} & Indica que un bean debe inicializarse de manera diferida.\\[0pt]
+\textbf{\textbf{@Primary}} & Define un bean como prioritario cuando hay múltiples candidatos.\\[0pt]
+\textbf{\textbf{@Qualifier}} & Diferencia entre múltiples beans del mismo tipo para la inyección.\\[0pt]
+\end{tabular}
+\end{center}
+
+\subsection{Conclusión}
+\label{sec:org3f79d1b}
+Las anotaciones que hemos revisado son herramientas clave para declarar y gestionar \textbf{\textbf{beans}} en Spring. Cada una tiene un propósito específico que ayuda a estructurar mejor la aplicación y aprovechar el \textbf{\textbf{contenedor de Inversión de Control (IoC)}} de Spring para gestionar la creación y el ciclo de vida de los objetos. En resumen:
+\begin{itemize}
+\item `@Component`, `@Service`, `@Repository`, y `@Controller` son los pilares para indicar que una clase es un \textbf{\textbf{bean gestionado}}.
+\item `@Bean`, `@Scope`, `@Lazy`, y `@Primary` permiten controlar el ciclo de vida, la inicialización y el uso de esos beans.
+\end{itemize}
+
+\section{Anexo V: Inversión de control (IoC)}
+\label{sec:org96a75cd}
+Vamos a profundizar en el concepto de \textbf{\textbf{Inversión de Control (IoC)}}, que es fundamental para entender cómo funciona el marco de trabajo \textbf{\textbf{Spring}}.
+
+\subsection{¿Qué es Inversión de Control (IoC)?}
+\label{sec:org62cd952}
+\textbf{\textbf{Inversión de Control (IoC)}} es un principio de diseño de software que cambia la forma en que se crean y gestionan las dependencias entre objetos. En lugar de que los objetos gestionen sus dependencias (creando o encontrando los objetos que necesitan), un \textbf{\textbf{contenedor externo}} (en este caso, el contenedor IoC de Spring) se encarga de hacerlo por ellos.
+
+\textbf{\textbf{"Inversión"}} se refiere a que el control sobre los objetos y sus dependencias cambia de lugar: en lugar de que un objeto controle la creación de sus propias dependencias, ahora \textbf{\textbf{el contenedor de Spring}} controla la creación y suministro de esas dependencias.
+
+Este principio es lo que permite que \textbf{\textbf{Spring}} inyecte automáticamente dependencias en clases a través de mecanismos como la \textbf{\textbf{inyección de dependencias (Dependency Injection, DI)}}, creando una arquitectura más flexible, modular y fácil de probar.
+
+\subsection{¿Cómo funciona IoC en Spring?}
+\label{sec:org100421d}
+En el marco de Spring, el \textbf{\textbf{contenedor IoC}} es el responsable de crear, configurar y gestionar el ciclo de vida de los \textbf{\textbf{beans}} (objetos) de la aplicación. La clave aquí es que \textbf{\textbf{IoC invierte la responsabilidad}} de controlar los objetos y sus dependencias: el contenedor IoC de Spring se encarga de suministrar los objetos (dependencias) en lugar de que las clases las creen manualmente.
+
+Este patrón tiene varias ventajas, como:
+\begin{enumerate}
+\item \textbf{\textbf{Desacoplamiento}}: Las clases no están acopladas entre sí porque no crean directamente sus dependencias.
+\item \textbf{\textbf{Facilidad de prueba}}: Puedes reemplazar las dependencias con versiones simuladas o alternativas, lo que facilita las pruebas unitarias.
+\item \textbf{\textbf{Modularidad}}: Puedes cambiar el comportamiento de una aplicación reemplazando un bean por otro sin modificar el código principal.
+\end{enumerate}
+
+\subsection{Inyección de Dependencias (DI) en IoC}
+\label{sec:orgbcbf204}
+La \textbf{\textbf{Inyección de Dependencias (Dependency Injection)}} es una de las formas más comunes de implementar IoC. Spring proporciona múltiples formas de inyectar dependencias en un objeto, que veremos a continuación.
+
+\subsubsection{Tipos de Inyección de Dependencias en Spring:}
+\label{sec:org1fd9e32}
+\begin{enumerate}
+\item \textbf{\textbf{Inyección por constructor}}:
+\begin{itemize}
+\item El contenedor de Spring inyecta las dependencias mediante el constructor de la clase.
+\item Este es el método más recomendado, ya que garantiza que las dependencias estén completamente inyectadas cuando el objeto es creado.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+public class LibroService {
+
+    private final LibroRepository libroRepository;
+
+    @Autowired
+    public LibroService(LibroRepository libroRepository) {
+        this.libroRepository = libroRepository;
+    }
+
+    // Métodos del servicio
+}
+\end{minted}
+
+\item \textbf{\textbf{Inyección por método setter}}:
+\begin{itemize}
+\item Spring inyecta las dependencias usando un método \textbf{\textbf{setter}}.
+\item Es útil si necesitas que una dependencia sea opcional o si quieres configurar ciertas dependencias después de crear el objeto.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+public class LibroService {
+
+    private LibroRepository libroRepository;
+
+    @Autowired
+    public void setLibroRepository(LibroRepository libroRepository) {
+        this.libroRepository = libroRepository;
+    }
+
+    // Métodos del servicio
+}
+\end{minted}
+
+\item \textbf{\textbf{Inyección por campo}} (atributo):
+\begin{itemize}
+\item Es el método más sencillo, ya que Spring inyecta directamente las dependencias en los campos (atributos) de la clase.
+\item Sin embargo, no es la mejor práctica en muchos casos porque dificulta las pruebas unitarias.
+\end{itemize}
+
+\textbf{\textbf{Ejemplo}}:
+\begin{minted}[]{java}
+@Service
+public class LibroService {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    // Métodos del servicio
+}
+\end{minted}
+\end{enumerate}
+
+\subsection{Ciclo de vida de los beans en IoC}
+\label{sec:org58968ed}
+El contenedor IoC de Spring no solo se encarga de inyectar dependencias, sino también de gestionar todo el ciclo de vida de los beans, desde su creación hasta su destrucción. Estos son los pasos principales del ciclo de vida de un bean:
+
+\begin{enumerate}
+\item \textbf{\textbf{Instanciación}}: Spring crea una instancia del bean.
+\item \textbf{\textbf{Inyección de dependencias}}: Spring inyecta las dependencias requeridas (otros beans).
+\item \textbf{\textbf{Inicialización}}: Si hay algún método de inicialización (como uno anotado con `@PostConstruct`), se ejecuta.
+\item \textbf{\textbf{Uso}}: El bean está disponible para ser usado en la aplicación.
+\item \textbf{\textbf{Destrucción}}: Al final del ciclo de vida, Spring ejecuta cualquier método de destrucción configurado (por ejemplo, un método anotado con `@PreDestroy`), si es necesario.
+\end{enumerate}
+
+\subsection{Implementación del patrón IoC en Spring: Contenedor IoC}
+\label{sec:orgf51a912}
+El \textbf{\textbf{contenedor IoC de Spring}} es la pieza central que gestiona los beans y sus dependencias. Existen dos implementaciones principales de este contenedor:
+
+\begin{enumerate}
+\item \textbf{\textbf{`ApplicationContext`}}:
+\begin{itemize}
+\item Es el contenedor más avanzado de Spring y el más utilizado en la mayoría de las aplicaciones.
+\item Proporciona características adicionales sobre el contenedor básico como \textbf{\textbf{eventos del ciclo de vida del bean}}, \textbf{\textbf{resolución de mensajes}} (internacionalización), etc.
+\item Se recomienda en aplicaciones empresariales y aplicaciones web.
+\end{itemize}
+
+\item \textbf{\textbf{`BeanFactory`}}:
+\begin{itemize}
+\item Es el contenedor IoC básico de Spring. Es ligero y proporciona las funcionalidades fundamentales de IoC (gestión de beans y dependencias).
+\item Se usa menos que `ApplicationContext`, pero puede ser útil en situaciones donde se busca un contenedor muy ligero.
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{Ejemplo básico de uso de `ApplicationContext`:}
+\label{sec:org423884b}
+\begin{minted}[]{java}
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public LibroRepository libroRepository() {
+        return new LibroRepositoryImpl();
+    }
+
+    @Bean
+    public LibroService libroService() {
+        return new LibroService(libroRepository());
+    }
+}
+
+// Clase principal
+public class MainApp {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        LibroService libroService = context.getBean(LibroService.class);
+        libroService.listarLibros();
+    }
+}
+\end{minted}
+
+En este ejemplo, el contenedor IoC (`ApplicationContext`) se encarga de instanciar el servicio (`LibroService`) y de inyectar su dependencia, el repositorio (`LibroRepository`).
+
+\subsection{Ventajas de IoC}
+\label{sec:org4b1b489}
+\begin{enumerate}
+\item \textbf{\textbf{Desacoplamiento}}: IoC ayuda a desacoplar las clases, ya que una clase no es responsable de crear sus propias dependencias. Esto mejora la mantenibilidad y escalabilidad de las aplicaciones.
+
+\item \textbf{\textbf{Facilidad de prueba}}: Gracias a IoC, es fácil reemplazar dependencias reales con objetos simulados (mocks) para realizar pruebas unitarias, lo que facilita la creación de pruebas.
+
+\item \textbf{\textbf{Reutilización}}: Las clases son más reutilizables, ya que dependen de interfaces y no de implementaciones concretas.
+
+\item \textbf{\textbf{Gestión centralizada}}: IoC centraliza la gestión de dependencias y la creación de objetos, lo que facilita el control y la gestión de la configuración de la aplicación.
+\end{enumerate}
+
+\subsection{Desventajas de IoC}
+\label{sec:org9c9b546}
+\begin{enumerate}
+\item \textbf{\textbf{Curva de aprendizaje}}: Para desarrolladores nuevos, el concepto de IoC puede ser difícil de entender inicialmente.
+
+\item \textbf{\textbf{Sobrecarga}}: Aunque IoC aporta flexibilidad, puede haber una pequeña sobrecarga en el rendimiento, especialmente en aplicaciones muy grandes, debido al costo de gestionar todas las dependencias y su ciclo de vida.
+\end{enumerate}
+
+---
+
+\subsection{Conclusión}
+\label{sec:org70530bb}
+El patrón de \textbf{\textbf{Inversión de Control (IoC)}} es el núcleo de cómo Spring gestiona los objetos y las dependencias en una aplicación. En lugar de que los objetos se gestionen a sí mismos, el \textbf{\textbf{contenedor IoC}} de Spring toma el control de la creación, configuración e inyección de dependencias. Esto conduce a un código más limpio, fácil de mantener y desacoplado, y abre las puertas a técnicas avanzadas como \textbf{\textbf{pruebas unitarias}} efectivas y \textbf{\textbf{modularidad}}.
+
+La \textbf{\textbf{Inyección de Dependencias (DI)}} es la forma más común de implementar IoC, y puede realizarse mediante inyección por constructor, por setter o por campo. Dependiendo de las necesidades de tu aplicación, puedes elegir la estrategia que mejor se ajuste a tu diseño.
+
+Si tienes más preguntas o necesitas que exploremos algún aspecto en más detalle, ¡avísame!
+
+
+\section{Anexo VI: Pre carga de datos en la BD}
+\label{sec:org25a25f7}
+
+En Spring Boot, puedes usar varios enfoques para \textbf{\textbf{pre-cargar datos en la base de datos}} cuando la aplicación se inicie, de modo que tengas algunos registros iniciales para probar y trabajar sin tener que insertar manualmente los datos después de que la aplicación arranque.
+
+\subsection{1. Usar `data.sql` para cargar datos al iniciar la aplicación}
+\label{sec:org83152fd}
+Una forma sencilla de insertar datos iniciales es mediante el uso de un archivo SQL llamado \textbf{\textbf{`data.sql`}} que Spring Boot ejecuta automáticamente cuando arranca la aplicación. Este archivo debe estar ubicado en el directorio `src/main/resources`.
+
+\subsubsection{Pasos:}
+\label{sec:orgb336598}
+\begin{enumerate}
+\item Crea un archivo llamado `data.sql` en el directorio `src/main/resources/`.
+\item Inserta tus sentencias SQL para insertar los registros que desees.
+\end{enumerate}
+
+\subsubsection{Ejemplo de `data.sql` para pre-cargar datos:}
+\label{sec:org9fd6faf}
+\begin{minted}[]{sql}
+-- Insertando autores
+INSERT INTO autor (id, nombre, nacionalidad) VALUES (1, 'Gabriel García Márquez', 'Colombiana');
+INSERT INTO autor (id, nombre, nacionalidad) VALUES (2, 'Isabel Allende', 'Chilena');
+
+-- Insertando libros
+INSERT INTO libro (id, titulo, genero, año_publicacion, estado, autor_id) VALUES
+(1, 'Cien años de soledad', 'Novela', 1967, 'disponible', 1),
+(2, 'El amor en los tiempos del cólera', 'Novela', 1985, 'disponible', 1),
+(3, 'La casa de los espíritus', 'Novela', 1982, 'disponible', 2);
+
+-- Insertando usuarios
+INSERT INTO usuario (id, nombre, email, password, rol) VALUES
+(1, 'Usuario1', 'usuario1@example.com', '123456', 'usuario'),
+(2, 'Bibliotecario1', 'bibliotecario1@example.com', '123456', 'bibliotecario');
+\end{minted}
+
+Este archivo SQL será ejecutado automáticamente cuando la aplicación se inicie y cargará estos datos en las tablas correspondientes.
+
+\subsection{2. Usar un `CommandLineRunner` para cargar datos de inicio en Java}
+\label{sec:org787019f}
+Otra forma es cargar datos directamente en tu código usando un \textbf{\textbf{`CommandLineRunner`}} o un \textbf{\textbf{`@PostConstruct`}}, que son métodos que se ejecutan al inicio de la aplicación y pueden usarse para insertar datos de prueba de manera programática.
+
+\subsubsection{Ejemplo con `CommandLineRunner`:}
+\label{sec:orgc54f6d3}
+\begin{enumerate}
+\item Crea una clase en el paquete `com.biblioteca.gestion.config` (o un paquete similar) llamada `DataLoader`:
+\end{enumerate}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.config;
+
+import com.biblioteca.gestion.entities.Autor;
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.repositories.AutorRepository;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DataLoader implements CommandLineRunner {
+
+    @Autowired
+    private AutorRepository autorRepository;
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public void run(String... args) throws Exception {
+        // Crear y guardar algunos autores
+        Autor autor1 = new Autor(null, "Gabriel García Márquez", "Colombiana", null);
+        Autor autor2 = new Autor(null, "Isabel Allende", "Chilena", null);
+        autorRepository.save(autor1);
+        autorRepository.save(autor2);
+
+        // Crear y guardar algunos libros
+        Libro libro1 = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor1);
+        Libro libro2 = new Libro(null, "El amor en los tiempos del cólera", "Novela", 1985, "disponible", autor1);
+        Libro libro3 = new Libro(null, "La casa de los espíritus", "Novela", 1982, "disponible", autor2);
+        libroRepository.save(libro1);
+        libroRepository.save(libro2);
+        libroRepository.save(libro3);
+
+        // Crear y guardar algunos usuarios
+        Usuario usuario1 = new Usuario(null, "Usuario1", "usuario1@example.com", passwordEncoder.encode("123456"), "usuario");
+        Usuario bibliotecario1 = new Usuario(null, "Bibliotecario1", "bibliotecario1@example.com", passwordEncoder.encode("123456"), "bibliotecario");
+        usuarioRepository.save(usuario1);
+        usuarioRepository.save(bibliotecario1);
+    }
+}
+\end{minted}
+
+\subsubsection{Explicación:}
+\label{sec:orgda82a09}
+\begin{itemize}
+\item \textbf{\textbf{`CommandLineRunner`}}: Es una interfaz que proporciona Spring Boot, cuyo método `run()` se ejecuta automáticamente cuando la aplicación se inicia. Aquí insertamos los registros iniciales programáticamente.
+\item \textbf{\textbf{Inyección de dependencias}}: Usamos `@Autowired` para inyectar los repositorios de \textbf{\textbf{Autor}}, \textbf{\textbf{Libro}} y \textbf{\textbf{Usuario}}.
+\item \textbf{\textbf{Cifrado de contraseñas}}: Usamos `PasswordEncoder` para encriptar las contraseñas de los usuarios antes de guardarlos en la base de datos.
+\end{itemize}
+
+\subsection{Ventajas y desventajas de cada enfoque:}
+\label{sec:org5295a55}
+\begin{itemize}
+\item \textbf{\textbf{`data.sql`}}:
+\begin{itemize}
+\item \textbf{\textbf{Ventaja}}: Es simple y no requiere lógica en el código Java. Ideal para datos estáticos.
+\item \textbf{\textbf{Desventaja}}: Menos flexible si necesitas lógica compleja o trabajar con objetos relacionados (como entidades con relaciones `@ManyToOne` o `@OneToMany`).
+\end{itemize}
+
+\item \textbf{\textbf{`CommandLineRunner`}}:
+\begin{itemize}
+\item \textbf{\textbf{Ventaja}}: Más flexible. Puedes ejecutar lógica compleja y utilizar el repositorio directamente.
+\item \textbf{\textbf{Desventaja}}: Añade un poco más de complejidad, ya que debes escribir código Java para cargar los datos.
+\end{itemize}
+\end{itemize}
+
+---
+
+\subsection{Implementación de Pre-carga de Datos en Spring Boot}
+\label{sec:org2a6c5c6}
+
+Vamos a implementar ambos enfoques para que puedas pre-cargar los datos tanto mediante un archivo `data.sql` como con el uso de un `CommandLineRunner`. Esto te permitirá ver ambos métodos en acción y elegir el que mejor se ajuste a tus necesidades.
+
+\subsubsection{1. Implementación de `data.sql`}
+\label{sec:orgea28903}
+
+Para usar el enfoque de \textbf{\textbf{`data.sql`}}, sigue estos pasos:
+
+\begin{enumerate}
+\item Crea el archivo `data.sql` en el directorio `src/main/resources`.
+
+\item Añade el siguiente contenido para pre-cargar algunos autores, libros y usuarios:
+\end{enumerate}
+
+\begin{itemize}
+\item `src/main/resources/data.sql`:
+\label{sec:orgf8eb0a8}
+
+\begin{minted}[]{sql}
+-- Insertando autores
+INSERT INTO autor (id, nombre, nacionalidad) VALUES (1, 'Gabriel García Márquez', 'Colombiana');
+INSERT INTO autor (id, nombre, nacionalidad) VALUES (2, 'Isabel Allende', 'Chilena');
+
+-- Insertando libros
+INSERT INTO libro (id, titulo, genero, año_publicacion, estado, autor_id) VALUES
+(1, 'Cien años de soledad', 'Novela', 1967, 'disponible', 1),
+(2, 'El amor en los tiempos del cólera', 'Novela', 1985, 'disponible', 1),
+(3, 'La casa de los espíritus', 'Novela', 1982, 'disponible', 2);
+
+-- Insertando usuarios (la contraseña aún no está encriptada en este método)
+INSERT INTO usuario (id, nombre, email, password, rol) VALUES
+(1, 'Usuario1', 'usuario1@example.com', '123456', 'usuario'),
+(2, 'Bibliotecario1', 'bibliotecario1@example.com', '123456', 'bibliotecario');
+\end{minted}
+
+Este archivo será ejecutado automáticamente por Spring Boot al arrancar la aplicación y pre-cargará los datos en la base de datos.
+\end{itemize}
+
+\subsubsection{2. Implementación de `CommandLineRunner`}
+\label{sec:org0bda98a}
+
+Para usar el enfoque con \textbf{\textbf{`CommandLineRunner`}} en lugar de un archivo SQL, podemos hacerlo desde el código Java.
+
+\begin{enumerate}
+\item Crea una clase de configuración para cargar los datos en el paquete `com.biblioteca.gestion.config`.
+
+\item Añade el siguiente código para pre-cargar autores, libros y usuarios:
+\end{enumerate}
+
+\begin{itemize}
+\item `src/main/java/com/biblioteca/gestion/config/DataLoader.java`:
+\label{sec:orgfd98dc8}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.config;
+
+import com.biblioteca.gestion.entities.Autor;
+import com.biblioteca.gestion.entities.Libro;
+import com.biblioteca.gestion.entities.Usuario;
+import com.biblioteca.gestion.repositories.AutorRepository;
+import com.biblioteca.gestion.repositories.LibroRepository;
+import com.biblioteca.gestion.repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+
+@Component
+public class DataLoader implements CommandLineRunner {
+
+    @Autowired
+    private AutorRepository autorRepository;
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public void run(String... args) throws Exception {
+        // Crear y guardar algunos autores
+        Autor autor1 = new Autor(null, "Gabriel García Márquez", "Colombiana", null);
+        Autor autor2 = new Autor(null, "Isabel Allende", "Chilena", null);
+        autorRepository.save(autor1);
+        autorRepository.save(autor2);
+
+        // Crear y guardar algunos libros
+        Libro libro1 = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor1);
+        Libro libro2 = new Libro(null, "El amor en los tiempos del cólera", "Novela", 1985, "disponible", autor1);
+        Libro libro3 = new Libro(null, "La casa de los espíritus", "Novela", 1982, "disponible", autor2);
+        libroRepository.save(libro1);
+        libroRepository.save(libro2);
+        libroRepository.save(libro3);
+
+        // Crear y guardar algunos usuarios con contraseñas encriptadas
+        Usuario usuario1 = new Usuario(null, "Usuario1", "usuario1@example.com", passwordEncoder.encode("123456"), "usuario");
+        Usuario bibliotecario1 = new Usuario(null, "Bibliotecario1", "bibliotecario1@example.com", passwordEncoder.encode("123456"), "bibliotecario");
+        usuarioRepository.save(usuario1);
+        usuarioRepository.save(bibliotecario1);
+    }
+}
+\end{minted}
+
+\item Explicación del código:
+\label{sec:org9e6504d}
+\begin{itemize}
+\item \textbf{\textbf{Cifrado de contraseñas}}: Como las contraseñas deben estar cifradas, usamos un `PasswordEncoder` inyectado mediante `@Autowired` para encriptar las contraseñas antes de guardarlas en la base de datos.
+\item \textbf{\textbf{Relaciones entre entidades}}: Como `Libro` tiene una relación con `Autor` (muchos-a-uno), en el momento de crear un libro también estamos asociándolo con su autor correspondiente.
+\end{itemize}
+
+---
+\end{itemize}
+
+\subsubsection{3. Configuración del `PasswordEncoder`}
+\label{sec:org308e978}
+
+Para que la clase `DataLoader` pueda encriptar las contraseñas, debes asegurarte de tener configurado un \textbf{\textbf{`PasswordEncoder`}} en tu clase de configuración de seguridad. Aquí te dejo un ejemplo de cómo hacerlo:
+
+\begin{itemize}
+\item `src/main/java/com/biblioteca/gestion/config/SecurityConfig.java`:
+\label{sec:org71d16a3}
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+\end{minted}
+
+Con esto, tendrás configurado un \textbf{\textbf{`BCryptPasswordEncoder`}} que será inyectado en la clase `DataLoader` para encriptar las contraseñas de los usuarios antes de almacenarlas.
+
+---
+\end{itemize}
+
+\subsubsection{Conclusión}
+\label{sec:orge9ce05d}
+
+Ya hemos implementado dos formas de cargar datos en la base de datos al iniciar la aplicación:
+
+\begin{enumerate}
+\item \textbf{\textbf{`data.sql`}}: Ideal para cargas simples sin necesidad de lógica en el código.
+\item \textbf{\textbf{`CommandLineRunner`}}: Te permite cargar datos programáticamente, con lógica adicional como cifrado de contraseñas o relaciones entre entidades.
+\end{enumerate}
+
+Ahora, cuando inicies la aplicación, los datos estarán pre-cargados y podrás empezar a realizar pruebas con los datos iniciales.
+
+
+Ambos enfoques te permitirán \textbf{\textbf{pre-cargar datos}} en la base de datos cuando la aplicación Spring Boot se inicie. Si tienes datos estáticos, como autores o libros, puedes usar el archivo `data.sql`. Si necesitas hacer algo más dinámico o programático, como insertar entidades con dependencias o cifrar contraseñas, puedes usar el enfoque con `CommandLineRunner`.
+
+
+\section{Anexo VII:  JUnit 5.8, Mockito}
+\label{sec:org96a3271}
+\subsection{JUnit 5.8}
+\label{sec:org71224a2}
+
+JUnit es una de las bibliotecas más populares para realizar \textbf{\textbf{pruebas unitarias}} en aplicaciones Java. La versión 5 de JUnit, conocida como \textbf{\textbf{JUnit Jupiter}}, trajo varios cambios importantes que han mejorado la experiencia de los desarrolladores. \textbf{\textbf{JUnit 5.8}} es una actualización de esta versión con varias mejoras y correcciones de errores.
+
+\textbf{\textbf{Características clave de JUnit 5.8:}}
+
+\begin{enumerate}
+\item \textbf{\textbf{Arquitectura modular}}:
+\begin{itemize}
+\item JUnit 5 está dividido en tres subproyectos: \textbf{\textbf{JUnit Platform}}, \textbf{\textbf{JUnit Jupiter}} y \textbf{\textbf{JUnit Vintage}}.
+\item \textbf{\textbf{JUnit Platform}}: Proporciona la infraestructura para ejecutar las pruebas.
+\item \textbf{\textbf{JUnit Jupiter}}: Proporciona las nuevas APIs y anotaciones de JUnit 5.
+\item \textbf{\textbf{JUnit Vintage}}: Permite ejecutar pruebas escritas en JUnit 3 y 4 en JUnit 5.
+\end{itemize}
+
+\item \textbf{\textbf{Anotaciones principales}}:
+\begin{itemize}
+\item \textbf{\textbf{@Test}}: Marca un método como una prueba.
+\item \textbf{\textbf{@BeforeEach}}: Se ejecuta antes de cada prueba, comúnmente usada para preparar el estado.
+\item \textbf{\textbf{@AfterEach}}: Se ejecuta después de cada prueba, útil para limpiar datos o recursos.
+\item \textbf{\textbf{@BeforeAll}} y \textbf{\textbf{@AfterAll}}: Ejecutan métodos antes y después de todas las pruebas dentro de una clase de prueba. Se usan para configuraciones globales.
+\item \textbf{\textbf{@Disabled}}: Desactiva una prueba específica.
+\end{itemize}
+
+\item \textbf{\textbf{Assertions}}:
+\begin{itemize}
+\item Las \textbf{\textbf{assertions}} son afirmaciones que se utilizan para verificar que las condiciones de la prueba son correctas. Algunas comunes incluyen:
+\begin{itemize}
+\item `assertEquals(expected, actual)`: Verifica que dos valores sean iguales.
+\item `assertTrue(condition)`: Verifica que una condición sea verdadera.
+\item `assertThrows()`: Verifica que se lanza una excepción específica en el código probado.
+\end{itemize}
+\end{itemize}
+
+\item \textbf{\textbf{Parameterized Tests}}:
+\begin{itemize}
+\item JUnit 5 admite pruebas parametrizadas, que permiten ejecutar el mismo método de prueba varias veces con diferentes parámetros.
+\item \textbf{\textbf{@ParameterizedTest}} y anotaciones como \textbf{\textbf{@ValueSource}} o \textbf{\textbf{@CsvSource}} permiten proporcionar diferentes valores a una misma prueba.
+\end{itemize}
+\end{enumerate}
+
+\textbf{\textbf{Mejoras en JUnit 5.8}}:
+\begin{itemize}
+\item \textbf{\textbf{Compatibilidad y soporte}}: Mejoras en la integración con Gradle y Maven.
+\item \textbf{\textbf{Opciones de configuración}}: Se introdujeron nuevas opciones para la configuración del entorno de pruebas y control de ejecución.
+\end{itemize}
+
+\subsection{Mockito}
+\label{sec:org2ab9b14}
+
+\textbf{\textbf{Mockito}} es una biblioteca de \textbf{\textbf{mocking}} para pruebas unitarias en Java. \textbf{\textbf{Mocking}} es una técnica que se utiliza para crear objetos simulados (mocks) que reemplazan a las dependencias reales de una clase en una prueba unitaria. Esto es útil cuando quieres probar una clase de forma aislada, sin depender de otras clases o servicios.
+
+\textbf{\textbf{¿Cuándo usar Mockito?}}
+\begin{itemize}
+\item Cuando necesitas probar una clase que tiene dependencias de otras clases o servicios (por ejemplo, bases de datos, servicios externos).
+\item Cuando no quieres utilizar instancias reales de estas dependencias porque pueden hacer la prueba más lenta o compleja.
+\item Cuando quieres controlar el comportamiento de estas dependencias para verificar cómo interactúa tu clase con ellas.
+\end{itemize}
+
+\textbf{\textbf{Conceptos clave de Mockito}}:
+
+\begin{enumerate}
+\item \textbf{\textbf{Mocks y Spies}}:
+\begin{itemize}
+\item \textbf{\textbf{Mock}}: Un mock es un objeto simulado, que no realiza las acciones reales de la dependencia, sino que devuelve respuestas controladas.
+\item \textbf{\textbf{Spy}}: Un spy es un objeto que, a diferencia de un mock, puede llamar a los métodos reales de la dependencia, pero te permite "espiar" cómo se utilizan.
+\end{itemize}
+
+\item \textbf{\textbf{Creación de mocks}}:
+\begin{itemize}
+\item \textbf{\textbf{Mockito.mock(Class.class)}}: Se utiliza para crear un mock de una clase.
+\item \textbf{\textbf{@Mock}}: Anotación que se usa junto con \textbf{\textbf{@ExtendWith(MockitoExtension.class)}} para inyectar automáticamente mocks en tu clase de pruebas.
+\item Ejemplo:
+\begin{minted}[]{java}
+@Mock
+private ServicioMiClase servicioMock;
+\end{minted}
+\end{itemize}
+
+\item \textbf{\textbf{Stubbing}}:
+\begin{itemize}
+\item El \textbf{\textbf{stubbing}} es el proceso de definir el comportamiento de un mock cuando se llama a uno de sus métodos.
+\item Con \textbf{\textbf{Mockito.when()}} puedes definir qué valor devolverá un método simulado.
+\item Ejemplo:
+\begin{minted}[]{java}
+when(servicioMock.obtenerDatos()).thenReturn("datos simulados");
+\end{minted}
+\end{itemize}
+
+\item \textbf{\textbf{Verificaciones}}:
+\begin{itemize}
+\item \textbf{\textbf{Mockito.verify()}}: Se utiliza para verificar que un método fue invocado en el mock.
+\item Ejemplo:
+\begin{minted}[]{java}
+verify(servicioMock).obtenerDatos();
+\end{minted}
+\end{itemize}
+
+\item \textbf{\textbf{Argument Matchers}}:
+\begin{itemize}
+\item Mockito proporciona \textbf{\textbf{matchers}} para verificar que los métodos se llamen con ciertos argumentos.
+\item Ejemplo: `Mockito.any()` o `Mockito.eq()` permiten crear coincidencias flexibles.
+\item Ejemplo:
+\begin{minted}[]{java}
+when(servicioMock.procesar(anyString())).thenReturn("procesado");
+\end{minted}
+\end{itemize}
+\end{enumerate}
+
+\textbf{\textbf{Ejemplo completo de uso de Mockito}}:
+
+\begin{minted}[]{java}
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+@ExtendWith(MockitoExtension.class)
+public class MiClaseTest {
+
+    @Mock
+    private ServicioMiClase servicioMock;
+
+    @InjectMocks
+    private MiClase miClase;
+
+    @Test
+    public void testProcesar() {
+        // Stubbing
+        when(servicioMock.obtenerDatos()).thenReturn("datos simulados");
+
+        // Ejecutar el método
+        String resultado = miClase.procesar();
+
+        // Verificar que el método se llama en el mock
+        verify(servicioMock).obtenerDatos();
+
+        // Afirmar que el resultado es el esperado
+        assertEquals("procesado: datos simulados", resultado);
+    }
+}
+\end{minted}
+
+En este ejemplo, hemos simulado el comportamiento de \textbf{\textbf{ServicioMiClase}} usando \textbf{\textbf{Mockito}}, configuramos una respuesta para un método y verificamos que el método se invocó correctamente.
+
+\subsection{Conclusión}
+\label{sec:org92be9ca}
+
+\begin{itemize}
+\item \textbf{\textbf{JUnit}} es ideal para definir pruebas unitarias básicas con sus assertions y estructura modular.
+\item \textbf{\textbf{Mockito}} es una herramienta poderosa para simular dependencias, ayudando a que las pruebas sean más aisladas y controladas, lo que facilita la verificación de la interacción entre componentes sin depender de implementaciones reales.
+\end{itemize}
+
+
+
+
+\subsection{Comprobación de acceso a la base de datos en test de integración}
+\label{sec:orgf8078a7}
+Para comprobar que realmente se accede a la base de datos en los \textbf{\textbf{test de integración}}, puedes escribir pruebas que interactúen directamente con la base de datos configurada (en este caso, H2 en modo fichero). A diferencia de las pruebas unitarias que utilizan \textbf{\textbf{mocks}} para simular la interacción con la base de datos, en las \textbf{\textbf{pruebas de integración}} se trabaja directamente con una base de datos real.
+
+Vamos a ver cómo configurar y escribir pruebas para \textbf{\textbf{leer}}, \textbf{\textbf{insertar}}, \textbf{\textbf{borrar}} y \textbf{\textbf{actualizar}} registros en la base de datos, utilizando \textbf{\textbf{JUnit 5}} y \textbf{\textbf{Spring Boot Test}}.
+
+\textbf{\textbf{Configuración de pruebas con acceso real a la base de datos}}
+
+Spring Boot proporciona el módulo `spring-boot-starter-test`, que incluye herramientas para realizar pruebas de integración que acceden a la base de datos real. Con este enfoque, puedes verificar que las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) se ejecutan correctamente en la base de datos.
+
+\textbf{\textbf{Dependencias en el `pom.xml`}}:
+
+Ya hemos incluido las dependencias necesarias anteriormente en `spring-boot-starter-test`, que proporciona:
+\begin{itemize}
+\item \textbf{\textbf{JUnit 5}} para escribir las pruebas.
+\item \textbf{\textbf{Spring Boot Test}} para configurar el contexto de Spring durante las pruebas.
+\item \textbf{\textbf{H2}} como base de datos embebida para realizar pruebas.
+\end{itemize}
+
+\subsubsection{Escribiendo pruebas de integración}
+\label{sec:orgc5b8d07}
+Vamos a escribir pruebas de integración que verifican las operaciones CRUD. Estas pruebas no usarán mocks, sino que interactuarán con la base de datos real.
+
+\textbf{\textbf{Pruebas CRUD con H2 (Base de Datos Real)}}
+
+A continuación, escribimos pruebas de integración para el repositorio de \textbf{\textbf{Libro}} (`LibroRepository`). Estas pruebas insertarán un libro en la base de datos, lo leerán, lo actualizarán y finalmente lo eliminarán.
+
+\textbf{\textbf{`LibroRepositoryIntegrationTest.java`}}:
+
+\begin{minted}[]{java}
+package com.biblioteca.gestion.repositories;
+
+import com.biblioteca.gestion.entities.Autor;
+import com.biblioteca.gestion.entities.Libro;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+class LibroRepositoryIntegrationTest {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @Autowired
+    private AutorRepository autorRepository;
+
+    private Autor autor;
+
+    @BeforeEach
+    void setUp() {
+        // Insertar autor para asociar a los libros
+        autor = new Autor(null, "Gabriel García Márquez", "Colombiana", null);
+        autorRepository.save(autor);
+    }
+
+    @Test
+    void testInsertarLibro() {
+        // Crear e insertar un libro
+        Libro libro = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor);
+        Libro libroGuardado = libroRepository.save(libro);
+
+        // Comprobar que se ha insertado correctamente
+        assertNotNull(libroGuardado.getId());
+        assertEquals("Cien años de soledad", libroGuardado.getTitulo());
+    }
+
+    @Test
+    void testLeerLibro() {
+        // Crear e insertar un libro
+        Libro libro = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor);
+        libroRepository.save(libro);
+
+        // Leer el libro insertado
+        Optional<Libro> libroEncontrado = libroRepository.findById(libro.getId());
+        assertTrue(libroEncontrado.isPresent());
+        assertEquals("Cien años de soledad", libroEncontrado.get().getTitulo());
+    }
+
+    @Test
+    void testActualizarLibro() {
+        // Crear e insertar un libro
+        Libro libro = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor);
+        libro = libroRepository.save(libro);
+
+        // Actualizar el título del libro
+        libro.setTitulo("Cien años de soledad - Edición Especial");
+        Libro libroActualizado = libroRepository.save(libro);
+
+        // Verificar que se actualizó correctamente
+        assertEquals("Cien años de soledad - Edición Especial", libroActualizado.getTitulo());
+    }
+
+    @Test
+    void testEliminarLibro() {
+        // Crear e insertar un libro
+        Libro libro = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor);
+        libro = libroRepository.save(libro);
+
+        // Eliminar el libro
+        libroRepository.delete(libro);
+
+        // Verificar que el libro ha sido eliminado
+        Optional<Libro> libroEliminado = libroRepository.findById(libro.getId());
+        assertFalse(libroEliminado.isPresent());
+    }
+
+    @Test
+    void testListarLibros() {
+        // Insertar varios libros
+        Libro libro1 = new Libro(null, "Cien años de soledad", "Novela", 1967, "disponible", autor);
+        Libro libro2 = new Libro(null, "El amor en los tiempos del cólera", "Novela", 1985, "disponible", autor);
+        libroRepository.save(libro1);
+        libroRepository.save(libro2);
+
+        // Listar todos los libros
+        List<Libro> libros = libroRepository.findAll();
+        assertEquals(2, libros.size());
+    }
+}
+\end{minted}
+
+\begin{itemize}
+\item Explicación de la prueba:
+\label{sec:org1972034}
+\begin{itemize}
+\item \textbf{\textbf{`@DataJpaTest`}}: Esta anotación es clave para las pruebas de integración en Spring Boot relacionadas con JPA. Levanta un contexto mínimo de Spring (sin los controladores ni los servicios), pero sí configura los repositorios y la base de datos H2.
+\item \textbf{\textbf{`@Autowired`}}: Inyectamos el repositorio real de \textbf{\textbf{Libro}} y \textbf{\textbf{Autor}} para interactuar directamente con la base de datos.
+\item \textbf{\textbf{Pruebas CRUD}}:
+\begin{itemize}
+\item \textbf{\textbf{`testInsertarLibro()`}}: Verifica que un libro se inserta correctamente en la base de datos.
+\item \textbf{\textbf{`testLeerLibro()`}}: Verifica que un libro puede leerse correctamente.
+\item \textbf{\textbf{`testActualizarLibro()`}}: Verifica que un libro puede actualizarse correctamente.
+\item \textbf{\textbf{`testEliminarLibro()`}}: Verifica que un libro puede eliminarse correctamente.
+\item \textbf{\textbf{`testListarLibros()`}}: Verifica que se pueden listar varios libros.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsection{Aserciones clave en las pruebas}
+\label{sec:org460eafd}
+\begin{itemize}
+\item \textbf{\textbf{`assertNotNull()`}}: Verifica que el ID del libro no es `null` después de la inserción (lo que significa que se generó un ID).
+\item \textbf{\textbf{`assertEquals()`}}: Compara el valor esperado con el valor actual (por ejemplo, para verificar el título de un libro).
+\item \textbf{\textbf{`assertTrue()`}}: Verifica que el libro existe en la base de datos después de una operación de lectura.
+\item \textbf{\textbf{`assertFalse()`}}: Verifica que el libro no existe en la base de datos después de eliminarlo.
+\end{itemize}
+
+\subsection{Acceso a la base de datos durante las pruebas}
+\label{sec:org565e7d3}
+Estas pruebas realmente acceden a la base de datos H2 configurada. Dado que usamos la anotación \textbf{\textbf{`@DataJpaTest`}}, Spring Boot:
+\begin{itemize}
+\item Inicializa la base de datos H2 en modo de \textbf{\textbf{ficheros}} o en memoria (dependiendo de tu configuración).
+\item Ejecuta las pruebas y, después de cada una, por defecto, la base de datos es \textbf{\textbf{restaurada}} a su estado inicial (se purgan las tablas).
+\item Si deseas mantener los datos entre pruebas o inicializar un estado específico, puedes usar scripts SQL como `schema.sql` o `data.sql` o usar la anotación \textbf{\textbf{`@Sql`}} para ejecutar scripts antes o después de las pruebas.
+\end{itemize}
+
+\begin{itemize}
+\item Ejemplo de uso de `@Sql`:
+\label{sec:org4470e63}
+
+\begin{minted}[]{java}
+@Test
+@Sql(scripts = "/insertar_libros.sql")
+void testLeerLibroConScript() {
+    Optional<Libro> libro = libroRepository.findById(1L);
+    assertTrue(libro.isPresent());
+}
+\end{minted}
+
+En este caso, el archivo `insertar\_libros.sql` se ejecuta antes de la prueba, y puedes incluir instrucciones SQL para insertar libros de prueba en la base de datos.
+
+---
+
+\item Conclusión
+\label{sec:org5e04260}
+Con estas pruebas de integración:
+\begin{itemize}
+\item Comprobamos que las operaciones CRUD (crear, leer, actualizar, eliminar) funcionan correctamente en la base de datos.
+\item Las pruebas no usan \textbf{\textbf{mocks}}, sino que interactúan directamente con la base de datos configurada (H2 en este caso).
+\item \textbf{\textbf{Spring Boot Test}} y \textbf{\textbf{`@DataJpaTest`}} facilitan la configuración del entorno para pruebas reales de persistencia.
+\end{itemize}
+
+Estas pruebas son esenciales para garantizar que tu aplicación funcione correctamente con datos reales y que los repositorios interactúen correctamente con la base de datos.
+\end{itemize}
+
+\section{Anexo VIII. Supuesto Práctico: Uso de PostgreSQL en lugar de H2}
+\label{sec:org1f96ff0}
+
+\subsection{Objetivo:}
+\label{sec:org46c23f7}
+Si decides usar \textbf{\textbf{PostgreSQL}} en lugar de \textbf{\textbf{H2}} como base de datos en tu aplicación, es necesario realizar algunos cambios en la configuración del proyecto. Los cambios principales son:
+
+\begin{enumerate}
+\item Actualizar las dependencias en el archivo \texttt{pom.xml}.
+\item Modificar la configuración de la base de datos en \texttt{application.properties} o \texttt{application.yml}.
+\item Configurar PostgreSQL en tu entorno de desarrollo (instalar localmente o usar un contenedor Docker).
+\end{enumerate}
+
+A continuación te detallo cada uno de estos pasos.
+
+\subsection{Actualizar las dependencias en \texttt{pom.xml}}
+\label{sec:org26d1f7f}
+
+Si actualmente estás usando H2, deberás agregar la dependencia de \textbf{\textbf{PostgreSQL}} y posiblemente eliminar la de H2 (si ya no la necesitas).
+
+\subsubsection{Agregar dependencia de PostgreSQL en \texttt{pom.xml}:}
+\label{sec:orgfcec906}
+
+\begin{minted}[]{xml}
+<dependencies>
+    <!-- Dependencia para PostgreSQL -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.2.23</version> <!-- Puedes verificar la versión más reciente -->
+    </dependency>
+
+    <!-- Spring Boot Starter Test para pruebas unitarias -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Otras dependencias que ya tengas -->
+</dependencies>
+\end{minted}
+
+\subsection{Modificar la configuración de la base de datos}
+\label{sec:org623ecda}
+
+Necesitas ajustar la configuración de la conexión a la base de datos en \textbf{\textbf{\texttt{application.properties}}} o \textbf{\textbf{\texttt{application.yml}}} para que Spring Boot se conecte a \textbf{\textbf{PostgreSQL}} en lugar de H2.
+
+\subsubsection{Configuración en \texttt{application.properties}}
+\label{sec:org4f34aa8}
+
+\begin{minted}[]{text}
+# Configuración para PostgreSQL
+spring.datasource.url=jdbc:postgresql://localhost:5432/biblioteca_db
+spring.datasource.username=tu_usuario
+spring.datasource.password=tu_contraseña
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# Configuración de Hibernate (JPA)
+spring.jpa.hibernate.ddl-auto=update  # Usar "create" para crear tablas en cada inicio (no recomendado en producción)
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true  # Opcional: Muestra las consultas SQL en la consola
+\end{minted}
+
+\subsubsection{Configuración en \texttt{application.yml}}
+\label{sec:org0be2d30}
+
+Si prefieres usar \textbf{\textbf{YAML}}, la configuración sería algo así:
+
+\begin{minted}[]{yaml}
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/biblioteca_db
+    username: tu_usuario
+    password: tu_contraseña
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+\end{minted}
+
+\subsubsection{Parámetros explicados:}
+\label{sec:orgfe60c63}
+\begin{itemize}
+\item \texttt{spring.datasource.url=jdbc:postgresql://localhost:5432/biblioteca\_db}: Especifica la URL de la base de datos PostgreSQL a la que se conectará la aplicación. Asegúrate de que \texttt{localhost} y el puerto \texttt{5432} sean correctos. Si usas Docker, la URL podría variar según el contenedor.
+\item \texttt{spring.datasource.username} y \texttt{spring.datasource.password}: El nombre de usuario y la contraseña de tu base de datos PostgreSQL.
+\item \texttt{spring.jpa.hibernate.ddl-auto=update}: Este valor permite que Hibernate actualice automáticamente las tablas según el modelo de entidades. En desarrollo, puedes usar \texttt{create} para que las tablas se creen desde cero cada vez que inicies la aplicación. En producción, debes evitar \texttt{create} o \texttt{update} y optar por \texttt{validate} o manejar el esquema de la base de datos de forma manual.
+\item \texttt{spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect}: Especifica el dialecto que Hibernate debe usar para PostgreSQL.
+\end{itemize}
+
+\subsection{Configurar PostgreSQL en tu entorno}
+\label{sec:orga25adf3}
+
+Tienes varias opciones para configurar PostgreSQL en tu entorno de desarrollo:
+
+\subsubsection{Opción 1: Instalar PostgreSQL localmente}
+\label{sec:org9b13107}
+
+Si prefieres instalar PostgreSQL en tu máquina de forma local:
+
+\begin{enumerate}
+\item Descarga e instala PostgreSQL desde \url{https://www.postgresql.org/download/}.
+\item Crea una base de datos llamada \texttt{biblioteca\_db} (o el nombre que elijas) en PostgreSQL con el siguiente comando en la terminal o en el cliente de PostgreSQL:
+\end{enumerate}
+
+\begin{minted}[]{sql}
+CREATE DATABASE biblioteca_db;
+\end{minted}
+
+\begin{enumerate}
+\item Crea un usuario con privilegios si es necesario, o usa el usuario predeterminado \texttt{postgres}.
+\end{enumerate}
+
+\subsubsection{Opción 2: Usar PostgreSQL con Docker}
+\label{sec:orga77d701}
+
+Otra opción es usar un contenedor Docker para PostgreSQL, lo que facilita la configuración sin necesidad de instalarlo localmente.
+
+\begin{enumerate}
+\item \textbf{\textbf{Docker Compose}}: Puedes crear un archivo \texttt{docker-compose.yml} para levantar un contenedor de PostgreSQL:
+\end{enumerate}
+
+\begin{minted}[]{yaml}
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: tu_usuario
+      POSTGRES_PASSWORD: tu_contraseña
+      POSTGRES_DB: biblioteca_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
+\end{minted}
+
+\begin{enumerate}
+\item Ejecuta el siguiente comando para levantar el contenedor de PostgreSQL:
+\end{enumerate}
+
+\begin{minted}[]{bash}
+docker-compose up -d
+\end{minted}
+
+\begin{enumerate}
+\item Luego, tu aplicación Spring Boot se conectará al contenedor PostgreSQL, usando \texttt{localhost:5432} como URL.
+\end{enumerate}
+
+\subsection{Cambios para las pruebas unitarias e integración}
+\label{sec:org8d4434e}
+
+Para las \textbf{\textbf{pruebas unitarias}} e \textbf{\textbf{integración}}, puedes seguir utilizando \textbf{\textbf{H2}} o puedes configurar \textbf{\textbf{PostgreSQL}} también. Si prefieres mantener H2 para las pruebas (ya que es más rápido y fácil de configurar), puedes tener configuraciones separadas para desarrollo y pruebas.
+
+\subsubsection{Configuración de pruebas usando H2 en \texttt{application-test.properties}}
+\label{sec:org88e37ae}
+
+Si decides seguir usando H2 para pruebas y PostgreSQL para desarrollo/producción, puedes tener un archivo de propiedades dedicado para pruebas, como \texttt{src/test/resources/application-test.properties}:
+
+\begin{minted}[]{text}
+# Configuración de H2 para pruebas
+spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+\end{minted}
+
+\subsection{Cambiar el perfil activo en las pruebas}
+\label{sec:org47df5e6}
+
+En tus pruebas, asegúrate de que Spring Boot use el perfil de pruebas (que usa H2) añadiendo la anotación \texttt{@ActiveProfiles("test")} en las clases de prueba:
+
+\begin{minted}[]{java}
+@ActiveProfiles("test")
+@DataJpaTest
+class LibroRepositoryIntegrationTest {
+    // Pruebas de integración con H2
+}
+\end{minted}
+
+\subsection{Conclusión}
+\label{sec:org9b63a95}
+
+Si decides cambiar de H2 a \textbf{\textbf{PostgreSQL}}, los pasos principales son:
+
+\begin{enumerate}
+\item Cambiar las dependencias a PostgreSQL.
+\item Ajustar la configuración de la base de datos en \textbf{\textbf{\texttt{application.properties}}} o \textbf{\textbf{\texttt{application.yml}}}.
+\item Asegurarte de que PostgreSQL esté correctamente configurado en tu entorno de desarrollo, ya sea localmente o con Docker.
+\item Si decides seguir usando H2 para pruebas, puedes mantener una configuración separada para pruebas.
+\end{enumerate}
+
+Si tienes alguna pregunta sobre esta configuración o cualquier otro aspecto del proyecto, ¡no dudes en preguntar!
+\end{document}

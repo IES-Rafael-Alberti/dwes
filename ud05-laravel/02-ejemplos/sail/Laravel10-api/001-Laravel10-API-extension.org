@@ -1,0 +1,759 @@
+#+TITLE: Laravel 10 Api, continuación
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+* 1. Generación de Tests en Laravel 10
+Ejecuta los siguientes comandos en tu terminal para crear los archivos de prueba:
+
+#+begin_src bash
+sail artisan make:test AuthTest
+sail artisan make:test PostTest
+sail artisan make:test RolePermissionTest
+#+end_src
+
+** 1.1 Prueba de Autenticación (AuthTest.php)
+Este test validará el registro, login y logout de un usuario autenticado con JWT.
+
+#+begin_src php
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class AuthTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_user_can_register()
+    {
+        $response = $this->postJson('/api/v1/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password'
+        ]);
+
+        $response->assertStatus(201)
+                 ->assertJsonStructure(['user', 'token']);
+    }
+
+    public function test_user_can_login()
+    {
+        $user = User::factory()->create(['password' => bcrypt('password')]);
+
+        $response = $this->postJson('/api/v1/login', [
+            'email' => $user->email,
+            'password' => 'password'
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['token']);
+    }
+
+    public function test_authenticated_user_can_logout()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+
+        $response = $this->postJson('/api/v1/logout', [], [
+            'Authorization' => "Bearer $token"
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['message' => 'Successfully logged out']);
+    }
+}
+#+end_src
+
+** 1.2 Prueba de CRUD para Post (PostTest.php)
+Este test validará la creación, edición, eliminación y consulta de posts.
+
+#+begin_src php
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class PostTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_user_can_create_a_post()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+
+        $response = $this->postJson('/api/v1/posts', [
+            'title' => 'Nuevo Post',
+            'content' => 'Contenido del post'
+        ], ['Authorization' => "Bearer $token"]);
+
+        $response->assertStatus(201)
+                 ->assertJsonStructure(['id', 'title', 'content']);
+    }
+
+    public function test_user_can_edit_own_post()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->putJson("/api/v1/posts/{$post->id}", [
+            'title' => 'Título Editado'
+        ], ['Authorization' => "Bearer $token"]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['title' => 'Título Editado']);
+    }
+
+    public function test_user_cannot_edit_someone_else_post()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $token = auth()->login($user1);
+        $post = Post::factory()->create(['user_id' => $user2->id]);
+
+        $response = $this->putJson("/api/v1/posts/{$post->id}", [
+            'title' => 'Intento de Edición'
+        ], ['Authorization' => "Bearer $token"]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_can_delete_own_post()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->deleteJson("/api/v1/posts/{$post->id}", [], [
+            'Authorization' => "Bearer $token"
+        ]);
+
+        $response->assertStatus(204);
+    }
+
+    public function test_user_cannot_delete_someone_else_post()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $token = auth()->login($user1);
+        $post = Post::factory()->create(['user_id' => $user2->id]);
+
+        $response = $this->deleteJson("/api/v1/posts/{$post->id}", [], [
+            'Authorization' => "Bearer $token"
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_pagination_works()
+    {
+        Post::factory(15)->create();
+
+        $response = $this->getJson('/api/v1/posts');
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['data', 'links', 'meta']);
+    }
+}
+#+end_src
+
+** 1.3 Prueba de Roles y Permisos (RolePermissionTest.php)
+Este test asegurará que los permisos de Spatie/laravel-permission funcionan correctamente.
+
+#+begin_src php
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
+class RolePermissionTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_admin_can_assign_roles()
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/v1/assign-role', [
+            'user_id' => $user->id,
+            'role' => 'editor'
+        ], ['Authorization' => "Bearer " . auth()->login($admin)]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['message' => 'Rol asignado correctamente']);
+    }
+
+    public function test_non_admin_cannot_assign_roles()
+    {
+        $user = User::factory()->create();
+        $nonAdmin = User::factory()->create();
+        $token = auth()->login($nonAdmin);
+
+        $response = $this->postJson('/api/v1/assign-role', [
+            'user_id' => $user->id,
+            'role' => 'editor'
+        ], ['Authorization' => "Bearer $token"]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_with_permission_can_edit_posts()
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo('edit posts');
+
+        $token = auth()->login($user);
+
+        $response = $this->getJson('/api/v1/check-permission', [
+            'Authorization' => "Bearer $token"
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJson(['can_edit' => true]);
+    }
+}
+#+end_src
+
+
+Sí, puedes crearlos directamente con `sail artisan make:test NombreDelTest`, lo que generará automáticamente los archivos en `tests/Feature/`. Aquí están los comandos que debes ejecutar:
+
+#+begin_src   bash
+sail artisan make:test AuthTest
+sail artisan make:test PostTest
+sail artisan make:test RolePermissionTest
+#+end_src
+
+Esto creará los archivos vacíos en `tests/Feature/`. Luego, puedes copiar y pegar el contenido que te proporcioné dentro de cada archivo generado.
+
+Después de agregar el código en los archivos correspondientes, ejecuta las pruebas con:
+
+#+begin_src   bash
+sail artisan test
+#+end_src
+
+Si alguna prueba falla, revisa los errores y ajusta las rutas o los controladores en la API según sea necesario. 🚀
+
+Cuando termines con esto, dime y pasamos al siguiente paso: **hooks automáticos para Swagger**. 😊
+
+
+* Siguientes Pasos
+1. Copia estos archivos en `tests/Feature/` dentro de tu proyecto Laravel.
+2. Ejecuta las pruebas con:
+
+   #+begin_src bash
+   sail artisan test
+   #+end_src
+
+3. Corrige errores y ajusta las respuestas de tu API según los resultados.
+
+---
+Aquí tienes la conversión a **Org Mode**, sin caracteres Unicode problemáticos:
+
+```org
+* 2. Automatización de la generación de Swagger en Laravel 10
+Para evitar ejecutar `php artisan l5-swagger:generate` manualmente cada vez que hacemos cambios en la API, vamos a configurar un hook de Git que lo haga automáticamente cuando hagamos un commit.
+
+** Paso 1: Crear un Hook de Git en pre-commit
+1. Navega al directorio `.git/hooks/` dentro de tu proyecto:
+
+   #+begin_src bash
+   cd .git/hooks
+   #+end_src
+
+2. Crea un nuevo archivo llamado `pre-commit`:
+
+   #+begin_src bash
+   touch pre-commit
+   chmod +x pre-commit  # Dar permisos de ejecución
+   #+end_src
+
+3. Abre el archivo en un editor de texto y agrega lo siguiente:
+
+   #+begin_src bash
+   #!/bin/bash
+
+   echo "Generando documentación Swagger antes del commit..."
+   sail php artisan l5-swagger:generate
+
+   if [ $? -ne 0 ]; then
+       echo "Error al generar Swagger. Corrige los problemas antes de commitear."
+       exit 1
+   fi
+
+   echo "Documentación Swagger actualizada. Listo para hacer commit!"
+   #+end_src
+
+Esto asegurará que cada vez que hagas un `git commit`, se ejecute `php artisan l5-swagger:generate` antes de confirmar los cambios.
+
+** Paso 2: Validar que el Hook Funciona
+Para probar si el hook funciona correctamente, sigue estos pasos:
+
+1. Modifica cualquier archivo en tu API, por ejemplo, `routes/api.php`.
+2. Intenta hacer un commit:
+
+   #+begin_src bash
+   git add .
+   git commit -m "Probando hook Swagger"
+   #+end_src
+
+Deberías ver en la terminal algo como:
+
+```
+Generando documentación Swagger antes del commit...
+Generating API docs...
+Documentación Swagger actualizada. Listo para hacer commit!
+```
+
+Si Swagger tiene errores de anotaciones en los controladores, el commit se detendrá hasta que los corrijas.
+
+** Paso 3: Agregar Opcionalmente a composer.json
+Para que también se ejecute después de `composer install` o `composer update`, agrega este script en `composer.json` dentro de `"scripts"`:
+
+#+begin_src json
+"post-update-cmd": [
+    "@php artisan l5-swagger:generate"
+],
+"post-install-cmd": [
+    "@php artisan l5-swagger:generate"
+]
+#+end_src
+
+Así, cada vez que instales dependencias (`composer install` o `composer update`), la documentación Swagger se generará automáticamente.
+
+** Beneficios de esta configuración
+- **Menos errores**: No olvidarás regenerar la documentación.
+- **Integración continua**: Siempre tendrás Swagger actualizado.
+- **Automatización**: Reduce tareas manuales en el flujo de desarrollo.
+
+* Siguientes pasos: Optimización de caché y rendimiento
+¿Listo para continuar?
+```
+* Ubicación de las optimizaciones en Laravel 10
+Aquí te dejo una guía sobre dónde debes colocar cada optimización dentro de tu API.
+
+** Paso 1: Caché de Configuración y Rutas
+Estas optimizaciones deben ejecutarse después de cada instalación o actualización de dependencias.
+
+Ubicación: `composer.json`
+Edita la sección `"scripts"` y agrégales estos comandos:
+
+#+begin_src json
+"post-update-cmd": [
+    "@php artisan config:cache",
+    "@php artisan route:cache",
+    "@php artisan view:cache"
+],
+"post-install-cmd": [
+    "@php artisan config:cache",
+    "@php artisan route:cache",
+    "@php artisan view:cache"
+]
+#+end_src
+
+Así, cada vez que ejecutes:
+
+#+begin_src bash
+sail composer install
+sail composer update
+#+end_src
+
+Laravel automáticamente optimizará rutas, vistas y configuración.
+
+** Paso 2: Cachear Consultas Frecuentes
+Si quieres evitar consultas repetitivas a la base de datos, usa `Cache::remember()`.
+
+Ubicación: `app/Http/Controllers/PostController.php`
+Modifica la función `index()` para usar caché:
+
+#+begin_src php
+use Illuminate\Support\Facades\Cache;
+use App\Models\Post;
+
+public function index()
+{
+    $posts = Cache::remember('posts', 60, function () {
+        return Post::latest()->paginate(10);
+    });
+
+    return response()->json($posts);
+}
+#+end_src
+
+Ubicación: `app/Models/Post.php`
+Añade estos eventos en el modelo `Post` para limpiar caché cuando haya cambios:
+
+#+begin_src php
+use Illuminate\Support\Facades\Cache;
+
+Post::created(function () {
+    Cache::forget('posts');
+});
+
+Post::updated(function () {
+    Cache::forget('posts');
+});
+
+Post::deleted(function () {
+    Cache::forget('posts');
+});
+#+end_src
+
+Así, si se crea, edita o elimina un post, la caché se limpia automáticamente.
+
+** Paso 3: Configurar throttle para limitar peticiones
+Ubicación: `routes/api.php`
+Añadir middleware `throttle` en las rutas para evitar abuso:
+
+#+begin_src php
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
+
+Route::middleware('throttle:60,1')->group(function () {
+    Route::apiResource('posts', PostController::class);
+});
+
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+#+end_src
+
+Esto:
+- Protege los endpoints contra ataques de fuerza bruta
+- Evita que un usuario haga demasiadas peticiones en poco tiempo
+
+** Paso 4: Habilitar Redis para caché (Opcional)
+Si usas Redis para caché en lugar de archivos o base de datos:
+
+Ubicación: `.env`
+Cambia estos valores para activar Redis:
+
+#+begin_src env
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+#+end_src
+
+Ubicación: `config/cache.php`
+Verifica que Redis esté configurado:
+
+#+begin_src php
+'default' => env('CACHE_DRIVER', 'file'),
+'stores' => [
+    'redis' => [
+        'driver' => 'redis',
+        'connection' => 'default',
+    ],
+],
+#+end_src
+
+Para instalar Redis en Laravel:
+
+#+begin_src bash
+sail composer require predis/predis
+#+end_src
+
+Esto mejorará el rendimiento de caché y sesiones.
+
+** Resumen de Ubicaciones
+- **Optimización de caché de rutas y configuración** → `composer.json`
+- **Caché de consultas de posts** → `PostController.php`
+- **Limpieza automática de caché** → `Post.php` (modelo)
+- **Protección con throttle** → `routes/api.php`
+- **Configuración de Redis (Opcional)** → `.env` y `config/cache.php`
+
+* Cache con redis
+* Uso de Redis para Caché en Laravel
+Sí, definitivamente puedes usar Redis para cachear en lugar de almacenamiento en archivos o base de datos. Como ya tienes Redis activado en Docker Compose, solo necesitamos asegurarnos de que Laravel esté configurado para usar Redis como sistema de caché. Vamos a hacerlo paso a paso.
+
+** Paso 1: Configurar Laravel para Usar Redis en Caché
+Ubicación: `.env`
+Modifica estas líneas para habilitar Redis en Laravel:
+
+#+begin_src env
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+#+end_src
+
+Con esto, Laravel ahora usará Redis para manejar la caché y las sesiones.
+
+Ubicación: `config/cache.php`
+Asegúrate de que Redis está configurado como driver de caché:
+
+#+begin_src php
+'default' => env('CACHE_DRIVER', 'redis'),
+
+'stores' => [
+    'redis' => [
+        'driver' => 'redis',
+        'connection' => 'cache',
+    ],
+],
+#+end_src
+
+Esto le dice a Laravel que use Redis como caché por defecto.
+
+** Paso 2: Cachear Consultas a la Base de Datos con Redis
+Ubicación: `app/Http/Controllers/PostController.php`
+Modifica la función `index()` para cachear usando Redis:
+
+#+begin_src php
+use Illuminate\Support\Facades\Cache;
+use App\Models\Post;
+
+public function index()
+{
+    $posts = Cache::store('redis')->remember('posts', 3600, function () {
+        return Post::latest()->paginate(10);
+    });
+
+    return response()->json($posts);
+}
+#+end_src
+
+Explicación:
+- `store('redis')` → Indica que Laravel debe guardar la caché en Redis.
+- `'posts', 3600` → Guarda los posts durante 1 hora (3600 segundos).
+- `remember()` → Si los datos existen en caché, los devuelve; si no, los obtiene de la base de datos y los cachea.
+
+** Paso 3: Eliminar Caché Cuando un Post Cambie
+Ubicación: `app/Models/Post.php`
+Añade estos eventos para que la caché se limpie cuando se edite, cree o borre un post:
+
+#+begin_src php
+use Illuminate\Support\Facades\Cache;
+
+Post::created(function () {
+    Cache::store('redis')->forget('posts');
+});
+
+Post::updated(function () {
+    Cache::store('redis')->forget('posts');
+});
+
+Post::deleted(function () {
+    Cache::store('redis')->forget('posts');
+});
+#+end_src
+
+Explicación:
+- Cada vez que un `Post` se cree, edite o elimine, la caché de Redis será borrada.
+- En la próxima consulta, la API volverá a cargar los datos y los guardará en caché.
+
+** Paso 4: Verificar que Redis Funciona
+Puedes verificar que Redis está guardando datos ejecutando esto en el contenedor de Docker:
+
+#+begin_src bash
+sail artisan cache:clear    # Limpiar caché
+sail artisan config:clear   # Limpiar configuración
+sail artisan config:cache   # Volver a cachear config
+#+end_src
+
+Luego, accede al shell de Redis dentro de Docker para ver los datos cacheados:
+
+#+begin_src bash
+sail redis-cli
+#+end_src
+
+Dentro de Redis, usa:
+
+#+begin_src redis
+keys *
+#+end_src
+
+Si ves algo como `posts`, significa que la caché está funcionando en Redis.
+
+** Beneficios de Usar Redis en Lugar de Caché en Archivos
+- **Mucho más rápido** que almacenar en archivos o base de datos.
+- **Reduce carga en la base de datos**, especialmente en consultas repetidas.
+- **Escalabilidad** si en el futuro decides usar múltiples servidores.
+
+* Siguientes pasos: Middleware para control de versiones de la API
+¿Listo para continuar?
+
+* Implementación de Middleware para Control de Versiones de la API en Laravel 10
+Para manejar múltiples versiones de la API (v1, v2, etc.) sin romper compatibilidad, usaremos un Middleware que redirija las solicitudes a la versión correcta. Vamos a implementarlo paso a paso.
+
+** Paso 1: Crear Middleware para Versionado de API
+Ejecuta este comando para generar el middleware:
+
+#+begin_src bash
+sail artisan make:middleware ApiVersionMiddleware
+#+end_src
+
+Esto creará un archivo en `app/Http/Middleware/ApiVersionMiddleware.php`.
+Ahora, edítalo y agrega la lógica para redirigir a la versión correcta:
+
+Ubicación: `app/Http/Middleware/ApiVersionMiddleware.php`
+Código del middleware:
+
+#+begin_src php
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+
+class ApiVersionMiddleware
+{
+    public function handle(Request $request, Closure $next)
+    {
+        // Obtener versión desde la cabecera 'Accept-Version'
+        $version = $request->header('Accept-Version', 'v1');
+
+        // Verificar si la versión existe
+        if (!in_array($version, ['v1', 'v2'])) {
+            return response()->json(['error' => 'Versión de API no soportada'], 400);
+        }
+
+        // Prefijar la versión en la ruta de la solicitud
+        $request->server->set('REQUEST_URI', "/api/$version" . $request->getPathInfo());
+
+        return $next($request);
+    }
+}
+#+end_src
+
+Explicación:
+- **Detecta la versión** de la API desde la cabecera `Accept-Version` o usa `v1` por defecto.
+- **Valida la versión** y devuelve un error `400` si no es válida.
+- **Reescribe la URI** para redirigir automáticamente la petición a `/api/v1/` o `/api/v2/`.
+
+** Paso 2: Registrar el Middleware en Laravel
+Ubicación: `app/Http/Kernel.php`
+Añadirlo a los middleware globales:
+
+#+begin_src php
+protected $middleware = [
+    \App\Http\Middleware\ApiVersionMiddleware::class,
+];
+#+end_src
+
+Ahora todas las peticiones de la API pasarán por este middleware.
+
+** Paso 3: Definir Rutas para Múltiples Versiones de la API
+Ubicación: `routes/api.php`
+Organiza las rutas de cada versión en archivos separados:
+
+1. **Crea `routes/api/v1.php`**:
+
+   #+begin_src php
+   use Illuminate\Support\Facades\Route;
+   use App\Http\Controllers\Api\V1\PostController;
+
+   Route::middleware('auth:api')->group(function () {
+       Route::apiResource('posts', PostController::class);
+   });
+   #+end_src
+
+2. **Crea `routes/api/v2.php`** (ejemplo con cambios en la versión 2):
+
+   #+begin_src php
+   use Illuminate\Support\Facades\Route;
+   use App\Http\Controllers\Api\V2\PostController;
+
+   Route::middleware('auth:api')->group(function () {
+       Route::apiResource('posts', PostController::class);
+       Route::get('posts/{id}/comments', [PostController::class, 'getComments']);
+   });
+   #+end_src
+
+3. **Modifica `routes/api.php` para cargar las versiones dinámicamente**:
+
+   #+begin_src php
+   use Illuminate\Support\Facades\Route;
+
+   // Cargar rutas de la versión actual
+   Route::prefix('api/v1')->group(base_path('routes/api/v1.php'));
+   Route::prefix('api/v2')->group(base_path('routes/api/v2.php'));
+   #+end_src
+
+** Paso 4: Pruebas del Middleware de Versionado
+Para probar que el middleware funciona correctamente, usa `cURL` o Postman:
+
+1. **Solicitar versión 1 de la API**:
+
+   #+begin_src bash
+   curl -H "Accept-Version: v1" http://localhost/api/posts
+   #+end_src
+
+   Debe redirigir la solicitud a `/api/v1/posts`.
+
+2. **Solicitar versión 2 de la API**:
+
+   #+begin_src bash
+   curl -H "Accept-Version: v2" http://localhost/api/posts
+   #+end_src
+
+   Debe redirigir a `/api/v2/posts`.
+
+3. **Solicitar una versión no válida**:
+
+   #+begin_src bash
+   curl -H "Accept-Version: v3" http://localhost/api/posts
+   #+end_src
+
+   Debe devolver:
+
+   #+begin_src json
+   {
+       "error": "Versión de API no soportada"
+   }
+   #+end_src
+
+** Beneficios de esta implementación
+- **Soporte para múltiples versiones** sin romper APIs antiguas.
+- **Flexibilidad** para desarrollar nuevas funcionalidades en `/v2` sin afectar `/v1`.
+- **Fácil mantenimiento**, ya que cada versión tiene su propio archivo de rutas.
+
+* ¡Con esto finalizamos la optimización de tu API Laravel 10!
+Si necesitas mejorar algún otro aspecto, dime. ¿Qué quieres revisar ahora?

@@ -1,0 +1,435 @@
+% Created 2024-01-11 jue 01:46
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.12)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{PHP Arrays}
+\label{sec:orgabfc312}
+Arrays are one of the fundamental data structures in PHP, used to store
+collections of values. They are versatile and can be used to store
+various data types, including numbers, strings, objects, and even other
+arrays.
+
+\subsection{Indexed Arrays}
+\label{sec:orgd2a9c9b}
+\textbf{Creating Arrays}
+
+There are two primary ways to create arrays in PHP:
+
+\begin{enumerate}
+\item \textbf{Using the square bracket syntax:} This method involves enclosing the
+elements within square brackets, separated by commas.
+\end{enumerate}
+
+\begin{minted}[]{php}
+<?=
+ $numbers = [1, 2, 3, 4, 5];
+ $colors = ["red", "green", "blue"];
+ $mixed = [1, "hello", true, [1, 2, 3]];
+\end{minted}
+
+\begin{enumerate}
+\item \textbf{Using the array() function:} This method explicitly creates an array
+and assigns it to a variable.
+\end{enumerate}
+
+\begin{minted}[]{php}
+<?=
+ $names = array("Alice", "Bob", "Charlie");
+\end{minted}
+
+\textbf{Accessing Array Elements}
+
+To access an element in an array, you can use its index, which is the
+position of the element within the array. Indexes start from 0, and you
+can access elements using the square bracket syntax.
+
+\begin{minted}[]{php}
+<?=
+ $firstNumber = $numbers[0]; // Output: 1
+ $secondColor = $colors[1]; // Output: green
+ $mixedElement = $mixed[3][2]; // Output: 3
+\end{minted}
+
+\textbf{Modifying Array Elements}
+
+You can modify the value of an existing element in an array by assigning
+a new value to its index.
+
+\begin{minted}[]{php}
+<?=
+ $names[0] = "John"; // Change the first name to John
+ $colors[2] = "purple"; // Change the third color to purple
+\end{minted}
+
+\textbf{Adding Elements to Arrays}
+
+To add new elements to an array, you can use the following methods:
+
+\begin{enumerate}
+\item \textbf{Using the push() method:} This method appends the new element to the
+end of the array.
+\begin{minted}[]{php}
+<?=
+ $names[] = "David"; // Add David to the end of the names array
+ $numbers[] = 6; // Add 6 to the end of the numbers array
+\end{minted}
+
+\item \textbf{Using the array\_push() function:} This method works similarly to the
+push() method but takes an array as the first argument and the
+elements to be added as the second argument.
+\begin{minted}[]{php}
+<?=
+ array_push($colors, "yellow", "orange");
+\end{minted}
+
+\item \textbf{Using the array\_merge() function:} This method merges two or more
+arrays into one.
+\begin{minted}[]{php}
+<?=
+ $newColors = array_merge($colors, ["pink", "cyan"]);
+\end{minted}
+\end{enumerate}
+
+\textbf{Removing Elements from Arrays}
+
+To remove elements from an array, you can use the following methods:
+
+\begin{enumerate}
+\item \textbf{Using the unset() function:} This method removes the element at the
+specified index from the array.
+\begin{minted}[]{php}
+<?=
+ unset($numbers[4]); // Remove the fourth element from the numbers array
+\end{minted}
+
+\item \textbf{Using the pop() method:} This method removes the last element from
+the array and returns its value.
+\begin{minted}[]{php}
+<?=
+ $lastColor = array_pop($colors); // Remove the last color and store it in lastColor variable
+\end{minted}
+
+\item \textbf{Using the array\_splice() function:} This method removes elements
+from the array and can also replace them with new elements.
+\begin{minted}[]{php}
+<?=
+ array_splice($colors, 1, 1, ["teal", "magenta"]); // Remove the second element and replace it with "teal" and "magenta"
+\end{minted}
+\end{enumerate}
+
+\textbf{Other Array Operations}
+\begin{enumerate}
+\item \textbf{count()}.
+The \texttt{count()} function is a built-in function in PHP that returns the
+number of elements in an array. It is a useful function for
+determining the size of an array. Here is an example of how to use the
+\texttt{count()} function:
+\begin{minted}[]{php}
+<?=
+  $numbers = [1, 2, 3, 4, 5];
+  $numberOfElements = count($numbers);
+  echo "Number of elements: $numberOfElements";
+\end{minted}
+
+\item \textbf{array\_shift()}
+The \texttt{array\_shift()} function removes the first element from an array and
+returns it. It is a convenient way to remove and access the first
+element of an array. Here is an example of how to use the
+\texttt{array\_shift()} function:
+\begin{minted}[]{php}
+<?=
+ $numbers = [1, 2, 3, 4, 5];
+ $firstNumber = array_shift($numbers);
+ echo "First number: $firstNumber";
+\end{minted}
+
+\item \textbf{array\_unshift()}
+The \texttt{array\_unshift()} function adds a new element to the beginning of an
+array. It is a simple way to insert an element at the beginning of an
+array. Here is an example of how to use the \texttt{array\_unshift()} function:
+\begin{minted}[]{php}
+<?=
+ $numbers = [1, 2, 3, 4, 5];
+ array_unshift($numbers, 0);
+ echo "New array: $numbers";
+\end{minted}
+
+\item \textbf{array\_slice()}
+The \texttt{array\_slice()} function extracts a specified portion of an array
+and returns it as a new array. It is a powerful tool for retrieving
+subsets of an array. Here is an example of how to use the
+\texttt{array\_slice()} function:
+\begin{minted}[]{php}
+<?=
+ $numbers = [1, 2, 3, 4, 5];
+ $slicedNumbers = array_slice($numbers, 2, 2);
+ echo "Sliced array: $slicedNumbers";
+\end{minted}
+\end{enumerate}
+
+These functions are essential for working with arrays in PHP. They allow
+you to access, modify, and manipulate arrays effectively.
+
+Arrays are versatile and essential data structures in PHP, allowing you
+to store, organize, and manipulate collections of data efficiently.
+
+\subsection{Multidimensional arrays}
+\label{sec:orga4bb55c}
+Multidimensional arrays in PHP are arrays that contain other arrays as
+elements. This allows you to store and organize data in a hierarchical
+structure, making it well-suited for representing data with nested
+relationships.
+
+\textbf{Creating Multidimensional Arrays}
+
+Multidimensional arrays can be created using the square bracket syntax,
+nesting one or more arrays within another. For example, the following
+code creates a 2D array:
+
+\begin{minted}[]{php}
+<?=
+ $students = [
+     ["Alice", "12345", "English", "History", "Math"],
+     ["Bob", "67890", "Science", "Art", "Computer Science"]
+ ];
+\end{minted}
+
+In this example, the \texttt{students} array contains two elements, each
+representing a student's information. Each student's information is
+stored in another array within the \texttt{students} array.
+
+\textbf{Accessing Elements in Multidimensional Arrays}
+
+To access an element in a multidimensional array, you can use nested
+indexing, where each index corresponds to the position of the element in
+the corresponding subarray. For example, the following code accesses the
+first student's name from the \texttt{students} array:
+
+\begin{minted}[]{php}
+<?=
+ $firstName = $students[0][0];
+ echo "First name: $firstName";
+\end{minted}
+
+\textbf{Modifying Elements in Multidimensional Arrays}
+
+You can modify an element in a multidimensional array by assigning a new
+value to its index. For example, the following code changes the second
+student's math grade to 100:
+
+\begin{minted}[]{php}
+<?=
+ $students[1][4] = 100;
+ echo "Second student's math grade: " . $students[1][4];
+\end{minted}
+
+\textbf{Adding Elements to Multidimensional Arrays}
+
+To add new elements to a multidimensional array, you can use the same
+methods as with one-dimensional arrays. For instance, the following code
+adds a new student to the \texttt{students} array:
+
+\begin{minted}[]{php}
+<?=
+ $students[] = ["Charlie", "98765", "Spanish", "Economics", "Music"];
+\end{minted}
+
+\textbf{Removing Elements from Multidimensional Arrays}
+
+To remove elements from a multidimensional array, you can use the
+\texttt{unset()} function, followed by the nested indices of the element to be
+removed. For example, the following code removes the first student's
+information from the \texttt{students} array:
+
+\begin{minted}[]{php}
+<?=
+ unset($students[0]);
+\end{minted}
+
+Multidimensional arrays offer a powerful way to organize and store
+complex data structures in PHP. They are particularly useful for
+representing nested relationships, such as employee hierarchies, product
+categories, or network topologies.
+
+\subsection{Associative arrays}
+\label{sec:org42ec974}
+Associative arrays in PHP are arrays whose elements are associated with
+keys instead of numeric indices. This allows you to store and retrieve
+data based on meaningful labels rather than numerical positions.
+
+\textbf{Creating Associative Arrays}
+
+Associative arrays can be created using the same square bracket syntax
+as regular arrays, but instead of using numeric indices, you use
+key-value pairs enclosed in curly braces. For example, the following
+code creates an associative array that stores student information:
+
+\begin{minted}[]{php}
+<?=
+ $student = [
+     "name" => "Alice",
+     "age" => 20,
+     "course" => "Computer Science"
+ ];
+\end{minted}
+
+In this example, the \texttt{student} array has three elements, each
+represented by a key-value pair. The key is the label for the data, and
+the value is the actual data itself.
+
+\textbf{Accessing Elements in Associative Arrays}
+
+To access an element in an associative array, you use the key instead of
+the index. For example, the following code accesses the student's name
+from the \texttt{student} array:
+
+\begin{minted}[]{php}
+<?=
+ $firstName = $student["name"];
+ echo "Student's name: $firstName";
+\end{minted}
+
+\textbf{Adding Elements to Associative Arrays}
+
+To add new elements to an associative array, you simply add new
+key-value pairs. For instance, the following code adds the student's GPA
+to the \texttt{student} array:
+
+\begin{minted}[]{php}
+<?=
+ $student["gpa"] = 3.9;
+ echo "Student's GPA: " . $student["gpa"];
+\end{minted}
+
+\textbf{Removing Elements from Associative Arrays}
+
+To remove an element from an associative array, you use the \texttt{unset()}
+function and provide the key of the element to be removed. For example,
+the following code removes the student's age from the \texttt{student} array:
+
+\begin{minted}[]{php}
+<?=
+ unset($student["age"]);
+ echo "Student's age: " . $student["age"];
+\end{minted}
+
+Associative arrays are a versatile and efficient data structure for
+storing and retrieving information based on meaningful labels. They are
+commonly used in various applications, such as user profiles, product
+catalogs, and configuration settings.
+
+\subsection{Here's a list of functions for working with arrays in PHP grouped by}
+\label{sec:org0ea5afb}
+functionality:
+
+\subsubsection{Array creation and initialization:*}
+\label{sec:orgd30115d}
+\begin{itemize}
+\item \texttt{array()}: Creates an empty array or initializes an array with a set
+of values.
+\item \texttt{count()}: Returns thenumber of elements in an array.
+\item \texttt{in\_array()}: Checks whether a specific value exists in an array.
+\end{itemize}
+
+\subsubsection{Array manipulation and modification:*}
+\label{sec:org6c55f78}
+\begin{itemize}
+\item \texttt{array\_push()}: Adds one or more elements to the end of an array.
+\item \texttt{array\_pop()}: Removes and returns the last element of an array.
+\item \texttt{array\_shift()}: Removes and returns the first element of an array.
+\item \texttt{array\_unshift()}: Adds one or more elements to the beginning of an array.
+\item \texttt{array\_splice()}: Removes and replaces elements from an array.
+\item \texttt{isset()}: Checks whether a specific key exists in an array.
+\item \texttt{empty()}: Checks whether an array isempty.
+\item \texttt{unset()}: Removes one or more elements from an array.
+\end{itemize}
+
+\subsubsection{Array iteration and searching:*}
+\label{sec:org04383c9}
+\begin{itemize}
+\item \texttt{foreach()}: Iterates over the elements of an array.
+\item \texttt{array\_keys()}: Returns an array of all the keys in an array.
+\item \texttt{array\_values()}: Returns an array of all the values in an array.
+\item \texttt{array\_search()}: Finds the first occurrence of a specific value in an array.
+\end{itemize}
+
+\subsubsection{Array sorting and filtering:*}
+\label{sec:orge676bb2}
+\begin{itemize}
+\item \texttt{sort()}: Sorts an array in ascending order.
+\item \texttt{rsort()}: Sorts an array in descending order.
+\item \texttt{asort()}: Sorts an associative array by value.
+\item \texttt{arsort()}: Sorts an associative array by value in descending order.
+\item \texttt{ksort()}: Sorts an associative array by key.
+\item \texttt{krsort()}: Sorts an associative array by key in descending order.
+\item \texttt{array\_filter()}: Filters an array based on a callback function.
+\end{itemize}
+
+\subsubsection{Array merging and combining:*}
+\label{sec:orgc3fad54}
+\begin{itemize}
+\item \texttt{array\_merge()}: Merges two or more arrays into one.
+\item \texttt{array\_slice()}: Extracts a portion of an array to create a new array.
+\item \texttt{array\_unique()}: Removes duplicate values from an array.
+\item \texttt{array\_fill()}: Creates a new array with a specified value and a range of keys.
+\end{itemize}
+
+\subsubsection{Array accessing and manipulating elements:*}
+\label{sec:org330c103}
+\begin{itemize}
+\item \texttt{array\_keys()}: Returns an array of all the keys in an array.
+\item \texttt{array\_values()}: Returns an array of all the values in an array.
+\item \texttt{array\_chunk()}: Divides an array into smaller subarrays.
+\item \texttt{array\_combine()}: Creates an associative array from two arrays of keys and values.
+\item \texttt{array\_map()}: Applies a callback function to each element in an array.
+\item \texttt{array\_reduce()}: Reduces an array to a single value using a callback function.
+\end{itemize}
+
+These functions provide a comprehensive set of tools for working with
+arrays in PHP, covering a wide range of tasks from creating and
+manipulating arrays to searching, sorting, and filtering them.
+\end{document}

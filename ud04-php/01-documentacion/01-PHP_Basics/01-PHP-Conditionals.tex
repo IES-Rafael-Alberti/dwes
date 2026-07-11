@@ -1,0 +1,362 @@
+% Created 2024-01-05 vie 20:26
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{PHP Conditionals}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={PHP Conditionals},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.12)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+\section{Chapter 3: Conditionals in PHP}
+\label{sec:org0a3a03f}
+Welcome to Chapter 3 of my book, designed to guide you through learning
+PHP. In this chapter, we will explore conditionals, an integral part of
+programming that allows you to make decisions based on different
+conditions. Conditionals are crucial for creating dynamic and
+interactive web pages, enabling responses to user inputs, data changes,
+or other events.
+
+\subsection{Understanding if, else, and elseif Statements}
+\label{sec:org4c9a7c3}
+Conditionals in PHP begin with the \texttt{if} statement, the most fundamental
+form of conditional logic. It allows for the execution of a block of
+code only if a certain condition is true.
+
+\subsubsection{Basic if Statement}
+\label{sec:org14b100b}
+The syntax for an if statement is straightforward:
+
+\begin{minted}[]{php}
+<?=
+  if (condition) {
+      // Code to be executed if condition is true
+  }
+\end{minted}
+
+For example, the following code checks if a variable `age` is greater than 18:
+
+\begin{minted}[]{php}
+<?=
+$age = 20;
+
+if ($age > 18) {
+  echo "You are an adult.";
+}
+\end{minted}
+
+
+For instance, if you want to display a message only when a user is
+logged in, you might use:
+
+\begin{minted}[]{php}
+<?=
+  // Assume $logged_in is a variable that stores true or false
+  if ($logged_in) {
+      echo "Welcome, you are logged in!";
+  }
+\end{minted}
+
+The code within the curly braces \texttt{\{\}} will execute if the condition
+within the parentheses \texttt{()} is true. In this case, \texttt{\$logged\_in} is a
+boolean variable that indicates the user's login status.
+
+\subsubsection{The else Clause}
+\label{sec:org0d7dcd2}
+An \texttt{else} clause can be added to specify what should happen when the
+\texttt{if} condition is false. The syntax as follows>
+\begin{minted}[]{php}
+<?=
+  if (condition) {
+    // Code to be executed if condition is true
+  } else {
+    // Code to be executed if condition is false
+  }
+\end{minted}
+
+The following code checks if a variable `score` is greater than 90:
+\begin{minted}[]{php}
+<?=
+$score = 95;
+
+if ($score > 90) {
+  echo "You scored an A.";
+} else {
+  echo "You scored below an A.";
+}
+\end{minted}
+
+This code checks if \texttt{\$logged\_in} is true and welcome us, or if not
+tell us to log in.
+\begin{minted}[]{php}
+<?=
+  if ($logged_in) {
+      echo "Welcome, you are logged in!";
+  } else {
+      echo "Please log in to access this page.";
+  }
+\end{minted}
+
+Here, if \texttt{\$logged\_in} is false, the message "Please log in to access
+this page." will be displayed.
+
+\subsubsection{Using elseif for Multiple Conditions}
+\label{sec:org3c53723}
+ The \texttt{elseif} statement is used to add multiple conditions to an if
+statement. It is similar to the else statement, but it allows you to
+check for multiple conditions. The syntax is as follows:
+\begin{minted}[]{php}
+<?=
+  if (condition1) {
+    // Code to be executed if condition1 is true
+  } elseif (condition2) {
+    // Code to be executed if condition1 is false and condition2 is true
+  } else {
+    // Code to be executed if conditions1 and condition2 are false
+  }
+\end{minted}
+
+Example 1:
+\begin{minted}[]{php}
+<?=
+  // Assume $age is a positive integer
+  if ($age < 13) {
+      echo "You are a child.";
+  } elseif ($age < 18) {
+      echo "You are a teenager.";
+  } elseif ($age < 65) {
+      echo "You are an adult.";
+  } else {
+      echo "You are a senior.";
+  }
+\end{minted}
+
+Example 2:
+the following code checks if a variable `grade` is A, B, or C:
+\begin{minted}[]{php}
+<?=
+$grade = "A";
+
+if ($grade == "A") {
+  echo "Your grade is an A.";
+} elseif ($grade == "B") {
+  echo "Your grade is a B.";
+} else {
+  echo "Your grade is a C.";
+}
+\end{minted}
+
+\texttt{elseif} clauses are evaluated in order and only one block of code is
+executed: the first one where the condition is true. If none are true,
+and there's an \texttt{else} clause, its code will run.
+
+
+\subsection{The switch Statement}
+\label{sec:org0d53632}
+Another powerful conditional in PHP is the \texttt{switch} statement, which
+allows for actions based on different values of a variable or
+expression (check for multiple conditions from a set of possible
+values).
+
+\subsubsection{Basic switch Syntax}
+\label{sec:orge7663ad}
+The structure of a \texttt{switch} statement is as follows:
+
+\begin{minted}[]{php}
+<?=
+  switch ($variable) {
+      case value1:
+          // Code to be executed if $variable equals value1
+          break;
+      case value2:
+          // Code to be executed if $variable equals value2
+          break;
+      ...
+      default:
+          // Code to be executed if $variable is different from all values
+  }
+\end{minted}
+
+For example:
+
+\begin{minted}[]{php}
+<?=
+  // Assume $color is a string variable
+  switch ($color) {
+      case "red":
+          echo "You like red.";
+          break;
+      case "blue":
+          echo "You like blue.";
+          break;
+      case "green":
+          echo "You like green.";
+          break;
+      default:
+          echo "You don't have a favorite color.";
+  }
+\end{minted}
+
+In the \texttt{switch} statement, each case is compared with the value of
+\texttt{\$color}, and the corresponding code block is executed if there's a
+match. The \texttt{break} statement prevents the code in subsequent cases from
+running.
+
+\subsubsection{Conclusion}
+\label{sec:orgb7bb211}
+Conditionals are a fundamental aspect of PHP programming, enabling
+decision-making based on various conditions. Through if, else, and
+elseif statements, you can execute different code blocks based on
+boolean conditions. Meanwhile, switch statements offer a streamlined
+method for handling multiple potential values of a variable.
+
+Having mastered these concepts, you're now equipped to add more
+interactive and responsive elements to your PHP projects. In the next
+chapter, we'll dive into loops, a feature that allows for repetitive
+actions, further expanding your PHP programming toolkit.
+
+\section{Conditionals in PHP 8}
+\label{sec:org5b76f72}
+In PHP 8, you can use alternative syntax for conditionals and the new
+Match expression, which offers a more concise and readable way of
+handling multiple conditional checks. Let's explore both.
+
+\subsection{Alternative Syntax for Conditionals}
+\label{sec:org14b5e28}
+PHP provides an alternative syntax for \texttt{if}, \texttt{elseif}, \texttt{else}, and
+\texttt{switch} statements, which is particularly useful in templates and HTML
+embedded PHP scripts.
+
+\subsubsection{Alternative Syntax for \texttt{if}, \texttt{elseif}, \texttt{else}}
+\label{sec:org2a59c5e}
+Instead of using curly braces \texttt{\{\}}, you use \texttt{:} to start and \texttt{endif;} to
+end the conditional block.
+
+\begin{minted}[]{php}
+<?php if ($condition): ?>
+    <!-- HTML to display if condition is true -->
+<?php elseif ($anotherCondition): ?>
+    <!-- HTML to display if another condition is true -->
+<?php else: ?>
+    <!-- HTML to display if all conditions are false -->
+<?php endif; ?>
+\end{minted}
+
+\subsubsection{Alternative Syntax for \texttt{switch}}
+\label{sec:org363f242}
+Similar to \texttt{if} statements, \texttt{switch} can use \texttt{endswitch;} in place of
+curly braces.
+
+\begin{minted}[]{php}
+<?php
+switch ($variable):
+    case "value1":
+        // Code for value1
+        break;
+    case "value2":
+        // Code for value2
+        break;
+    //...
+    default:
+        // Default code
+endswitch;
+?>
+\end{minted}
+
+\subsection{Match Expression (PHP 8)}
+\label{sec:org30f9710}
+The \texttt{match} expression introduced in PHP 8 is similar to \texttt{switch}, but
+it's more powerful and concise. It returns a value and doesn't require a
+\texttt{break} statement.
+
+\subsubsection{Basic Syntax}
+\label{sec:org76c0a5e}
+\begin{minted}[]{php}
+$result = match ($variable) {
+    'value1' => 'Result for value1',
+    'value2' => 'Result for value2',
+    default => 'Default result',
+};
+\end{minted}
+
+\subsubsection{Features}
+\label{sec:orgea4ac10}
+\begin{itemize}
+\item \textbf{Value Return}: Directly returns the value of the matched case.
+\item \textbf{Expression Comparison}: Compares values as expressions, not just
+simple comparisons.
+\item \textbf{Strict Type Checking}: Uses strict type comparison (\texttt{===}).
+\end{itemize}
+
+\subsubsection{Example}
+\label{sec:orgca07d00}
+\begin{minted}[]{php}
+$color = "red";
+$message = match ($color) {
+    "red" => "The color is red",
+    "green" => "The color is green",
+    "blue" => "The color is blue",
+    default => "Unknown color",
+};
+
+echo $message;
+\end{minted}
+
+This will output: \texttt{The color is red}.
+
+\subsubsection{When to Use \texttt{match}}
+\label{sec:org41edecd}
+\begin{itemize}
+\item \textbf{Simple Value Mapping}: When you need to map specific values to
+results.
+\item \textbf{Concise Conditional Logic}: Reduces the verbosity of multiple
+\texttt{if-elseif} statements.
+\item \textbf{Strict Comparison}: Automatically applies strict comparison, making
+it more reliable for certain types of data.
+\end{itemize}
+
+\subsubsection{Conclusion}
+\label{sec:org5840ada}
+The alternative syntax for conditionals and the Match expression in PHP
+8 provide cleaner and more concise ways to write conditional logic. They
+are particularly useful in scenarios where readability and
+maintainability of code are priorities, such as in template files or
+when handling many conditions.
+\end{document}

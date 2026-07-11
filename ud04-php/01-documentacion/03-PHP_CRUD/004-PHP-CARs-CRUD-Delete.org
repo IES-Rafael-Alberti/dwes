@@ -1,0 +1,150 @@
+#+TITLE: PHP CRUD Car Dealership. Delete
+#+AUTHOR: José Manuel Sánchez Álvarez
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+To add the functionality of deleting a car from your CRUD application,
+you'll need both a PHP script to handle the deletion process and an HTML
+interface for users to trigger this action. Below is a basic example of
+how you can implement this.
+
+*** Step 1: HTML Interface for Car Deletion
+    :PROPERTIES:
+    :CUSTOM_ID: step-1-html-interface-for-car-deletion
+    :END:
+
+You can provide a simple form for users to input the ID of the car they
+wish to delete. This form will send the data to a PHP script
+(=delete_car.php=) for processing.
+
+*HTML (part of your existing interface, e.g., =delete_car.html=):*
+
+#+begin_src php
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Delete Car</title>
+  </head>
+  <body>
+      <h1>Delete Car</h1>
+      <form action="delete_car.php" method="post">
+          Car ID to Delete: <input type="text" name="car_id" required>
+          <input type="submit" value="Delete Car">
+      </form>
+  </body>
+  </html>
+#+end_src
+
+*** Step 2: PHP Script for Deleting a Car
+    :PROPERTIES:
+    :CUSTOM_ID: step-2-php-script-for-deleting-a-car
+    :END:
+
+This script (=delete_car.php=) will receive the car ID from the form and
+use it to delete the corresponding record from the database.
+
+*PHP (delete_car.php):*
+
+#+begin_src php
+  <?php
+  require_once 'db_connect.php'; // Database connection file
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['car_id'])) {
+      $carId = $_POST['car_id'];
+
+      // Prepare a delete statement
+      $stmt = $pdo->prepare("DELETE FROM Car WHERE id = :carId");
+      $stmt->bindParam(':carId', $carId, PDO::PARAM_INT);
+
+      try {
+          $stmt->execute();
+          if ($stmt->rowCount() > 0) {
+              echo "Car with ID $carId has been deleted.";
+          } else {
+              echo "No car found with ID $carId.";
+          }
+      } catch (PDOException $e) {
+          echo "Error deleting car: " . $e->getMessage();
+      }
+  } else {
+      echo "Car ID is required.";
+  }
+  ?>
+#+end_src
+
+*** Explanation:
+    :PROPERTIES:
+    :CUSTOM_ID: explanation
+    :END:
+
+1. *Form Submission*: The HTML form provides a field for the user to
+   enter the ID of the car to be deleted.
+
+2. *PHP Processing*:
+
+   - The PHP script checks if the form has been submitted and if the
+     =car_id= field is not empty.
+   - It then prepares a SQL DELETE statement to remove the car from the
+     database.
+   - The car ID from the form is bound to the prepared statement and
+     executed.
+   - The script checks if a row was affected (i.e., a car was deleted)
+     and provides appropriate feedback.
+
+*** Security and Error Handling:
+    :PROPERTIES:
+    :CUSTOM_ID: security-and-error-handling
+    :END:
+
+- *Prepared Statements*: This method prevents SQL injection attacks.
+- *Error Handling*: Try-catch blocks are used to handle any exceptions
+  that may occur during the database operation.
+- *Validation*: The script checks if the =car_id= field is filled before
+  attempting a delete operation.
+
+*** Integration:
+    :PROPERTIES:
+    :CUSTOM_ID: integration
+    :END:
+
+- Integrate this functionality into your existing CRUD application,
+  ensuring that the database connection file (=db_connect.php=) and any
+  other required files are correctly included.
+- Enhance user experience by adding confirmation prompts or messages,
+  and redirecting or refreshing the page as needed after deletion.
+
+This setup provides basic functionality for deleting a car from the
+database. For a production-level application, you might want to
+implement more robust validation, error handling, and user feedback
+mechanisms.

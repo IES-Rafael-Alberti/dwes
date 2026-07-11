@@ -1,0 +1,358 @@
+% Created 2025-02-04 mar 00:32
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{API REST Con Laravel 11 API REST con Laravel 11}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={API REST Con Laravel 11 API REST con Laravel 11},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.17)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{API REST con Laravel}
+\label{sec:org157bec4}
+Vamos a ver las posibilidades de escribir una \texttt{API REST} con
+Laravel 10. Podemos hacer un \texttt{CRUD} como hemos hecho antes con el
+blog. Nos daremos cuenta de que, al final, nos va a quedar algo mucho
+más sencillo, puesto que no tendremos vistas ni plantillas, ni
+componentes... Sólo \textbf{rutas}, y \textbf{puntos de acceso} —=endpoints=—.
+
+\subsection{API en pocas palabras}
+\label{sec:org1651989}
+Una \textbf{Interfaz de Programación de Aplicaciones} permite a dos sistemas
+comunicarse uno con otro. Proporciona el lenguaje y el contrato de
+como interactuan los dos sistemas. Cada \texttt{API} tiene documentación y
+especificaciones que determinan cómo se puede transferir la
+información.
+
+Las \texttt{API} (WEB) generalmente se clasifican como \texttt{SOAP} o \texttt{REST} y
+ambas se usan para acceder a los servicios web.
+
+\texttt{SOAP} se basa únicamente en \texttt{XML} para proporcionar servicios de
+mensajería, mientras que \texttt{REST} ofrece un método más ligero, utilizando
+direcciones \texttt{URL} en la mayoría de los casos para recibir o enviar
+información.
+
+Vamos a crear \texttt{APIs REST}.
+
+Para aprovechar al máximo las \texttt{API}, las empresas las usan para:
+\begin{itemize}
+\item Integrarse con \texttt{API} de terceros.
+\item Para uso interno.
+\item Para exponerla para uso externo.
+\end{itemize}
+
+
+
+\page
+
+
+\subsubsection{¿Que es un EndPoint?}
+\label{sec:org6ec9dba}
+Brevemente un endPoint es un extremo de un canal de
+comunicación. Cuando una API interactúa con otro sistema, los puntos
+de contacto de esta comunicación se consideran endpoints.
+
+Cuando una API solicita información de una aplicación web o un
+servidor web, recibirá una respuesta. El lugar donde las \texttt{API} envían
+solicitudes y donde vive el recurso se denomina \texttt{endpoint}.
+
+Para las \texttt{API}, un \texttt{endpoint} puede incluir una \texttt{URL} de un
+\emph{servidor}. Cada \texttt{endpoint} es la ubicación desde la cual las API pueden
+acceder a los recursos que necesitan para llevar a cabo su función.
+
+\section{Introducción}
+\label{sec:org2557565}
+Esta guía está diseñada para ayudarte a crear una API REST utilizando
+Laravel 11. Laravel 11 introduce algunos cambios importantes en su
+estructura por defecto, como la eliminación de ciertas configuraciones
+iniciales, rutas de API predefinidas, y soporte opcional para paquetes
+que deben ser instalados manualmente.
+
+Esta actualización aborda los cambios y adapta el proyecto creado en
+Laravel 9 y 10 para ser compatible con Laravel 11.
+\section{API REST con Laravel 11}
+\label{sec:org6802bb9}
+
+Esta guía está diseñada para ayudarte a crear una API REST utilizando Laravel 11. Laravel 11 introduce algunos cambios importantes en su estructura por defecto, como la eliminación de ciertas configuraciones iniciales, rutas de API predefinidas y soporte opcional para paquetes que deben ser instalados manualmente.
+
+Esta actualización adapta el proyecto creado en Laravel 9 y 10 para que funcione con Laravel 11.
+
+---
+
+Esta guía está diseñada para ayudarte a crear una API REST utilizando Laravel 11. Laravel 11 introduce algunos cambios importantes en su estructura por defecto, como la eliminación de ciertas configuraciones iniciales, rutas de API predefinidas y soporte opcional para paquetes que deben ser instalados manualmente.
+
+Esta actualización adapta el proyecto creado en Laravel 9 y 10 para que funcione con Laravel 11.
+
+\section{Cambios en Laravel 11}
+\label{sec:org5c6093e}
+
+\begin{enumerate}
+\item \texttt{Eliminación de Rutas de API Predefinidas} :: Laravel 11 ya no incluye rutas API preconfiguradas en el archivo \texttt{routes/api.php}. Estas deben agregarse manualmente si son necesarias.
+
+\item \texttt{Middleware de Autenticación de API} :: El middleware \texttt{auth:api} ya no está configurado por defecto. Para utilizar autenticación de API con tokens personales, necesitas instalar manualmente Sanctum o Passport.
+
+\item \texttt{Paquetes Eliminados o Opcionales} :: Algunos paquetes previamente incluidos, como Sanctum o Passport, deben ser instalados manualmente.
+
+\item \texttt{Instalación Simplificada de Características Opcionales} :: Laravel 11 introduce el comando \texttt{php artisan install:api} para instalar configuraciones opcionales, como \texttt{sanctum} y \texttt{api.php}.
+\end{enumerate}
+
+\section{Configuración inicial con Laravel Sail}
+\label{sec:orgd9ae06c}
+
+Para montar un entorno de desarrollo usaremos Laravel Sail, que facilita la configuración con Docker.
+
+\subsection{1. Crear un Proyecto con Laravel 11 usando Sail}
+\label{sec:org3682f47}
+
+Ejecuta el siguiente comando para crear un nuevo proyecto utilizando Sail:
+
+\begin{minted}[]{bash}
+curl -s "https://laravel.build/laravel11-api?with=pgsql,redis" | bash
+\end{minted}
+
+Por defecto, el stack instalado incluye MySQL, Redis, Meilisearch, Mailhog y Selenium, pero puedes personalizarlo.
+
+Inicia la aplicación con:
+
+\begin{minted}[]{bash}
+cd laravel11-api && ./vendor/bin/sail up -d
+\end{minted}
+
+Opcionalmente, define un alias para evitar escribir repetidamente \texttt{vendor/bin/sail}:
+
+\begin{minted}[]{bash}
+alias sail='bash vendor/bin/sail'
+\end{minted}
+
+\section{Instalación de Sanctum y configuración de autenticación}
+\label{sec:orga0b6eb1}
+
+Laravel 11 no incluye el archivo \texttt{routes/api.php} por defecto, y tampoco Sanctum. Para instalar el scaffolding de la API, ejecuta:
+
+\begin{minted}[]{bash}
+sail php artisan install:api
+\end{minted}
+
+Este comando instala Sanctum para autenticación con tokens, crea el archivo \texttt{routes/api.php} y ejecuta las migraciones necesarias.
+
+Si necesitas instalar Sanctum manualmente:
+
+\begin{minted}[]{bash}
+sail composer require laravel/sanctum
+sail artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+sail artisan migrate
+\end{minted}
+
+En el modelo \texttt{User.php}, asegúrate de incluir el trait \texttt{HasApiTokens}:
+
+\begin{minted}[]{php}
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens;
+}
+\end{minted}
+
+Para proteger las rutas de la API, usa el middleware \texttt{auth:sanctum} en \texttt{routes/api.php}:
+
+\begin{minted}[]{php}
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\AuthController;
+
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+});
+\end{minted}
+
+Crea el controlador \texttt{AuthController.php} con:
+
+\begin{minted}[]{bash}
+sail artisan make:controller Api/V1/AuthController
+\end{minted}
+
+Y añade la lógica de autenticación:
+
+\begin{minted}[]{php}
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['message' => 'Credenciales inválidas'], 401);
+        }
+
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Sesión cerrada correctamente']);
+    }
+
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+}
+\end{minted}
+
+\section{CRUD para Posts}
+\label{sec:orgabe6152}
+
+\subsection{1. Crear modelo y controlador}
+\label{sec:orge08e041}
+
+\begin{minted}[]{bash}
+sail artisan make:model Post -m -c --api
+\end{minted}
+
+Esto genera:
+\begin{itemize}
+\item \textbf{\textbf{Modelo:}} \texttt{app/Models/Post.php}
+\item \textbf{\textbf{Migración:}} \texttt{database/migrations/...create\_posts\_table.php}
+\item \textbf{\textbf{Controlador:}} \texttt{app/Http/Controllers/Api/V1/PostController.php}
+\end{itemize}
+
+Modifica la migración para definir la tabla \texttt{posts}:
+
+\begin{minted}[]{php}
+public function up()
+{
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->string('title');
+        $table->string('image')->nullable();
+        $table->text('description');
+        $table->timestamps();
+    });
+}
+\end{minted}
+
+Aplica las migraciones:
+
+\begin{minted}[]{bash}
+sail artisan migrate
+\end{minted}
+
+\subsection{2. Definir rutas de la API}
+\label{sec:org05bbb41}
+
+\begin{minted}[]{php}
+use App\Http\Controllers\Api\V1\PostController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('posts', PostController::class);
+});
+\end{minted}
+
+\subsection{3. Implementar métodos en \texttt{PostController.php}}
+\label{sec:orga0c3666}
+
+\begin{minted}[]{php}
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
+class PostController extends Controller
+{
+    public function index()
+    {
+        return Post::latest()->paginate();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'image' => 'image|max:1024',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+        $post = Post::create($validated);
+
+        return response()->json($post, 201);
+    }
+
+    public function destroy(Post $post)
+    {
+        $post->delete();
+        return response()->json(['message' => 'Post eliminado'], 200);
+    }
+}
+\end{minted}
+
+\section{Conclusión}
+\label{sec:org6d0b0cc}
+
+Laravel 11 ha simplificado la estructura de proyectos, eliminando
+configuraciones predefinidas. Con esta guía, hemos adaptado el sistema
+de autenticación con Sanctum y configurado un CRUD de posts protegido
+por autenticación. 🚀
+\end{document}

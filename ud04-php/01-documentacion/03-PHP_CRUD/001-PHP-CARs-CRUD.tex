@@ -1,0 +1,520 @@
+% Created 2024-01-08 lun 09:13
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\author{José Manuel Sánchez Álvarez}
+\date{}
+\title{PHP CRUD Car Dealership}
+\hypersetup{
+ pdfauthor={José Manuel Sánchez Álvarez},
+ pdftitle={PHP CRUD Car Dealership},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{Car Dealership CRUD in PHP}
+\label{sec:org5a9b2ab}
+Creating a CRUD (Create, Read, Update, Delete) application for a car
+dealership in PHP involves designing a suitable database schema. Below,
+I'll outline a basic database structure with tables, attributes, types,
+constraints, keys, and relationships. This schema is designed to manage
+information about cars, brands, sellers, and clients.
+
+\subsection{Database}
+\label{sec:org281fe6d}
+\subsubsection{Table: \texttt{CarBrand}}
+\label{sec:org53ed497}
+\begin{itemize}
+\item \textbf{Attributes:}
+
+\begin{itemize}
+\item \texttt{id} (INT, primary key, auto-increment)
+\item \texttt{name} (VARCHAR, unique, not null)
+\end{itemize}
+
+\item \textbf{Primary Key:} \texttt{id}
+\item \textbf{Unique Key:} \texttt{name}
+\item \textbf{Purpose:} Stores different car brands.
+\end{itemize}
+
+\subsubsection{Table: \texttt{Seller}}
+\label{sec:orgd161478}
+\begin{itemize}
+\item \textbf{Attributes:}
+
+\begin{itemize}
+\item \texttt{id} (INT, primary key, auto-increment)
+\item \texttt{name} (VARCHAR, not null)
+\item \texttt{cars\_selled} (INT, default 0)
+\end{itemize}
+
+\item \textbf{Primary Key:} \texttt{id}
+\item \textbf{Purpose:} Stores information about car sellers.
+\end{itemize}
+
+\subsubsection{Table: \texttt{Car}}
+\label{sec:orge1f9115}
+\begin{itemize}
+\item \textbf{Attributes:}
+
+\begin{itemize}
+\item \texttt{id} (INT, primary key, auto-increment)
+\item \texttt{model} (VARCHAR, not null)
+\item \texttt{price} (DECIMAL(10,2), not null)
+\item \texttt{condition} (VARCHAR, not null, values like 'new', 'refurbished')
+\item \texttt{engine\_features} (TEXT, nullable)
+\item \texttt{gas\_type} (VARCHAR, nullable)
+\item \texttt{mileage} (INT, nullable)
+\item \texttt{status} (VARCHAR, nullable)
+\item \texttt{gears} (INT, nullable)
+\item \texttt{license\_plate} (VARCHAR, nullable)
+\item \texttt{deposit\_capacity} (DECIMAL(5,2), nullable)
+\item \texttt{trunk\_capacity} (DECIMAL(5,2), nullable)
+\item \texttt{horse\_power} (INT, nullable)
+\item \texttt{brand\_id} (INT, foreign key to CarBrand, not null)
+\item \texttt{seller\_id} (INT, foreign key to Seller, not null)
+\end{itemize}
+
+\item \textbf{Primary Key:} \texttt{id}
+\item \textbf{Foreign Keys:}
+
+\begin{itemize}
+\item \texttt{brand\_id} references \texttt{CarBrand(id)}
+\item \texttt{seller\_id} references \texttt{Seller(id)}
+\end{itemize}
+
+\item \textbf{Purpose:} Stores details about each car.
+\end{itemize}
+
+\subsubsection{Table: \texttt{Client}}
+\label{sec:orgb9d78d6}
+\begin{itemize}
+\item \textbf{Attributes:}
+
+\begin{itemize}
+\item \texttt{id} (INT, primary key, auto-increment)
+\item \texttt{name} (VARCHAR, not null)
+\end{itemize}
+
+\item \textbf{Primary Key:} \texttt{id}
+\item \textbf{Purpose:} Stores client information.
+\end{itemize}
+
+\subsubsection{Table: \texttt{Purchase}}
+\label{sec:orgbe5021f}
+\begin{itemize}
+\item \textbf{Attributes:}
+
+\begin{itemize}
+\item \texttt{id} (INT, primary key, auto-increment)
+\item \texttt{client\_id} (INT, foreign key to Client, not null)
+\item \texttt{car\_id} (INT, foreign key to Car, not null)
+\item \texttt{date} (DATE, not null)
+\end{itemize}
+
+\item \textbf{Primary Key:} \texttt{id}
+\item \textbf{Foreign Keys:}
+
+\begin{itemize}
+\item \texttt{client\_id} references \texttt{Client(id)}
+\item \texttt{car\_id} references \texttt{Car(id)}
+\end{itemize}
+
+\item \textbf{Purpose:} Records the purchases of cars by clients.
+\end{itemize}
+
+\subsection{Notes on the Database Design}
+\label{sec:org6e3dc71}
+\begin{itemize}
+\item \textbf{Normalization:} The database design should be normalized to at least
+the third normal form (3NF) to reduce redundancy and improve data
+integrity.
+\item \textbf{Data Types:} Choose appropriate data types for each field. For
+instance, \texttt{VARCHAR} for strings, \texttt{INT} for integers, \texttt{DECIMAL} for
+prices and capacities, and \texttt{DATE} for dates.
+\item \textbf{Constraints:}
+
+\begin{itemize}
+\item \texttt{NOT NULL} constraints are used for mandatory fields.
+\item \texttt{AUTO\_INCREMENT} is used for primary keys to create unique
+identifiers for each row.
+\item \texttt{UNIQUE} constraints ensure values like brand names are not
+duplicated.
+\end{itemize}
+
+\item \textbf{Foreign Key Relationships:} These enforce referential integrity
+between tables. For example, each car is associated with a specific
+brand and seller.
+\item \textbf{Nullable Fields:} Fields like \texttt{engine\_features}, \texttt{gas\_type},
+\texttt{mileage}, etc., are allowed to be \texttt{NULL} to accommodate varying
+levels of detail available for different cars.
+\end{itemize}
+
+This database structure provides a comprehensive foundation for a car
+dealership system, enabling efficient data storage and retrieval for a
+wide range of dealership operations.
+
+\section{PHP and HTML Code}
+\label{sec:org86cff2d}
+\subsection{List ALL Cars}
+\label{sec:org1ccf60d}
+To create a simple HTML page and its corresponding PHP script for
+listing all cars with their model, brand, and price in a car dealership
+project, you'll need to follow these steps. This example assumes you
+have a database with the necessary tables and data in place.
+
+\subsubsection{Step 1: Create the HTML Page}
+\label{sec:org99f0a8a}
+This page (\texttt{list\_cars.html}) will be simple, primarily serving as a link
+to the PHP script that will display the car list.
+
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Car Dealership - Car List</title>
+</head>
+<body>
+    <h1>Car List</h1>
+    <p>
+        <a href="list_cars.php">View All Cars</a>
+    </p>
+</body>
+</html>
+\end{minted}
+
+\subsubsection{Step 2: Create the PHP Script}
+\label{sec:org36f5a87}
+This PHP script (\texttt{list\_cars.php}) will connect to the database, retrieve
+the list of cars, and display the model, brand, and price. We'll use PDO
+for database interaction with prepared statements.
+
+\begin{minted}[]{php}
+<?php
+$host = 'localhost';
+$db   = 'car_dealership';
+$user = 'root';      // Replace with your database username
+$pass = '';          // Replace with your database password
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+
+$stmt = $pdo->prepare("SELECT Car.model, Car.price, CarBrand.name AS brand FROM Car JOIN CarBrand ON Car.brand_id = CarBrand.id");
+$stmt->execute();
+
+echo "<h1>Car List</h1>";
+echo "<table border='1'><tr><th>Model</th><th>Brand</th><th>Price</th></tr>";
+while ($row = $stmt->fetch()) {
+    echo "<tr><td>".$row["model"]."</td><td>".$row["brand"]."</td><td>".$row["price"]."</td></tr>";
+}
+echo "</table>";
+?>
+\end{minted}
+
+\subsubsection{Explanation:}
+\label{sec:orged183c0}
+\begin{enumerate}
+\item \textbf{Database Connection}: The script starts by setting up a PDO
+connection to the database.
+
+\item \textbf{Prepared Statement}: A prepared statement is used to query the
+database. This query joins the \texttt{Car} and \texttt{CarBrand} tables to get the
+model, brand, and price of each car.
+
+\item \textbf{Data Display}: The fetched data is displayed in an HTML table.
+\end{enumerate}
+
+\subsubsection{Note:}
+\label{sec:orgdb29b83}
+\begin{itemize}
+\item Make sure to replace the \texttt{\$host}, \texttt{\$db}, \texttt{\$user}, and \texttt{\$pass}
+variables with your actual database host, database name, username, and
+password.
+\item The structure of the SQL query depends on your database schema. Adjust
+the field names and table names according to your actual database
+schema.
+\item Ensure that your PHP environment is correctly set up to connect to
+your MySQL database.
+\end{itemize}
+
+This setup provides a basic and secure way to list cars from your
+database using PHP and PDO with prepared statements.
+
+\subsection{One car deatails}
+\label{sec:orgaa0b000}
+To create an HTML page and a corresponding PHP script for showing the
+details of a specific car selected by its ID, you'll need to follow
+these steps. This example assumes you have a database with the necessary
+tables and data, including detailed information about each car.
+
+\subsubsection{Step 1: Create the HTML Page for Car Selection}
+\label{sec:org6b8f0cf}
+This page (\texttt{select\_car.html}) allows the user to enter the ID of the car
+they want to view.
+
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Car Dealership - Select Car</title>
+</head>
+<body>
+    <h1>Select a Car to View Details</h1>
+    <form action="car_detail.php" method="get">
+        Car ID: <input type="text" name="car_id">
+        <input type="submit" value="View Details">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\subsubsection{Step 2: Create the PHP Script for Displaying Car Details}
+\label{sec:orgc482337}
+This PHP script (\texttt{car\_detail.php}) will connect to the database,
+retrieve the details of the car with the given ID, and display them.
+We'll continue using PDO for database interaction with prepared
+statements.
+
+\begin{minted}[]{php}
+<?php
+$host = 'localhost';
+$db   = 'car_dealership';
+$user = 'root';      // Replace with your database username
+$pass = '';          // Replace with your database password
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+
+$carId = $_GET['car_id'] ?? ''; // Retrieve car ID from URL parameter
+
+if ($carId) {
+    $stmt = $pdo->prepare("SELECT * FROM Car WHERE id = :carId");
+    $stmt->bindParam(':carId', $carId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $car = $stmt->fetch();
+    if ($car) {
+        echo "<h1>Car Details</h1>";
+        echo "<p>Model: " . htmlspecialchars($car["model"]) . "</p>";
+        echo "<p>Brand: " . htmlspecialchars($car["brand"]) . "</p>";
+        // Display other details like price, condition, engine features, etc.
+    } else {
+        echo "<p>Car not found.</p>";
+    }
+} else {
+    echo "<p>No car selected.</p>";
+}
+?>
+\end{minted}
+
+\subsubsection{Explanation:}
+\label{sec:org6b3ba8f}
+\begin{enumerate}
+\item \textbf{Database Connection}: The script sets up a PDO connection to the
+database.
+
+\item \textbf{Retrieving Car ID}: The car ID is obtained from the URL parameter
+(\texttt{\$\_GET['car\_id']}).
+
+\item \textbf{Query and Display Car Details}: A prepared statement is used to
+retrieve and display the details of the car with the provided ID. The
+data is sanitized using \texttt{htmlspecialchars} to prevent XSS attacks.
+\end{enumerate}
+
+\subsubsection{Note:}
+\label{sec:org04e5d0f}
+\begin{itemize}
+\item Replace the database connection details (\texttt{\$host}, \texttt{\$db}, \texttt{\$user},
+\texttt{\$pass}) with your actual database information.
+\item Ensure your table and column names in the SQL query match those in
+your database schema.
+\item The script assumes that the \texttt{Car} table contains all necessary columns
+like \texttt{model}, \texttt{brand}, \texttt{price}, \texttt{condition}, etc. Modify the script to
+include all relevant details as per your database schema.
+\item This setup provides a basic and secure way to display detailed
+information about a car from your database using PHP and PDO. For a
+more user-friendly interface, you might consider adding error handling
+for invalid IDs and styling the output with CSS.
+\end{itemize}
+
+\subsection{Create a new car}
+\label{sec:orgd783d5c}
+Creating an HTML form and corresponding PHP script for inserting a new
+car with all its details into a database involves two main parts:
+designing the form and handling the form submission with PHP. Below is a
+basic example. This assumes you have a database structure ready to store
+these details.
+
+\subsubsection{Step 1: Create the HTML Form}
+\label{sec:org7d6bf5f}
+Create an HTML page (\texttt{add\_car.html}) for the input form. This form will
+include various fields for car details. Some fields will be marked as
+mandatory.
+
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Car</title>
+</head>
+<body>
+    <h1>Add New Car</h1>
+    <form action="insert_car.php" method="post">
+        Model (required): <input type="text" name="model" required><br>
+        Brand (required): <input type="text" name="brand" required><br>
+        Price (required): <input type="number" name="price" required><br>
+        Condition: <input type="text" name="condition"><br>
+        Engine Features: <input type="text" name="engine_features"><br>
+        Gas Type: <input type="text" name="gas_type"><br>
+        Mileage: <input type="number" name="mileage"><br>
+        Status (new/refurbished): <input type="text" name="status"><br>
+        Gears: <input type="number" name="gears"><br>
+        License Plate: <input type="text" name="license_plate"><br>
+        Deposit Capacity: <input type="number" name="deposit_capacity"><br>
+        Trunk Capacity: <input type="number" name="trunk_capacity"><br>
+        Horse Power: <input type="number" name="horse_power"><br>
+        <input type="submit" value="Add Car">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\subsubsection{Step 2: Create the PHP Script for Form Handling}
+\label{sec:org17903ce}
+Create a PHP script (\texttt{insert\_car.php}) to handle the form submission.
+This script will insert the new car details into your database.
+
+\begin{minted}[]{php}
+<?php
+$host = 'localhost';
+$db   = 'car_dealership';
+$user = 'root';      // Replace with your database username
+$pass = '';          // Replace with your database password
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $stmt = $pdo->prepare("INSERT INTO Car (model, brand, price, condition, engine_features, gas_type, mileage, status, gears, license_plate, deposit_capacity, trunk_capacity, horse_power) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    $stmt->execute([
+        $_POST['model'],
+        $_POST['brand'],
+        $_POST['price'],
+        $_POST['condition'] ?? null,
+        $_POST['engine_features'] ?? null,
+        $_POST['gas_type'] ?? null,
+        $_POST['mileage'] ?? null,
+        $_POST['status'] ?? null,
+        $_POST['gears'] ?? null,
+        $_POST['license_plate'] ?? null,
+        $_POST['deposit_capacity'] ?? null,
+        $_POST['trunk_capacity'] ?? null,
+        $_POST['horse_power'] ?? null
+    ]);
+
+    echo "New car added successfully.";
+}
+?>
+\end{minted}
+
+\subsubsection{Explanation}
+\label{sec:org02c408b}
+\begin{itemize}
+\item The HTML form includes various fields for entering car details. The
+\texttt{required} attribute is added to mandatory fields.
+\item The PHP script connects to the database and uses a prepared statement
+to insert the car data. It uses the POST method to retrieve data from
+the form.
+\item Null coalescing operators (\texttt{??}) are used for optional fields to
+handle cases where no data is entered.
+\item Proper error handling should be implemented for a production
+environment (e.g., try-catch blocks, validation of input data).
+\end{itemize}
+
+\subsubsection{Note}
+\label{sec:org959a493}
+\begin{itemize}
+\item Replace the \texttt{\$host}, \texttt{\$db}, \texttt{\$user}, and \texttt{\$pass} variables with your
+actual database host, database name, username, and password.
+\item The SQL query in the prepared statement should match your database's
+table structure. Adjust the field names and table name according to
+your database schema.
+\item This example does not include client-side or server-side validation
+for the sake of brevity. In a real-world application, you should
+validate and sanitize all inputs to ensure data integrity and
+security.
+\item The form assumes that the user knows the Car ID they wish to update.
+In a practical scenario, you might have a selection process or a
+search feature to find the car before updating its details.
+\end{itemize}
+\end{document}

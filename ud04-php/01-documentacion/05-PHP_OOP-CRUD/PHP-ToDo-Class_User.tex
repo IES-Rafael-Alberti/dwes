@@ -1,0 +1,213 @@
+% Created 2024-01-08 lun 09:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setlength\parindent{10pt}
+
+\section*{User management}
+\label{sec:org90866e5}
+Creating a \texttt{User} class in PHP involves implementing methods for user
+authentication, role-based authorization, and session management. Below
+is an outline of the \texttt{User} class, including methods for login,
+registration, role checking, and session handling. Additionally, I'll
+provide examples of corresponding HTML forms for user interaction.
+
+\subsection*{PHP \texttt{User} Class}
+\label{sec:orgd6c866b}
+\begin{minted}[]{php}
+class User {
+    private $pdo;
+    private $userId;
+    private $username;
+    private $role;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+        session_start();
+    }
+
+    public function login($username, $password) {
+        $stmt = $this->pdo->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            $this->userId = $user['id'];
+            $this->username = $user['username'];
+            $this->role = $user['role'];
+            return true;
+        }
+        return false;
+    }
+
+    public function register($username, $password) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $stmt->execute([$username, $hashedPassword]);
+    }
+
+    public function logout() {
+        session_unset();
+        session_destroy();
+    }
+
+    public function isUserLoggedIn() {
+        return isset($_SESSION['user_id']);
+    }
+
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function getRole() {
+        return $this->role;
+    }
+
+    public function isAdmin() {
+        return $this->role === 'admin';
+    }
+}
+\end{minted}
+
+\subsection*{Explanation}
+\label{sec:orgc6d32ed}
+\begin{itemize}
+\item \textbf{Constructor}: Initializes the database connection and starts the
+session.
+\item \textbf{Login}: Verifies user credentials and starts a session for the user.
+\item \textbf{Register}: Registers a new user with a hashed password.
+\item \textbf{Logout}: Ends the session.
+\item \textbf{Session Checks}: Methods like \texttt{isUserLoggedIn} and \texttt{isAdmin} check
+the user's login status and role.
+\end{itemize}
+
+\subsection*{HTML Forms}
+\label{sec:org5b5f2bf}
+\subsubsection*{Registration Form (\texttt{register.html})}
+\label{sec:org275d539}
+\begin{minted}[]{php}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form action="register.php" method="post">
+        Username: <input type="text" name="username" required><br>
+        Password: <input type="password" name="password" required><br>
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\subsubsection*{Login Form (\texttt{login.html})}
+\label{sec:org83b4fb1}
+\begin{minted}[]{html}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="login.php" method="post">
+        Username: <input type="text" name="username" required><br>
+        Password: <input type="password" name="password" required><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\subsection*{PHP Scripts for Forms}
+\label{sec:org9ef2a00}
+\subsubsection*{Registration Script (\texttt{register.php})}
+\label{sec:org8a84ccd}
+\begin{minted}[]{php}
+<?php
+require_once 'User.php';
+require_once 'db_connect.php'; // PDO connection
+
+$user = new User($pdo);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user->register($_POST['username'], $_POST['password']);
+    // Redirect to login or display a success message
+}
+\end{minted}
+
+\subsubsection*{Login Script (\texttt{login.php})}
+\label{sec:orgf70c0b3}
+\begin{minted}[]{php}
+<?php
+require_once 'User.php';
+require_once 'db_connect.php'; // PDO connection
+
+$user = new User($pdo);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if ($user->login($_POST['username'], $_POST['password'])) {
+        header("Location: dashboard.php"); // Redirect to a protected page
+    } else {
+        echo "Invalid credentials.";
+    }
+}
+\end{minted}
+
+\subsection*{Security Considerations}
+\label{sec:org123a5a1}
+\begin{itemize}
+\item Always sanitize and validate user inputs.
+\item Store hashed passwords in the database, never plain text.
+\item Implement CSRF protection on forms.
+\item Ensure secure session management, particularly on shared hosting
+environments.
+\end{itemize}
+
+This setup provides a foundational structure for user authentication and
+role-based authorization in your PHP application, integrating session
+management for maintaining user state across different pages.
+\end{document}

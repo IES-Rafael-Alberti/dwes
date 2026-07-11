@@ -1,0 +1,468 @@
+#+TITLE: Roles y Control de acceso
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+* Policies and Gates
+    :PROPERTIES:
+    :CUSTOM_ID: policies-and-gates
+    :END:
+
+Laravel ofrece una manera poderosa y flexible de manejar la autorización
+con dos características principales: Gates (Puertas) y Policies
+(Políticas). Los Gates proporcionan un enfoque simple basado en closures
+para la autorización, mientras que las Policies, como clases, organizan
+la lógica de autorización alrededor de un modelo o recurso particular.
+Aquí tienes una guía para entender y usar los Gates y Policies de
+Laravel en tus aplicaciones.
+
+** Entendiendo los Gates
+    :PROPERTIES:
+    :CUSTOM_ID: entendiendo-los-gates
+    :END:
+
+Los Gates son closures que determinan si un usuario está autorizado para
+realizar una acción dada. Se definen en el =AuthServiceProvider= y se
+utilizan típicamente para acciones que no requieren una instancia de
+modelo.
+
+*** Definiendo Gates
+     :PROPERTIES:
+     :CUSTOM_ID: definiendo-gates
+     :END:
+
+Los Gates se definen en el método =boot= de tu =AuthServiceProvider=. Un
+gate recibe una instancia de usuario y cualquier argumento adicional
+relevante para la decisión de autorización.
+
+#+BEGIN_EXAMPLE
+  use Illuminate\Support\Facades\Gate;
+
+  /**
+   * Registra cualquier servicio de autenticación/autorización.
+   *
+   * @return void
+   */
+  public function boot()
+  {
+      $this->registerPolicies();
+
+      Gate::define('edit-settings', function ($user) {
+          return $user->isAdmin;
+      });
+  }
+#+END_EXAMPLE
+
+*** Autorizando Acciones Usando Gates
+     :PROPERTIES:
+     :CUSTOM_ID: autorizando-acciones-usando-gates
+     :END:
+
+Puedes verificar si un gate permite a un usuario realizar una acción
+usando varios métodos como =allows=, =denies=, o las directivas de Blade
+=@can= y =@cannot=.
+
+#+BEGIN_EXAMPLE
+  if (Gate::allows('edit-settings', $user)) {
+      // El usuario puede editar configuraciones
+  }
+
+  if (Gate::denies('edit-settings', $user)) {
+      // El usuario no puede editar configuraciones
+  }
+#+END_EXAMPLE
+
+En las plantillas Blade, puedes usar:
+
+#+BEGIN_EXAMPLE
+  @can('edit-settings')
+      <!-- Mostrar formulario de edición de configuraciones -->
+  @endcan
+
+  @cannot('edit-settings')
+      <!-- Mostrar un mensaje de prohibido -->
+  @endcannot
+#+END_EXAMPLE
+
+** Entendiendo las Policies
+    :PROPERTIES:
+    :CUSTOM_ID: entendiendo-las-policies
+    :END:
+
+Las Policies son clases que organizan la lógica de autorización para un
+modelo o recurso particular. Cada policy es responsable de determinar si
+un usuario puede realizar una acción sobre un recurso.
+
+*** Generando Policies
+     :PROPERTIES:
+     :CUSTOM_ID: generando-policies
+     :END:
+
+Puedes generar una policy usando la herramienta de línea de comandos
+Artisan. Por ejemplo, para crear una policy para un modelo =Post=:
+
+#+BEGIN_SRC sh
+  php artisan make:policy PostPolicy --model=Post
+#+END_SRC
+
+Este comando generará una clase =PostPolicy= en el directorio
+=app/Policies=.
+
+*** Escribiendo Policies
+     :PROPERTIES:
+     :CUSTOM_ID: escribiendo-policies
+     :END:
+
+Las Policies definen métodos que corresponden a las diversas acciones
+que un usuario podría realizar en una instancia del modelo, tales como
+ver, crear, actualizar o eliminar.
+
+#+BEGIN_EXAMPLE
+  /**
+   * Determina si el post dado puede ser actualizado por el usuario.
+   *
+   * @param  \App\Models\User  $user
+   * @param  \App\Models\Post  $post
+   * @return bool
+   */
+  public function update(User $user, Post $post)
+  {
+      return $user->id === $post->user_id;
+  }
+#+END_EXAMPLE
+
+*** Registrando Policies
+     :PROPERTIES:
+     :CUSTOM_ID: registrando-policies
+     :END:
+
+Las Policies necesitan ser registradas dentro del =AuthServiceProvider=.
+Esto se hace típicamente en el array de propiedad =policies=.
+
+#+BEGIN_EXAMPLE
+  protected $policies = [
+      'App\Models\Post' => 'App\Policies\PostPolicy',
+  ];
+#+END_EXAMPLE
+
+*** Autorizando Acciones Usando Policies
+     :PROPERTIES:
+     :CUSTOM_ID: autorizando-acciones-usando-policies
+     :END:
+
+Puedes verificar si una policy autoriza una acción de manera similar a
+los gates. Usa métodos como =can= en una instancia de usuario o las
+directivas de Blade =@can= y =@cannot=, especificando la acción y el
+modelo relevante.
+
+#+BEGIN_EXAMPLE
+  if ($user->can('update', $post)) {
+      // El usuario puede actualizar el post
+  }
+#+END_EXAMPLE
+
+En las plantillas Blade, especifica la instancia del modelo:
+
+#+BEGIN_EXAMPLE
+  @can('update', $post)
+      <!-- Mostrar formulario de actualización del post -->
+  @endcan
+#+END_EXAMPLE
+
+** Mejores Prácticas
+    :PROPERTIES:
+    :CUSTOM_ID: mejores-prácticas
+    :END:
+
+- *Usa Gates para acciones no relacionadas con modelos*, como ver un
+  panel de administración.
+- *Usa Policies para acciones relacionadas con modelos*, asegurando que
+  tu lógica de autorización esté organizada y asociada directamente con
+  operaciones del modelo.
+- *Aprovecha el auto-descubrimiento de policy* en Laravel, que descubre
+  automáticamente policies siempre que se sigan las convenciones de
+  nomenclatura de modelo y policy.
+
+Al aprovechar Gates y Policies, puedes mantener un enfoque limpio y
+organizado para manejar la autorización dentro de tus aplicaciones
+Laravel, manteniendo tu código seguro y manejable.
+
+* Manejo de roles y control de acceso directo
+Para manejar la autorización basada en roles y permisos directamente
+desde la base de datos, sin utilizar Gates y Policies de Laravel, puedes
+seguir una estrategia que involucre la creación de tablas adicionales
+para roles y permisos, y luego verificar estos roles y permisos en tu
+aplicación. A continuación, se presenta una guía alternativa para
+implementar este sistema de autorización:
+
+** Paso 1: Diseñar el Modelo de Datos
+    :PROPERTIES:
+    :CUSTOM_ID: paso-1-diseñar-el-modelo-de-datos
+    :END:
+
+Primero, necesitas diseñar tu base de datos para almacenar roles y
+permisos:
+
+- *Tabla =roles=*: Almacena los roles de los usuarios (por ejemplo,
+  Admin, Editor, Usuario Regular).
+- *Tabla =permissions=*: Almacena los permisos específicos (por ejemplo,
+  'edit post', 'delete post').
+- *Tabla =role_user=*: Una tabla de pivote que relaciona los usuarios
+  con sus roles.
+- *Tabla =permission_role=*: Una tabla de pivote que relaciona los roles
+  con sus permisos.
+
+** Paso 2: Crear Modelos y Relaciones
+    :PROPERTIES:
+    :CUSTOM_ID: paso-2-crear-modelos-y-relaciones
+    :END:
+
+Después de crear las tablas, define los modelos =Role= y =Permission= en
+Laravel, y establece las relaciones adecuadas:
+
+- Un =User= puede tener muchos =Roles=.
+- Un =Role= puede tener muchos =Permissions=.
+
+** Paso 3: Sembrar la Base de Datos con Roles y Permisos
+    :PROPERTIES:
+    :CUSTOM_ID: paso-3-sembrar-la-base-de-datos-con-roles-y-permisos
+    :END:
+
+Utiliza seeders para poblar tus tablas de roles y permisos con los
+valores iniciales.
+
+** Paso 4: Crear Middleware para Verificar Permisos
+    :PROPERTIES:
+    :CUSTOM_ID: paso-4-crear-middleware-para-verificar-permisos
+    :END:
+
+Puedes crear un middleware que verifique si un usuario tiene un permiso
+específico antes de permitirle acceder a una ruta:
+
+#+BEGIN_EXAMPLE
+  php artisan make:middleware CheckPermission
+#+END_EXAMPLE
+
+En este middleware, verifica si el usuario tiene el permiso necesario
+para realizar la acción:
+
+#+BEGIN_EXAMPLE
+  public function handle($request, Closure $next, $permission)
+  {
+      if (!auth()->user() || !auth()->user()->hasPermission($permission)) {
+          // Redireccionar o lanzar una excepción
+          abort(403, 'No estás autorizado para realizar esta acción.');
+      }
+
+      return $next($request);
+  }
+#+END_EXAMPLE
+
+** Paso 5: Verificar Permisos en los Controladores o Rutas
+    :PROPERTIES:
+    :CUSTOM_ID: paso-5-verificar-permisos-en-los-controladores-o-rutas
+    :END:
+
+Usa el middleware en tus rutas o controladores para proteger el acceso
+basado en permisos:
+
+#+BEGIN_EXAMPLE
+  Route::get('/post/edit/{id}', 'PostController@edit')
+   ->middleware('checkPermission:edit post');
+#+END_EXAMPLE
+
+** Paso 6: Crear Métodos de Ayuda en el Modelo de Usuario
+    :PROPERTIES:
+    :CUSTOM_ID: paso-6-crear-métodos-de-ayuda-en-el-modelo-de-usuario
+    :END:
+
+En tu modelo =User=, puedes agregar métodos como =hasRole()= o
+=hasPermission()= para verificar los roles y permisos del usuario:
+
+#+BEGIN_EXAMPLE
+  public function hasRole($role)
+  {
+      return $this->roles->contains('name', $role);
+  }
+
+  public function hasPermission($permission)
+  {
+      return $this->roles->pluck('permissions')
+       ->flatten()->contains('name', $permission);
+  }
+#+END_EXAMPLE
+
+** Conclusión
+    :PROPERTIES:
+    :CUSTOM_ID: conclusión
+    :END:
+
+Este enfoque te permite tener un control fino sobre quién puede hacer
+qué dentro de tu aplicación, basándote completamente en la configuración
+almacenada en tu base de datos. La ventaja de este método es la
+flexibilidad para cambiar roles y permisos sin necesidad de ajustar el
+código, simplemente actualizando las entradas en la base de datos.
+
+Sin embargo, es importante notar que este enfoque requiere una cuidadosa
+gestión de la base de datos y posiblemente una interfaz de usuario para
+administrar roles y permisos, lo que podría aumentar la complejidad de
+tu aplicación. Además, debes asegurarte de que tu sistema de roles y
+permisos esté bien diseñado para evitar brechas de seguridad.
+
+* Roles y control de acceso con Laravel Breeze
+Para integrar un sistema de roles y permisos en una aplicación Laravel
+que utiliza Laravel Breeze para la autenticación, puedes seguir una
+serie de pasos que te permitirán verificar los roles y permisos de los
+usuarios. Aunque Laravel Breeze no proporciona directamente un sistema
+de gestión de roles y permisos, puedes extender tu aplicación con estas
+funcionalidades. Aquí te muestro cómo hacerlo:
+
+** Paso 1: Instalar Laravel Breeze
+    :PROPERTIES:
+    :CUSTOM_ID: paso-1-instalar-laravel-breeze
+    :END:
+
+Si aún no has instalado Laravel Breeze, comienza por hacerlo para
+configurar la autenticación básica:
+
+#+BEGIN_SRC sh
+  composer require laravel/breeze --dev
+  php artisan breeze:install
+  npm install && npm run dev
+  php artisan migrate
+#+END_SRC
+
+** Paso 2: Diseñar el Modelo de Datos para Roles y Permisos
+    :PROPERTIES:
+    :CUSTOM_ID: paso-2-diseñar-el-modelo-de-datos-para-roles-y-permisos
+    :END:
+
+Necesitarás tablas adicionales para manejar roles y permisos:
+
+- *roles*: Almacena roles como Admin, Editor, etc.
+- *permissions*: Almacena permisos como 'edit post', 'view post', etc.
+- *role_user*: Tabla de pivote para relacionar usuarios con roles.
+- *permission_role*: Tabla de pivote para relacionar roles con permisos.
+
+Puedes crear estas tablas usando migraciones de Laravel.
+
+** Paso 3: Crear Modelos y Establecer Relaciones
+    :PROPERTIES:
+    :CUSTOM_ID: paso-3-crear-modelos-y-establecer-relaciones
+    :END:
+
+Crea modelos =Role= y =Permission= y define las relaciones adecuadas en
+los modelos =User=, =Role=, y =Permission=. Por ejemplo, en tu modelo
+=User=, podrías tener:
+
+#+BEGIN_EXAMPLE
+  public function roles()
+  {
+      return $this->belongsToMany(Role::class);
+  }
+
+  public function hasRole($role)
+  {
+      return $this->roles()->where('name', $role)->exists();
+  }
+#+END_EXAMPLE
+
+Y métodos similares en =Role= y =Permission= para gestionar las
+relaciones.
+
+** Paso 4: Middleware para Verificar Roles y Permisos
+    :PROPERTIES:
+    :CUSTOM_ID: paso-4-middleware-para-verificar-roles-y-permisos
+    :END:
+
+Crea un middleware que verifique si el usuario tiene el rol o permiso
+necesario para acceder a una ruta:
+
+#+BEGIN_SRC sh
+  php artisan make:middleware CheckRole
+#+END_SRC
+
+En el middleware, puedes verificar el rol del usuario:
+
+#+BEGIN_EXAMPLE
+  public function handle($request, Closure $next, $role)
+  {
+      if (!$request->user() || !$request->user()->hasRole($role)) {
+          abort(403);
+      }
+
+      return $next($request);
+  }
+#+END_EXAMPLE
+
+Registra tu middleware en =app/Http/Kernel.php= para poder usarlo en tus
+rutas.
+
+** Paso 5: Usar el Middleware en Rutas
+    :PROPERTIES:
+    :CUSTOM_ID: paso-5-usar-el-middleware-en-rutas
+    :END:
+
+Protege las rutas especificando el middleware y el rol necesario:
+
+#+BEGIN_EXAMPLE
+  Route::middleware(['auth', 'checkRole:admin'])->group(function () {
+      Route::get('/admin', function () {
+          // Solo accesible por usuarios con rol 'admin'
+      });
+  });
+#+END_EXAMPLE
+
+** Paso 6: Gestión de Roles y Permisos en la UI
+    :PROPERTIES:
+    :CUSTOM_ID: paso-6-gestión-de-roles-y-permisos-en-la-ui
+    :END:
+
+Para gestionar roles y permisos desde la interfaz de usuario, podrías
+crear vistas y controladores que permitan asignar roles a los usuarios y
+gestionar permisos. Laravel Breeze ya proporciona un esqueleto básico de
+autenticación, por lo que puedes extenderlo para incluir tu lógica de
+gestión de roles y permisos.
+
+** Conclusión
+    :PROPERTIES:
+    :CUSTOM_ID: conclusión
+    :END:
+
+Aunque Laravel Breeze proporciona una excelente base para la
+autenticación, la implementación de un sistema de gestión de roles y
+permisos requiere pasos adicionales. Integrar este sistema en tu
+aplicación te permitirá controlar el acceso a diferentes partes de tu
+aplicación basándote en los roles y permisos de los usuarios. Recuerda
+siempre proteger adecuadamente las rutas y ofrecer una gestión segura de
+roles y permisos desde tu interfaz de usuario.

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Tareas</title>
+    <script>
+        // Función para confirmar el borrado
+        function confirmDeleteSelected() {
+            const checkboxes = document.querySelectorAll('input[name="taskIds"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Por favor, selecciona al menos una tarea para eliminar.");
+                return false;
+            }
+
+            const confirmed = confirm("¿Estás seguro de que deseas eliminar las tareas seleccionadas?");
+            if (confirmed) {
+                document.getElementById("action-type").value = "delete";
+                document.getElementById("task-action-form").submit();
+            }
+        }
+
+        // Función para confirmar cambio de estado
+        function confirmChangeStatus() {
+            const checkboxes = document.querySelectorAll('input[name="taskIds"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Por favor, selecciona al menos una tarea para cambiar su estado.");
+                return false;
+            }
+
+            const confirmed = confirm("¿Estás seguro de que deseas cambiar el estado de las tareas seleccionadas?");
+            if (confirmed) {
+                document.getElementById("action-type").value = "toggle";
+                document.getElementById("task-action-form").submit();
+            }
+        }
+    </script>
+</head>
+<body>
+{{> header}} <!-- Incluimos el encabezado común -->
+
+<main>
+    <h1>Lista de Tareas</h1>
+
+    <!-- Formulario de búsqueda -->
+    <form action="/tasks/search" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="keyword" placeholder="Buscar tareas..." value="{{keyword}}">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Botones de filtrado -->
+    <div style="margin-bottom: 20px;">
+        <a href="/tasks/filter?status=all">Todas</a> |
+        <a href="/tasks/filter?status=completed">Completadas</a> |
+        <a href="/tasks/filter?status=pending">Pendientes</a>
+    </div>
+
+    <!-- Formulario general para ambas acciones -->
+    <form id="task-action-form" action="/tasks/action" method="post">
+        <ul>
+            {{#tasks}}
+            <li>
+                <input type="checkbox" name="taskIds" value="{{id}}"> <!-- Checkbox -->
+                {{description}} -
+                {{#completed}}Completada{{/completed}}
+                {{^completed}}Pendiente{{/completed}}
+            </li>
+            {{/tasks}}
+        </ul>
+        <!-- Campo oculto para determinar la acción -->
+        <input type="hidden" id="action-type" name="actionType" value="">
+
+        <!-- Botones para acciones -->
+        <button type="button" onclick="confirmChangeStatus()">Cambiar Estado</button>
+        <button type="button" onclick="confirmDeleteSelected()" style="color:red;">Eliminar Seleccionadas</button>
+    </form>
+
+    <a href="/tasks/new">Agregar Nueva Tarea</a>
+</main>
+
+{{> footer}} <!-- Incluimos el pie de página común -->
+</body>
+</html>

@@ -1,0 +1,263 @@
+#+TITLE: CORS
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: H:3
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* CORS
+CORS stands for Cross-Origin Resource Sharing, it is a security
+feature implemented by web browsers that blocks web pages from making
+requests to a different domain than the one that served the web
+page. This restriction is called the same-origin policy and it helps
+prevent malicious attacks on websites. CORS allows a server to specify
+which domains are allowed to make requests to it, and it is
+implemented through HTTP headers sent in response to a cross-origin
+request.
+
+CORS is a mechanism that allows a web page to make requests to a
+server on a different domain. It works by adding HTTP headers to the
+response from the server, indicating which domains are allowed to make
+cross-origin requests to it. When a web page makes a request to a
+server, the browser checks whether the request is a cross-origin
+request, and if so, whether the server has indicated that the domain
+making the request is allowed. If the server has indicated that the
+domain is allowed, the browser will proceed with the request. If not,
+the request will be blocked and the response will not be delivered to
+the web page.
+
+CORS is important because it helps prevent malicious attacks on
+websites by limiting the scope of cross-origin requests. By default,
+the same-origin policy is in effect, which blocks all cross-origin
+requests. However, with CORS, a server can explicitly indicate which
+domains are allowed to make cross-origin requests to it, enabling the
+creation of rich web applications that make use of resources on
+different domains.
+
+CORS is implemented using HTTP headers, and the most important header
+is the "Access-Control-Allow-Origin" header. This header indicates
+which domains are allowed to make cross-origin requests to the
+server. If the header is set to "*", it allows requests from any
+domain. If the header is set to a specific domain, only requests from
+that domain will be allowed.
+
+** CORS managing in Spring Boot
+In a Spring Boot API, you can handle CORS by adding a CORS filter to
+your application. Here is an example of how to configure a CORS filter
+in Spring Boot:
+
+1. Create a class that implements the javax.servlet.Filter interface.
+   #+begin_src java
+   @Component
+   public class CORSFilter implements Filter {
+
+     @Override
+     public void doFilter(ServletRequest request, ServletResponse response,
+
+         throws IOException, ServletException {
+       HttpServletResponse httpResponse = (HttpServletResponse) response;
+       HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+       httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+       httpResponse.setHeader("Access-Control-Allow-Methods",
+                              "GET, POST, PUT, DELETE, OPTIONS");
+       httpResponse.setHeader("Access-Control-Max-Age", "3600");
+       httpResponse.setHeader("Access-Control-Allow-Headers",
+                              "Authorization, content-type, xsrf-token");
+       httpResponse.addHeader("Access-Control-Expose-Headers",
+                              "xsrf-token");
+       if ("OPTIONS".equals(httpRequest.getMethod())) {
+           httpResponse.setStatus(HttpServletResponse.SC_OK);
+           return;
+       }
+       chain.doFilter(request, response);
+     }
+
+     @Override
+     public void init(FilterConfig filterConfig) {}
+
+     @Override
+     public void destroy() {}
+
+   }
+   #+end_src
+
+
+2. Add the filter to the Spring Boot application by annotating it with @Component.
+
+3. Enable CORS globally by adding the following code to your
+   WebMvcConfigurer implementation:
+   #+begin_src java
+   @Configuration
+   public class WebConfig implements WebMvcConfigurer {
+
+     @Autowired
+     private CORSFilter corsFilter;
+
+     @Override
+     public void addCorsMappings(CorsRegistry registry) {
+       registry.addMapping("/**")
+           .allowedOrigins("*")
+           .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+           .allowedHeaders("Authorization", "content-type", "xsrf-token")
+           .exposedHeaders("xsrf-token")
+           .maxAge(3600);
+     }
+
+     @Bean
+     public FilterRegistrationBean<CORSFilter> corsFilter() {
+       FilterRegistrationBean<CORSFilter> bean =
+
+       bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+       return bean;
+     }
+   }
+   #+end_src
+
+This code sets up a CORS filter that allows requests from any origin
+and specifies the allowed methods, headers, and exposed headers. The
+filter is registered with a high precedence to ensure that it is
+applied before other filters in the application.
+
+Note that the above code is just an example and you can customize it
+according to your needs by specifying different allowed origins,
+methods, headers, and exposed headers.
+** Laravel
+In a Laravel API, you can manage CORS by adding a middleware to your
+application that sets the appropriate CORS headers in the
+response. Here is an example of how to configure CORS in a Laravel
+API:
+
+1. Create a new middleware class using the php artisan make:middleware command:
+#+begin_src bash
+php artisan make:middleware CORS
+#+end_src
+
+In the newly created middleware class, add the following code:
+#+begin_src php
+  <?php
+
+  namespace App\Http\Middleware;
+
+  use Closure;
+
+  class CORS
+  {
+      /**
+       ,* Handle an incoming request.
+       ,*
+       ,* @param  \Illuminate\Http\Request  $request
+       ,* @param  \Closure  $next
+       ,* @return mixed
+       ,*/
+      public function handle($request, Closure $next)
+      {
+          $headers = [
+              'Access-Control-Allow-Origin' => '*',
+              'Access-Control-Allow-Methods' =>'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin, Authorization'
+  ];
+   if ($request->getMethod() == "OPTIONS") {
+     return response()->json('OK', 200, $headers);
+    }
+
+    $response = $next($request);
+    foreach ($headers as $key => $value) {
+        $response->header($key, $value);
+    }
+
+    return $response;
+}
+#+end_src
+
+The code sets up a CORS middleware that allows requests from any
+origin and specifies the allowed methods and headers. The middleware
+sets the appropriate headers in the response for all requests,
+including preflight (OPTIONS) requests.
+
+Note that the above code is just an example and you can customize it
+according to your needs by specifying different allowed origins,
+methods, and headers.
+
+If you want to allow CORS only for specific domains or URLs, you can
+modify the Access-Control-Allow-Origin header accordingly. For
+example, to allow CORS only for a specific domain, you can do the
+following:
+
+#+begin_src php
+<?php
+'Access-Control-Allow-Origin' => 'https://example.com',
+#+end_src
+
+And to allow CORS for multiple domains, you can do the following:
+
+#+begin_src php
+'Access-Control-Allow-Origin' => ['https://example1.com', 'https://example2.com'],
+#+end_src
+
+Additionally, you can specify the allowed headers and methods in the
+Access-Control-Allow-Headers and Access-Control-Allow-Methods headers
+respectively. This will allow you to have more control over the types
+of requests that your API accepts.
+
+It's also important to note that you should only enable CORS for
+trusted domains or origins, and it's always a good practice to secure
+your API with appropriate authentication and authorization mechanisms.
+
+Here are some additional tips for managing CORS in Laravel:
+
+  - CORS Preflight Requests: In some cases, the browser may send an
+    OPTIONS request before making the actual request. This is known as
+    a preflight request and it's used to check if the actual request
+    is safe to proceed. To handle these preflight requests in your
+    Laravel API, you can add a separate middleware or modify the
+    existing CORS middleware to return a response with the appropriate
+    headers.
+  - CORS and Security: While CORS is a useful mechanism for enabling
+    cross-origin communication, it's important to remember that it can
+    also introduce security risks if not configured properly. Always
+    be careful when allowing requests from untrusted domains, and use
+    appropriate authentication and authorization mechanisms to secure
+    your API.
+  - CORS and Performance: Keep in mind that CORS headers can add extra
+    overhead to your API response, as the browser has to make an
+    additional request before making the actual request. To minimize
+    the impact on performance, consider using caching mechanisms, such
+    as browser caching, to reduce the number of CORS preflight
+    requests.
+  - Debugging CORS Issues: If you are encountering issues with CORS in
+    your Laravel API, you can use browser development tools, such as
+    the network tab in Chrome, to inspect the requests and responses,
+    and debug any issues. Additionally, you can also use tools like
+    the CORS extension for Chrome to temporarily disable CORS and test
+    your API.

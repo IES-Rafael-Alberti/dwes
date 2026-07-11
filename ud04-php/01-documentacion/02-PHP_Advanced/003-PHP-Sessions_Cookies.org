@@ -1,0 +1,332 @@
+#+TITLE: PHP Sessions and Cookies
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* Sessions And Cookies
+Managing sessions and cookies is an essential aspect of web development
+in PHP, as they allow you to maintain state across multiple page
+requests. Here's a guide to help you understand and use sessions and
+cookies effectively in PHP.
+
+** PHP Sessions
+   :PROPERTIES:
+   :CUSTOM_ID: php-sessions
+   :END:
+
+Sessions in PHP are used to preserve certain data across subsequent
+accesses by the same user. This is useful for things like maintaining
+user state (e.g., ensuring a user is logged in) across different pages.
+
+*** Starting a Session
+    :PROPERTIES:
+    :CUSTOM_ID: starting-a-session
+    :END:
+
+To start a session, use =session_start()=. This function must be called
+before any output is sent to the browser.
+
+#+begin_src php
+  session_start();
+#+end_src
+
+*** Storing Data in a Session
+    :PROPERTIES:
+    :CUSTOM_ID: storing-data-in-a-session
+    :END:
+
+Once a session is started, you can store data in the =$_SESSION=
+superglobal array.
+
+#+begin_src php
+  $_SESSION["username"] = "john_doe";
+#+end_src
+
+*** Accessing Session Data
+    :PROPERTIES:
+    :CUSTOM_ID: accessing-session-data
+    :END:
+
+You can access session data stored in the =$_SESSION= array as long as
+the session is active.
+
+#+begin_src php
+  echo "Welcome, " . $_SESSION["username"];
+#+end_src
+
+*** Ending a Session
+    :PROPERTIES:
+    :CUSTOM_ID: ending-a-session
+    :END:
+
+To end a session and clear session data, use =session_unset()= and
+=session_destroy()=.
+
+#+begin_src php
+  session_unset(); // remove all session variables
+  session_destroy(); // destroy the session
+#+end_src
+
+** PHP Cookies
+   :PROPERTIES:
+   :CUSTOM_ID: php-cookies
+   :END:
+
+Cookies are small files stored on the user's computer. They are
+typically used to remember information about users, such as login
+details or website preferences.
+
+*** Setting Cookies
+    :PROPERTIES:
+    :CUSTOM_ID: setting-cookies
+    :END:
+
+Use the =setcookie()= function to set a cookie. This function must be
+called before any output is sent to the browser.
+
+#+begin_src php
+  setcookie("user", "john_doe", time() + 3600); // 3600 seconds = 1 hour
+#+end_src
+
+*** Accessing Cookies
+    :PROPERTIES:
+    :CUSTOM_ID: accessing-cookies
+    :END:
+
+Access cookies through the =$_COOKIE= superglobal array.
+
+#+begin_src php
+  if(isset($_COOKIE["user"])) {
+      echo "Welcome " . $_COOKIE["user"];
+  }
+#+end_src
+
+*** Deleting Cookies
+    :PROPERTIES:
+    :CUSTOM_ID: deleting-cookies
+    :END:
+
+Delete a cookie by setting its expiration date in the past.
+
+#+begin_src php
+  setcookie("user", "", time() - 3600);
+#+end_src
+
+** Best Practices and Security Considerations
+   :PROPERTIES:
+   :CUSTOM_ID: best-practices-and-security-considerations
+   :END:
+
+*** Sessions
+    :PROPERTIES:
+    :CUSTOM_ID: sessions
+    :END:
+
+- Regenerate session ID: Use =session_regenerate_id()= to prevent
+  session fixation attacks.
+- Secure session cookies: Set =session.cookie_secure= and
+  =session.cookie_httponly= flags to true to enhance security.
+- Session data is stored server-side, which is generally more secure
+  than storing sensitive data in cookies.
+
+*** Cookies
+    :PROPERTIES:
+    :CUSTOM_ID: cookies
+    :END:
+
+- Sensitive data: Avoid storing sensitive data in cookies as they are
+  stored client-side.
+- Secure and HTTPOnly flags: Set these flags when setting cookies to
+  enhance security (=secure= for HTTPS only, =HTTPOnly= to make them
+  inaccessible to JavaScript).
+- Expiration time: Be mindful of the expiration time of cookies,
+  especially for sensitive information.
+
+*** General
+    :PROPERTIES:
+    :CUSTOM_ID: general
+    :END:
+
+- Data validation: Always validate and sanitize any data received from
+  cookies or sessions.
+- HTTPS: Use HTTPS to encrypt cookies and session data transmitted over
+  the network.
+
+Using sessions and cookies appropriately can greatly enhance the user
+experience on your website by allowing for persistent, stateful
+interactions across multiple web pages. Remember to handle them securely
+to protect your users' data.
+
+* Sessions and cookies cont.
+  :PROPERTIES:
+  :CUSTOM_ID: sessions-and-cookies-cont.
+  :END:
+
+Certainly! Below are code examples to illustrate how to use cookies and
+sessions in PHP. These examples cover basic operations like setting,
+accessing, and deleting cookies, as well as starting a session, storing
+session data, and ending a session.
+
+*** Using Cookies in PHP
+    :PROPERTIES:
+    :CUSTOM_ID: using-cookies-in-php
+    :END:
+
+**** Setting a Cookie
+     :PROPERTIES:
+     :CUSTOM_ID: setting-a-cookie
+     :END:
+
+To set a cookie, use the =setcookie()= function. This should be done
+before any output is sent to the browser.
+
+#+begin_src php
+  // Set a cookie that expires in 1 hour
+  setcookie("username", "john_doe", time() + 3600, "/");
+
+  // Secure and HTTPOnly flags
+  setcookie("secure_user", "john_doe_secure", time() + 3600, "/", "", true, true);
+#+end_src
+
+**** Accessing a Cookie
+     :PROPERTIES:
+     :CUSTOM_ID: accessing-a-cookie
+     :END:
+
+Access a cookie via the =$_COOKIE= superglobal array.
+
+#+begin_src php
+  if (isset($_COOKIE["username"])) {
+      echo "Welcome " . htmlspecialchars($_COOKIE["username"]);
+  } else {
+      echo "Welcome guest!";
+  }
+#+end_src
+
+**** Deleting a Cookie
+     :PROPERTIES:
+     :CUSTOM_ID: deleting-a-cookie
+     :END:
+
+Delete a cookie by setting its expiration date to a past time.
+
+#+begin_src php
+  // Deleting a cookie by setting its expiration to one hour ago
+  setcookie("username", "", time() - 3600, "/");
+#+end_src
+
+*** Using Sessions in PHP
+    :PROPERTIES:
+    :CUSTOM_ID: using-sessions-in-php
+    :END:
+
+**** Starting a Session
+     :PROPERTIES:
+     :CUSTOM_ID: starting-a-session-1
+     :END:
+
+Start a session with =session_start()=. This should be the first thing
+in your script.
+
+#+begin_src php
+  session_start();
+#+end_src
+
+**** Storing Data in a Session
+     :PROPERTIES:
+     :CUSTOM_ID: storing-data-in-a-session-1
+     :END:
+
+Store data in the =$_SESSION= superglobal array after starting the
+session.
+
+#+begin_src php
+  $_SESSION["username"] = "john_doe";
+#+end_src
+
+**** Accessing Session Data
+     :PROPERTIES:
+     :CUSTOM_ID: accessing-session-data-1
+     :END:
+
+Retrieve data from the session.
+
+#+begin_src php
+  session_start();
+  if (isset($_SESSION["username"])) {
+      echo "Welcome " . htmlspecialchars($_SESSION["username"]);
+  } else {
+      echo "Welcome guest!";
+  }
+#+end_src
+
+**** Ending a Session
+     :PROPERTIES:
+     :CUSTOM_ID: ending-a-session-1
+     :END:
+
+End a session and clear its data.
+
+#+begin_src php
+  session_start();
+
+  // Unset all session variables
+  session_unset();
+
+  // Destroy the session
+  session_destroy();
+#+end_src
+
+*** Important Notes
+    :PROPERTIES:
+    :CUSTOM_ID: important-notes
+    :END:
+
+- *Cookie Security*: Remember that cookies are stored client-side. Avoid
+  storing sensitive information in them. Use the =secure= and =HTTPOnly=
+  flags for enhanced security, especially if using cookies for
+  authentication.
+
+- *Session Security*: PHP sessions are generally more secure as the
+  session data is stored server-side. However, ensure to regenerate
+  session IDs (=session_regenerate_id()=) during login to prevent
+  session fixation attacks.
+
+- *Output Buffering*: If you need to set cookies after sending output,
+  use output buffering (=ob_start()=) at the beginning of your script.
+
+These examples cover fundamental uses of cookies and sessions in PHP.
+For more advanced features and security measures, consult the official
+PHP documentation and consider additional security practices relevant to
+your application's context.

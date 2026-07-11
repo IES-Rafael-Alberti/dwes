@@ -1,0 +1,456 @@
+#+TITLE: Patrones DTO y DAO
+#+AUTHOR: José Manuel Sánchez Álvarez
+#+EMAIL:
+#+DATE: \today
+#+OPTIONS: H:3
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: scrartcl
+#+LATEX_HEADER:
+#+LATEX_COMPILER: xelatex
+#+LANGUAGE: es
+#+LATEX_HEADER: \renewcommand{\contentsname}{Índice}
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage{polyglossia}
+#+LATEX_HEADER: \setmainlanguage{spanish}
+#+LATEX_HEADER: \renewcommand{\contentsname}{Contenido}
+#+LATEX_COMPILER: xelatex
+
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \usepackage{placeins}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage{mathpazo}
+#+LATEX_HEADER: \usepackage[scaled]{helvet}
+#+LATEX_HEADER: \usepackage{courier}
+#+LATEX_HEADER: \linespread{1.05}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+
+**;; Minted y enmarcado**
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usemintedstyle{friendly}
+#+LATEX_HEADER: \usepackage{mdframed}
+#+LATEX_HEADER: \BeforeBeginEnvironment{minted}{\begin{mdframed}[backgroundcolor=gray!5, roundcorner=5pt]}
+#+LATEX_HEADER: \AfterEndEnvironment{minted}{\end{mdframed}}
+#+LATEX_HEADER: \setminted{fontsize=\small, breaklines, linenos}
+
+* Patrón DTO
+** Generalidades
+El patrón DTO (Data Transfer Object) es un patrón de diseño comúnmente
+utilizado en aplicaciones de Spring Boot que proporciona una forma de
+transferir datos entre las capas de la aplicación. El DTO se utiliza
+para transferir datos entre la capa de aplicación y la capa de
+persistencia (como una base de datos), sin exponer el modelo de datos
+subyacente o exponer datos sensibles.
+
+** Ejemplos con Spring Boot
+Aquí está cómo utilizar el patrón DTO en una aplicación de Spring Boot:
+*** Ejemplo 1
+1. Definir una clase DTO: Cree una clase separada que represente los
+   datos que desea transferir entre la capa de aplicación y la capa
+   de persistencia.
+   #+begin_src java
+   public class UserDTO {
+       private String username;
+       private String email;
+       private String password;
+       private String phoneNumber;
+   }
+   #+end_src
+
+2. Mapeo entre DTO y Entidad: Cree una clase mapeadora que mapee entre
+   la clase DTO y la clase de entidad (la clase que representa los
+   datos en la capa de persistencia).
+   #+begin_src java
+   @Mapper
+   public interface UserMapper {
+    UserDTO toDTO(User user);
+    User toEntity(UserDTO userDTO);
+    }
+   #+end_src
+
+3. Utilizar el DTO en la capa de servicio: Utilice el DTO en la capa
+   de servicio para transferir datos entre la capa de aplicación y la
+   capa de persistencia.
+   #+begin_src java
+   @Service
+    public class UserService {
+      private UserRepository userRepository;
+      private UserMapper userMapper;
+
+      public UserDTO createUser(UserDTO userDTO) {
+        User user = userMapper.toEntity(userDTO);
+        user = userRepository.save(user);
+        return userMapper.toDTO(user);
+       }
+    }
+   #+end_src
+
+En este ejemplo, el UserService utiliza el UserMapper para mapear
+entre el UserDTO y el User entity, y para transferir datos entre la
+capa de aplicación y la capa de persistencia. De esta manera, los
+datos sensibles en el User entity no se exponen a la capa de
+aplicación, y la transferencia de datos es más segura.
+
+*** Ejemplo 2
+1. Clase usuario
+   #+begin_src java
+   @Entity
+   public class User {
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       private Long id;
+       private String username;
+       private String email;
+       private String password;
+       private String phoneNumber;
+   }
+   #+end_src
+
+2. Repositorio:
+   #+begin_src java
+   @Repository
+   public interface UserRepository extends JpaRepository<User, Long>
+   {
+   }
+   #+end_src
+
+3. Mapeador DTO:
+   #+begin_src java
+   @Component
+   public class UserMapper {
+       public UserDTO toDTO(User user) {
+           UserDTO userDTO = new UserDTO();
+           userDTO.setUsername(user.getUsername());
+           userDTO.setEmail(user.getEmail());
+           userDTO.setPassword(user.getPassword());
+           userDTO.setPhoneNumber(user.getPhoneNumber());
+           return userDTO;
+       }
+
+       public User toEntity(UserDTO userDTO) {
+           User user = new User();
+           user.setUsername(userDTO.getUsername());
+           user.setEmail(userDTO.getEmail());
+           user.setPassword(userDTO.getPassword());
+           user.setPhoneNumber(userDTO.getPhoneNumber());
+           return user;
+       }
+   }
+   #+end_src
+
+4. Servicio (lo normal es usar un servicio y no hacer las cosas
+   directamente en el controlador, cuando es mucho trabajo)
+   #+begin_src java
+   @Service
+   public class UserService {
+       private UserRepository userRepository;
+       private UserMapper userMapper;
+
+       public UserService(UserRepository userRepository,
+                          UserMapper userMapper) {
+           this.userRepository = userRepository;
+           this.userMapper = userMapper;
+       }
+
+       public UserDTO createUser(UserDTO userDTO) {
+           User user = userMapper.toEntity(userDTO);
+           user = userRepository.save(user);
+           return userMapper.toDTO(user);
+       }
+
+       public List<UserDTO> getAllUsers() {
+           List<User> users = userRepository.findAll();
+           return users.stream().
+                  map(userMapper::toDTO).
+                  collect(Collectors.toList());
+       }
+   }
+
+   #+end_src
+
+5. Controlador Rest:
+   #+begin_src java
+   @RestController
+   @RequestMapping("/api/users")
+   public class UserController {
+       private UserService userService;
+
+       public UserController(UserService userService) {
+           this.userService = userService;
+       }
+
+       @PostMapping
+       public UserDTO createUser(@RequestBody UserDTO userDTO) {
+           return userService.createUser(userDTO);
+       }
+
+       @GetMapping
+       public List<UserDTO> getAllUsers() {
+           return userService.getAllUsers();
+       }
+   }
+   #+end_src
+
+En este ejemplo, se utilizan las anotaciones @Entity para definir una
+entidad User, `@Repositorypara crear un repositorio UserRepository que
+extienda de JpaRepository, @Component para crear un mapeador de DTO
+UserMapper, @Service para crear un servicio UserService que utiliza el
+repositorio y el mapeador, y finalmente @RestController para crear un
+controlador REST UserController que utiliza el servicio para manejar
+las solicitudes de API relacionadas con los usuarios.
+
+Este ejemplo muestra cómo se puede utilizar Spring Boot para
+implementar el patrón DAO y separar la lógica de negocios y acceso a
+datos en capas separadas. Al utilizar DTOs y mapeadores, se logra una
+mayor flexibilidad y seguridad en la representación de los datos en la
+API.
+
+  - Modelo de entidad: En lugar de utilizar DTOs, se pueden exponer
+    directamente las entidades JPA en la API.
+  - Modelo de transferencia de objetos dinámicos: En lugar de utilizar
+    DTOs estáticos, se pueden utilizar objetos dinámicos como mapas o
+    JSON para representar los datos.
+  - Modelo de transferencia de objetos simples: En lugar de utilizar
+    DTOs complejos, se pueden utilizar objetos simples con propiedades
+    básicas para representar los datos.
+  - Modelo de transferencia de objetos anotados: En lugar de utilizar
+    DTOs, se pueden utilizar objetos anotados con Jackson o similar
+    para controlar la representación de los datos en la API.
+
+*** Ejemplo 1 de DTO en Spring Boot con JsonViews
+Aquí hay un ejemplo de código que utiliza JsonView y objetos anotados
+para crear un DTO en Spring Boot:
+#+begin_src java
+public class UserDto {
+    public interface PublicView {}
+    public interface InternalView extends PublicView {}
+
+    @JsonView(PublicView.class)
+    private Long id;
+
+    @JsonView(PublicView.class)
+    private String username;
+
+    @JsonView(InternalView.class)
+    private String password;
+
+    // getters and setters for id, username, and password
+}
+
+@RestController
+public class UserController {
+    @GetMapping("/user/{id}")
+    @JsonView(UserDto.PublicView.class)
+    public UserDto getUser(@PathVariable Long id) {
+        UserDto user = // retrieve user data
+        return user;
+    }
+
+    @PostMapping("/user")
+    @JsonView(UserDto.InternalView.class)
+    public UserDto createUser(@RequestBody UserDto user) {
+        // create user
+        return user;
+    }
+}
+#+end_src
+
+En este ejemplo, se utiliza JsonView para especificar las vistas
+publica y interna para el DTO de usuario. En el controlador, se usan
+las anotaciones @JsonView en los métodos GET y POST para controlar qué
+información se incluye en la respuesta JSON. De esta manera, se puede
+garantizar que la información confidencial, como la contraseña, solo
+sea visible en la vista interna.
+
+*** Ejemplo 2 de DTO en Spring Boot con JsonViews
+ejemplo completo de código que utiliza JsonView, objetos anotados y un
+repositorio para crear un DTO en Spring Boot:
+#+begin_src java
+public class UserDto {
+    public interface PublicView {}
+    public interface InternalView extends PublicView {}
+
+    @JsonView(PublicView.class)
+    private Long id;
+
+    @JsonView(PublicView.class)
+    private String username;
+
+    @JsonView(InternalView.class)
+    private String password;
+
+    // getters and setters for id, username, and password
+}
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+    private String password;
+
+    // getters and setters for id, username, and password
+}
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {}
+
+@Component
+public class UserMapper {
+    public UserDto toDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setPassword(user.getPassword());
+        return dto;
+    }
+
+    public User toEntity(UserDto dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        return user;
+    }
+}
+
+@RestController
+public class UserController {
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    public UserController(UserRepository userRepository,
+                         UserMapper userMapper)
+    {
+
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
+    @GetMapping("/user/{id}")
+    @JsonView(UserDto.PublicView.class)
+    public UserDto getUser(@PathVariable Long id) {
+        User user =
+            userRepository.
+            findById(id).
+            orElseThrow(() ->  new ResourceNotFoundException());
+        return userMapper.toDto(user);
+    }
+
+    @PostMapping("/user")
+    @JsonView(UserDto.InternalView.class)
+    public UserDto createUser(@RequestBody UserDto user) {
+        User newUser = userMapper.toEntity(user);
+        newUser = userRepository.save(newUser);
+        return userMapper.toDto(newUser);
+    }
+}
+#+end_src
+En este ejemplo, se utiliza un repositorio JPA para acceder a los
+datos de usuario y un mapeador para convertir entre el DTO y el modelo
+de entidad. El controlador utiliza las anotaciones @JsonView y la
+lógica de repositorio y mapeo para recuperar y crear usuarios en la
+API.
+
+
+* Patrón DAO
+** Generalidades
+El patrón DAO (Data Access Object) es un patrón de diseño que se
+utiliza para separar la lógica de acceso a datos de la lógica de
+negocios de una aplicación. Con el DAO, se puede proporcionar una
+interfaz común para acceder a diferentes fuentes de datos, como bases
+de datos relacionales, archivos, APIs de terceros, etc. El DAO permite
+a la aplicación interactuar con la fuente de datos sin tener que
+conocer los detalles de la implementación de la fuente de datos. Esto
+permite a la aplicación ser más flexible y fácil de mantener, ya que
+se pueden realizar cambios en la fuente de datos sin afectar la
+aplicación.
+
+** Ejemplo con Spring Boot
+1. Crear una interfaz DAO: Esta interfaz define los métodos para acceder
+a la fuente de datos, como insertar, actualizar, eliminar y recuperar
+registros.
+#+begin_src java
+public interface UserDao {
+    void insert(User user);
+    User getById(int id);
+    void update(User user);
+    void delete(int id);
+}
+#+end_src
+
+2. Implementar la interfaz DAO: Esta clase proporciona una
+   implementación concreta de los métodos definidos en la interfaz
+   DAO.
+#+begin_src java
+@Repository
+public class UserDaoImpl implements UserDao {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    // implementation of CRUD methods
+}
+#+end_src
+
+3. Inyectar DAO en la clase de servicio: La clase de servicio usa la
+   implementación DAO para acceder a la fuente de datos.
+#+begin_src java
+    @Service
+    public class UserService {
+    @Autowired
+    private UserDao userDao;
+   // business logic using UserDao
+ }
+#+end_src
+
+En este ejemplo, se utiliza JDBC como fuente de datos y JdbcTemplate
+como herramienta de acceso a datos en Spring Boot. Además, se usan
+anotaciones como =@Repository= y =@Service= para identificar las clases
+como componentes de Spring.
+
+ - Ventajas: Mejora la separación de responsabilidades, facilita la
+   mantenibilidad y pruebas unitarias de la aplicación.
+ - Inconvenientes: Aumenta la complejidad de la aplicación y puede ser
+   difícil de implementar correctamente.
+
+Alternativas:
+   - JPA (Java Persistence API): una especificación Java para acceder
+     a bases de datos relacionales.
+   - Hibernate: una popular implementación de JPA.
+   - JDBC (Java Database Connectivity): una API de Java para acceder a
+     bases de datos relacionales.
+
+* Anotaciones Spring Boot
+Las siguientes son las anotaciones comúnmente utilizadas en Spring Boot:
+
+  - =@SpringBootApplication=: es una combinación de varias anotaciones,
+    incluidas =@Configuration=, =@EnableAutoConfiguration=, y
+    =@ComponentScan=. Se usa para habilitar la configuración automática
+    en una aplicación y para permitir a Spring escanear los
+    componentes en el paquete raíz y sus subpaquetes.
+  - =@RestController=: se utiliza para crear un controlador REST en una
+    aplicación Spring Boot.
+  - =@Repository=: se utiliza para identificar una clase como un
+    repositorio, es decir, una clase que proporciona acceso a datos.
+  - =@Service=: se utiliza para identificar una clase como un servicio,
+    es decir, una clase que contiene la lógica de negocios de una
+    aplicación.
+  - =@Autowired=: se utiliza para inyectar un objeto de una dependencia
+    en una clase.
+  - @Entity: se utiliza en combinación con JPA para identificar una
+    clase como una entidad, es decir, una clase que representa una
+    tabla en una base de datos relacional.
+  - =@Transactional=: se utiliza para controlar las transacciones en una
+    aplicación. Esta anotación garantiza que las operaciones en una
+    transacción se realicen juntas o no se realicen en absoluto.
+
+Estas son solo algunas de las anotaciones más comunes utilizadas en
+Spring Boot. Hay muchas más anotaciones disponibles, dependiendo de
+los requisitos específicos de la aplicación.

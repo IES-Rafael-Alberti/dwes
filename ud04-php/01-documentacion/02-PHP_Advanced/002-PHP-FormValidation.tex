@@ -1,0 +1,173 @@
+% Created 2024-01-12 vie 10:04
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\author{José Manuel Sánchez Álvarez}
+\date{}
+\title{PHP Form Validation}
+\hypersetup{
+ pdfauthor={José Manuel Sánchez Álvarez},
+ pdftitle={PHP Form Validation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{Form Validation}
+\label{sec:org00e6146}
+Form validation is a crucial aspect of web development to ensure that
+the data collected from users is correct and useful. In PHP, form
+validation involves checking the data submitted by the user against
+certain criteria before processing it. Here's an overview of how to
+perform basic form validation in PHP:
+
+\subsubsection{Basic Steps for PHP Form Validation:}
+\label{sec:org43971c3}
+\begin{enumerate}
+\item \textbf{Check if the Form is Submitted}: First, check whether the form has
+been submitted. This can typically be done by checking if the form's
+submit button has been clicked.
+
+\begin{minted}[]{php}
+<?
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Form was submitted
+}
+\end{minted}
+
+\item \textbf{Sanitize Input Data}: Before validating, it's important to sanitize
+the input to prevent security issues like SQL injections and
+cross-site scripting (XSS). PHP provides several functions for this,
+such as \texttt{trim()}, \texttt{stripslashes()}, and \texttt{htmlspecialchars()}.
+
+\begin{minted}[]{php}
+<?
+$name = htmlspecialchars(stripslashes(trim($_POST["name"])));
+\end{minted}
+
+\item \textbf{Validate Each Field}: Check each input against specific criteria.
+For example, if a field must be filled out, check if it's empty; if
+an email is expected, check if it's a valid email format.
+
+\begin{minted}[]{php}
+<?
+if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+} else {
+    $email = test_input($_POST["email"]);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $emailErr = "Invalid email format";
+    }
+}
+\end{minted}
+
+\item \textbf{Return Error Messages}: If validation fails, return a meaningful
+error message to the user. This helps them understand what
+corrections are needed.
+
+\item \textbf{Process the Data}: Once all fields are validated, you can proceed
+with processing the data (e.g., storing it in a database, sending an
+email, etc.).
+\end{enumerate}
+
+\subsubsection{Example: Simple PHP Form Validation}
+\label{sec:org10e1a86}
+Here's a simple example of a PHP form with validation for a name and an
+email field:
+
+\begin{minted}[]{php}
+<?php
+$nameErr = $emailErr = "";
+$name = $email = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (empty($_POST["name"])) {
+        $nameErr = "Name is required";
+    } else {
+        $name = test_input($_POST["name"]);
+        // check if name only contains letters and whitespace
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
+            $nameErr = "Only letters and white space allowed";
+        }
+    }
+
+    if (empty($_POST["email"])) {
+        $emailErr = "Email is required";
+    } else {
+        $email = test_input($_POST["email"]);
+        // check if e-mail address is well-formed
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $emailErr = "Invalid email format";
+        }
+    }
+}
+
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+?>
+
+<form method="post"
+  action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+    Name: <input type="text" name="name" value="<?php echo $name;?>">
+    <span class="error">* <?php echo $nameErr;?></span>
+    <br><br>
+    E-mail: <input type="text" name="email"
+                               value="<?php echo $email;?>">
+    <span class="error">* <?php echo $emailErr;?></span>
+    <br><br>
+    <input type="submit" name="submit" value="Submit">
+</form>
+\end{minted}
+
+In this example, the \texttt{test\_input} function sanitizes the data. The name
+and email fields are validated for being required, and additional checks
+are performed for proper formatting.
+
+
+\subsubsection{Conclusion}
+\label{sec:org41f11b9}
+Form validation in PHP is essential for ensuring data integrity and
+security. While the above example covers basic validation, real-world
+applications may require more complex checks and security measures, such
+as validating against a list of allowed values, checking for uniqueness
+in a database, or using CAPTCHA for spam prevention.
+\end{document}

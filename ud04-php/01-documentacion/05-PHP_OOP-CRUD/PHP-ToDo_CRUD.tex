@@ -1,0 +1,186 @@
+% Created 2025-12-17 mié 14:28
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.6.18)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+
+\section{To-Do App}
+\label{sec:org99cd46c}
+Database design for a To-Do App with user registration and role
+management, refined version of your database schema, including a table for
+categories and foreign key constraints for relational integrity:
+
+\subsubsection{Refined Database Schema}
+\label{sec:orga4bb73c}
+\begin{itemize}
+\item Table: \texttt{todos}
+\label{sec:org0c4d9dd}
+\begin{minted}[]{sql}
+CREATE TABLE todos (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  category_id INT,
+  done BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+\end{minted}
+
+\item Table: \texttt{users}
+\label{sec:org3b9da34}
+\begin{minted}[]{sql}
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(255) NOT NULL DEFAULT 'user'
+);
+\end{minted}
+
+\item Table: \texttt{categories}
+\label{sec:orgc53f2bb}
+\begin{minted}[]{sql}
+CREATE TABLE categories (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL UNIQUE
+);
+\end{minted}
+\end{itemize}
+
+\subsubsection{Additional Considerations}
+\label{sec:orgac8fe7b}
+\begin{enumerate}
+\item \textbf{Categories Table}: A separate table for categories allows more
+flexibility and normalization. Users can create custom categories, or
+you can pre-populate it with common categories.
+
+\item \textbf{Foreign Keys}: These ensure relational integrity. For example,
+\texttt{user\_id} in the \texttt{todos} table references \texttt{id} in the \texttt{users} table.
+
+\item \textbf{Timestamps}: Consider automatically updating the \texttt{updated\_at}
+timestamp. In MySQL, you can use \texttt{ON UPDATE CURRENT\_TIMESTAMP}.
+
+\item \textbf{Password Storage}: Ensure you store hashed passwords, not plain
+text. Use PHP's \texttt{password\_hash()} and \texttt{password\_verify()} for
+handling passwords.
+
+\item \textbf{Indexes}: Depending on your queries, consider adding indexes to
+frequently searched fields for performance optimization.
+
+\item \textbf{Roles Management}: If your application's roles have different
+permissions or capabilities, consider having a separate \texttt{roles} table
+and link it to the \texttt{users} table. This allows for easier management
+and scalability of roles.
+\end{enumerate}
+
+\subsubsection{PHP OOP Approach}
+\label{sec:org1345282}
+For the PHP backend, consider the following OOP structure:
+
+\begin{itemize}
+\item \textbf{Classes for Database Tables}: Create classes like \texttt{Todo}, \texttt{User},
+\texttt{Category} each encapsulating CRUD operations for their respective
+tables.
+\item \textbf{Session Management}: Use PHP sessions for handling user logins.
+\item \textbf{Authentication and Authorization}: Implement methods in your \texttt{User}
+class for handling user authentication and role-based authorization.
+\item \textbf{Validation and Sanitization}: Include methods for validating and
+sanitizing input data to ensure security and data integrity.
+\item \textbf{Error Handling}: Robust error handling mechanisms to manage and
+respond to any exceptions or errors that occur during database
+operations.
+\end{itemize}
+
+\subsubsection{Example: PHP Class for \texttt{Todo}}
+\label{sec:org97d89a6}
+Here's a basic structure for the \texttt{Todo} class:
+
+\begin{minted}[]{php}
+class Todo {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function create($userId, $title, $description, $categoryId) {
+        // Insert a new todo into the database
+    }
+
+    public function markDone($todoId) {
+        // Mark a specific todo as done
+    }
+
+    // Additional CRUD methods...
+}
+\end{minted}
+
+Each class (\texttt{Todo}, \texttt{User}, \texttt{Category}) will follow a similar pattern,
+with methods for each CRUD operation.
+
+\subsubsection{Web Interface}
+\label{sec:org1b1f087}
+For the web interface, you'll create HTML forms and PHP scripts to
+interact with these classes. For example, forms for adding a todo, user
+registration, login, etc., and corresponding PHP scripts to process
+these forms and call the appropriate class methods.
+
+\subsubsection{Security}
+\label{sec:org215c65e}
+\begin{itemize}
+\item Use prepared statements to prevent SQL injection.
+\item Implement CSRF tokens in forms to prevent cross-site request forgery.
+\item Hash passwords using \texttt{password\_hash()} for storage.
+\item Implement proper session management for user authentication.
+\end{itemize}
+
+By combining these database structures and OOP principles in PHP, you'll
+create a robust, scalable, and secure To-Do application.
+\end{document}

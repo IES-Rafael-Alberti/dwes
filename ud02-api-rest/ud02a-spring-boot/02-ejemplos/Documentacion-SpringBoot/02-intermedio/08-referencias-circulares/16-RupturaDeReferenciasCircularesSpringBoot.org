@@ -1,0 +1,358 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* El problema de los bucles infinitos entre entidades en Spring Boot
+El problema de los bucles infinitos entre entidades en Spring Boot, como ocurre entre **Libro** y **Autor** por sus relaciones bidireccionales, se debe a que estas relaciones cruzadas pueden generar ciclos cuando se serializan las entidades en formato JSON (por ejemplo, en los controladores REST). Esto ocurre porque **Libro** tiene una referencia a **Autor**, y **Autor** tiene una lista de **Libros**, creando un ciclo de referencia que hace que Jackson (la biblioteca usada por Spring para serializar objetos en JSON) entre en un bucle.
+
+Para resolver este problema, puedes usar una de las siguientes estrategias:
+
+**1. Anotaciones `@JsonIgnore` o `@JsonManagedReference` / `@JsonBackReference`**
+Estas anotaciones ayudan a Jackson a gestionar las relaciones bidireccionales de manera que evite los ciclos de serialización.
+
+**Solución con `@JsonIgnore`**
+Puedes usar **`@JsonIgnore`** para evitar la serialización del campo que causa el ciclo. Generalmente, ignoramos el lado de la relación que no es necesario serializar en ese contexto.
+
+**Ejemplo en la entidad `Libro`:**
+#+BEGIN_SRC java
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    @JsonIgnore  // Ignorar la serialización del autor para evitar ciclos
+    private Autor autor;
+
+    // Getters y Setters
+}
+#+END_SRC
+
+Con **`@JsonIgnore`**, la referencia a **Autor** no se serializará en la salida JSON cuando se consulte un **Libro**, cortando el ciclo.
+
+**Solución con `@JsonManagedReference` / `@JsonBackReference`**
+Otra opción es usar **`@JsonManagedReference`** y **`@JsonBackReference`** para indicar a Jackson cómo gestionar la serialización de relaciones bidireccionales.
+
+- **`@JsonManagedReference`**: Colocar en el lado propietario de la relación (por ejemplo, en la entidad `Autor` en la colección de `libros`).
+- **`@JsonBackReference`**: Colocar en el lado inverso de la relación (por ejemplo, en la entidad `Libro` en el campo `autor`).
+
+**Ejemplo usando `@JsonManagedReference` y `@JsonBackReference`:**
+#+BEGIN_SRC java
+@Entity
+public class Autor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String nacionalidad;
+
+    @OneToMany(mappedBy = "autor")
+    @JsonManagedReference  // Lado propietario de la relación
+    private List<Libro> libros;
+
+    // Getters y Setters
+}
+#+END_SRC
+
+#+BEGIN_SRC java
+@Entity
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    @JsonBackReference  // Lado inverso de la relación
+    private Autor autor;
+
+    // Getters y Setters
+}
+#+END_SRC
+
+Con esta configuración:
+- **`@JsonManagedReference`** en `Autor` indica que esta parte de la relación se serializará en JSON.
+- **`@JsonBackReference`** en `Libro` indica que este campo no se serializará, evitando el ciclo.
+
+**2. Anotación `@JsonIgnoreProperties`**
+Otra solución es usar **`@JsonIgnoreProperties`** en el campo que puede crear el ciclo. Esto es útil si quieres ignorar no solo el campo completo, sino también propiedades específicas.
+
+**Ejemplo:**
+#+BEGIN_SRC java
+@Entity
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    @JsonIgnoreProperties("libros")  // Ignorar el campo "libros" del autor para evitar el ciclo
+    private Autor autor;
+
+    // Getters y Setters
+}
+#+END_SRC
+
+Con **`@JsonIgnoreProperties("libros")`** le estamos indicando a Jackson que ignore el campo `libros` dentro de la entidad **Autor** cuando está serializando **Libro**, lo que también corta el ciclo.
+
+**3. Proyección o DTO (Data Transfer Object)**
+Si prefieres más control sobre los datos que se serializan, puedes crear **DTOs** (Objetos de Transferencia de Datos) para las respuestas JSON, lo que te permite eliminar las relaciones que no son necesarias en ciertos contextos.
+
+**Ejemplo de un DTO para `Libro`:**
+#+BEGIN_SRC java
+public class LibroDTO {
+
+    private Long id;
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+    private String autorNombre;
+
+    // Constructor que convierte un Libro en un LibroDTO
+    public LibroDTO(Libro libro) {
+        this.id = libro.getId();
+        this.titulo = libro.getTitulo();
+        this.genero = libro.getGenero();
+        this.añoPublicacion = libro.getAñoPublicacion();
+        this.estado = libro.getEstado();
+        this.autorNombre = libro.getAutor().getNombre();  // Solo tomar el nombre del autor
+    }
+
+    // Getters y Setters
+}
+#+END_SRC
+
+Luego, en tu controlador puedes convertir las entidades a **DTOs** antes de devolverlas en la respuesta:
+
+#+BEGIN_SRC java
+@RestController
+@RequestMapping("/libros")
+public class LibroController {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @GetMapping
+    public List<LibroDTO> listarLibros() {
+        List<Libro> libros = libroRepository.findAll();
+        return libros.stream().map(LibroDTO::new).collect(Collectors.toList());
+    }
+}
+#+END_SRC
+
+**Conclusión**
+Para evitar el ciclo infinito entre las entidades **Libro** y **Autor**, puedes usar una de estas soluciones:
+
+1. **`@JsonIgnore`** para ignorar la serialización del campo inverso.
+2. **`@JsonManagedReference`** y **`@JsonBackReference`** para gestionar relaciones bidireccionales.
+3. **`@JsonIgnoreProperties`** para ignorar propiedades específicas durante la serialización.
+4. Usar **DTOs** para controlar qué datos se devuelven en la respuesta JSON y evitar las relaciones cruzadas innecesarias.
+
+Si prefieres una solución más simple, **`@JsonIgnore`** es la forma más directa. Si necesitas más control sobre la serialización, la combinación de **`@JsonManagedReference`** y **`@JsonBackReference`** también es una buena opción
+
+
+
+* ¿Es posible una solución que al serializar libro aparezca el autor?
+Sí, es posible hacer que, al serializar el **`Libro`**, aparezca también el **`Autor`**, pero sin crear ciclos infinitos. La combinación de **`@JsonManagedReference`** y **`@JsonBackReference`** que hemos usado está diseñada para cortar ciclos, lo que significa que si usas **`@JsonBackReference`** en la clase `Libro`, el autor no aparecerá en la serialización.
+
+Si deseas que tanto el **`Libro`** como el **`Autor`** aparezcan en la serialización de `Libro` (y viceversa), puedes usar otras soluciones, como:
+
+**Solución 1: Usar `@JsonIdentityInfo`**
+La anotación **`@JsonIdentityInfo`** permite manejar las referencias cíclicas de forma más flexible, utilizando un identificador para cada entidad. Con esta estrategia, Jackson evita el ciclo referencial al sustituir referencias repetidas por el ID del objeto previamente serializado.
+
+**Ejemplo con `@JsonIdentityInfo`**:
+
+1. *En la entidad `Autor`*:
+#+begin_src java
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class,
+property = "id")
+public class Autor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String nacionalidad;
+
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private List<Libro> libros;
+
+    // Getters y Setters
+}
+#+end_src
+
+2. *En la entidad `Libro`*:
+#+begin_src java
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+
+@Entity
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class,
+property = "id")
+public class Libro {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+
+    // Getters y Setters
+}
+#+end_src
+
+**¿Cómo funciona `@JsonIdentityInfo`?**
+
+- **`@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")`**: Esta anotación le dice a Jackson que, al serializar la entidad, utilice el **`id`** como identificador. Si la entidad ya fue serializada previamente, Jackson solo incluirá el ID en lugar de volver a serializar el objeto completo, evitando así el ciclo infinito.
+
+**Resultado al serializar un `Libro`**:
+Cuando serializas un **`Libro`** con esta configuración, verás algo como esto:
+#+begin_example
+{
+  "id": 1,
+  "titulo": "Cien años de soledad",
+  "genero": "Novela",
+  "añoPublicacion": 1967,
+  "estado": "disponible",
+  "autor": {
+    "id": 1,
+    "nombre": "Gabriel García Márquez",
+    "nacionalidad": "Colombiana",
+    "libros": [1, 2]  // Solo aparece el ID de los libros para evitar el ciclo
+  }
+}
+#+end_example
+
+**Solución 2: Usar DTOs (Data Transfer Objects)**
+
+Otra solución es usar **DTOs** (Objetos de Transferencia de Datos) para controlar exactamente cómo quieres que se serialicen las relaciones. Esto te da mucho más control, ya que defines qué campos y relaciones se deben incluir en la respuesta.
+
+**Ejemplo con DTO**:
+
+1. *Crear un DTO para `Libro`* que incluya solo los datos que quieras serializar:
+#+begin_src java
+public class LibroDTO {
+
+    private Long id;
+    private String titulo;
+    private String genero;
+    private int añoPublicacion;
+    private String estado;
+    private String autorNombre;
+
+    public LibroDTO(Libro libro) {
+        this.id = libro.getId();
+        this.titulo = libro.getTitulo();
+        this.genero = libro.getGenero();
+        this.añoPublicacion = libro.getAñoPublicacion();
+        this.estado = libro.getEstado();
+        this.autorNombre = libro.getAutor().getNombre();  // Solo el nombre del autor
+    }
+
+    // Getters y Setters
+}
+#+end_src
+
+2. *Modificar el controlador para devolver `LibroDTO`*:
+#+begin_src java
+@RestController
+@RequestMapping("/libros")
+public class LibroController {
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @GetMapping
+    public List<LibroDTO> listarLibros() {
+        List<Libro> libros = libroRepository.findAll();
+        return libros.stream().map(LibroDTO::new).collect(Collectors.toList());
+    }
+}
+#+end_src
+
+**Conclusión**
+
+Para lograr que el **`Autor`** aparezca al serializar un **`Libro`** sin causar ciclos infinitos, tienes varias opciones:
+
+1. **`@JsonIdentityInfo`**: Es una solución automática y flexible que te permite serializar ambas entidades sin ciclos, usando el ID de los objetos para resolver las referencias.
+2. **DTOs**: Si prefieres más control sobre qué datos y relaciones incluir, puedes optar por crear DTOs, lo que te permite definir manualmente cómo se deben serializar las entidades.
+
+La opción **`@JsonIdentityInfo`** es más fácil de implementar y cubre muchos casos de uso sin tener que crear nuevas clases, mientras que los **DTOs** ofrecen más control si necesitas una estructura específica para la salida JSON.
+
+¿Te gustaría proceder con una de estas opciones o necesitas más detalles? ¡Estoy aquí para ayudarte!

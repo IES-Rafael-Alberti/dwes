@@ -1,0 +1,586 @@
+#+TITLE: PHP and Databases
+#+AUTHOR: José Manuel Sánchez Álvarez
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* PHP and Databases
+  :PROPERTIES:
+  :CUSTOM_ID: php-and-databases
+  :END:
+
+Working with databases is a critical aspect of PHP development. In this
+section, we'll explore how PHP interacts with databases, particularly
+focusing on MySQL and PostgreSQL.
+
+** Introduction to Databases
+   :PROPERTIES:
+   :CUSTOM_ID: introduction-to-databases
+   :END:
+
+A database is an organized collection of data, generally stored and
+accessed electronically from a computer system. In web development,
+databases are used to store data such as user information, posts,
+comments, and more.
+
+** Database Access from PHP
+   :PROPERTIES:
+   :CUSTOM_ID: database-access-from-php
+   :END:
+
+PHP interacts with databases through specific libraries. The most common
+libraries for MySQL are:
+
+- *MySQLi*: An improved version of the older MySQL library. It provides
+  both procedural and object-oriented interfaces and supports prepared
+  statements, which are crucial for security.
+
+- *PDO (PHP Data Objects)*: A database access layer providing a uniform
+  method of access to multiple databases. It doesn't support
+  database-specific syntax, but it's flexible and supports prepared
+  statements.
+
+*** MySQLi and PDO for MySQL
+    :PROPERTIES:
+    :CUSTOM_ID: mysqli-and-pdo-for-mysql
+    :END:
+
+**** Connecting to a MySQL Database
+     :PROPERTIES:
+     :CUSTOM_ID: connecting-to-a-mysql-database
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $mysqli = new mysqli("localhost", "username", "password", "database");
+
+    if ($mysqli->connect_error) {
+        die("Connection failed: " . $mysqli->connect_error);
+    }
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    try {
+        $pdo = new PDO("mysql:host=localhost;dbname=database",
+                                          "username", "password");
+        // Set the PDO error mode to exception
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch(PDOException $e) {
+        die("Connection failed: " . $e->getMessage());
+    }
+  #+end_src
+
+**** Listing Databases
+     :PROPERTIES:
+     :CUSTOM_ID: listing-databases
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $result = $mysqli->query("SHOW DATABASES");
+
+    while ($row = $result->fetch_assoc()) {
+        echo $row["Database"] . "\n";
+    }
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    $query = $pdo->query("SHOW DATABASES");
+
+    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+        echo $row["Database"] . "\n";
+    }
+  #+end_src
+
+*** CRUD Operations
+    :PROPERTIES:
+    :CUSTOM_ID: crud-operations
+    :END:
+
+**** Query All Data from a Table
+     :PROPERTIES:
+     :CUSTOM_ID: query-all-data-from-a-table
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $result = $mysqli->query("SELECT * FROM table_name");
+
+    while ($row = $result->fetch_assoc()) {
+        echo $row["column1"] . ", " . $row["column2"] . "\n";
+    }
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    $stmt = $pdo->query("SELECT * FROM table_name");
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo $row["column1"] . ", " . $row["column2"] . "\n";
+    }
+  #+end_src
+
+**** More Complex Queries
+     :PROPERTIES:
+     :CUSTOM_ID: more-complex-queries
+     :END:
+
+You can perform complex SQL queries such as JOINs, nested SELECTs, etc.,
+using the same methods.
+
+**** Insert Data
+     :PROPERTIES:
+     :CUSTOM_ID: insert-data
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $sql = "INSERT INTO table_name (column1, column2)
+      VALUES ('value1', 'value2')";
+    $mysqli->query($sql);
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    $sql = "INSERT INTO table_name (column1, column2)
+      VALUES ('value1', 'value2')";
+    $pdo->exec($sql);
+  #+end_src
+
+**** Delete Rows
+     :PROPERTIES:
+     :CUSTOM_ID: delete-rows
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $sql = "DELETE FROM table_name WHERE condition";
+    $mysqli->query($sql);
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    $sql = "DELETE FROM table_name WHERE condition";
+    $pdo->exec($sql);
+  #+end_src
+
+**** Create Tables
+     :PROPERTIES:
+     :CUSTOM_ID: create-tables
+     :END:
+
+- *MySQLi*:
+
+  #+begin_src php
+    $sql = "CREATE TABLE table_name (id INT, data VARCHAR(100))";
+    $mysqli->query($sql);
+  #+end_src
+
+- *PDO*:
+
+  #+begin_src php
+    $sql = "CREATE TABLE table_name (id INT, data VARCHAR(100))";
+    $pdo->exec($sql);
+  #+end_src
+
+*** PostgreSQL Connection and CRUD Operations with PDO
+    :PROPERTIES:
+    :CUSTOM_ID: postgresql-connection-and-crud-operations-with-pdo
+    :END:
+
+Connecting to PostgreSQL and performing CRUD operations with PDO is
+similar to MySQL. The primary difference lies in the DSN (Data Source
+Name) used in the PDO constructor.
+
+**** Connecting to a PostgreSQL Database
+     :PROPERTIES:
+     :CUSTOM_ID: connecting-to-a-postgresql-database
+     :END:
+
+#+begin_src php
+   try {
+       $pdo = new PDO("pgsql:host=localhost;dbname=database",
+                                        l"username", "password");
+       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+   } catch(PDOException $e) {
+       die("Connection failed: " . $e->getMessage());
+   }
+#+end_src
+
+The CRUD operations for PostgreSQL using PDO are identical to those for
+MySQL, as PDO abstracts the database details, providing a consistent
+method for database interaction.
+
+** CRUD Car Dealership
+   :PROPERTIES:
+   :CUSTOM_ID: crud-car-dealership
+   :END:
+
+Creating a complete set of CRUD operations for a car dealership database
+involves several components, including database design, PHP scripts for
+handling operations, and HTML forms for user input. Let's outline a
+basic structure for such an application.
+
+*** Database Structure
+    :PROPERTIES:
+    :CUSTOM_ID: database-structure
+    :END:
+
+1. *Tables:*
+
+   - =Car=: =id=, =model=, =price=, =brand_id=, =seller_id=
+   - =CarBrand=: =id=, =name=
+   - =Seller=: =id=, =name=, =cars_selled=
+   - =Client=: =id=, =name=
+   - =Purchase=: =id=, =client_id=, =car_id=, =date=
+
+2. *Relationships:*
+
+   - A =Car= belongs to a =CarBrand= and a =Seller=.
+   - A =Purchase= links a =Client= to a =Car=.
+
+*** HTML Forms for Data Insertion
+    :PROPERTIES:
+    :CUSTOM_ID: html-forms-for-data-insertion
+    :END:
+
+1. *Add a New Car:*
+
+   #+begin_src html
+     <form action="add_car.php" method="post">
+         Model: <input type="text" name="model"><br>
+         Price: <input type="text" name="price"><br>
+         Brand: <select name="brand_id">
+             <!-- Options populated from CarBrand table -->
+         </select><br>
+         Seller: <select name="seller_id">
+             <!-- Options populated from Seller table -->
+         </select><br>
+         <input type="submit" value="Add Car">
+     </form>
+   #+end_src
+
+2. *Add a New Client:*
+
+   #+begin_src html
+     <form action="add_client.php" method="post">
+         Name: <input type="text" name="name"><br>
+         <input type="submit" value="Add Client">
+     </form>
+   #+end_src
+
+*** PHP Scripts for CRUD Operations
+    :PROPERTIES:
+    :CUSTOM_ID: php-scripts-for-crud-operations
+    :END:
+
+1. *Add a New Car (=add_car.php=):*
+
+   #+begin_src php
+     <?=
+     // Assume PDO $pdo is already connected to the database
+     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+         $stmt = $pdo->prepare(
+           "INSERT INTO Car (model, price, brand_id, seller_id)
+           VALUES (:model, :price, :brand_id, :seller_id)");
+         $stmt->execute([
+             ':model' => $_POST['model'],
+             ':price' => $_POST['price'],
+             ':brand_id' => $_POST['brand_id'],
+             ':seller_id' => $_POST['seller_id']
+         ]);
+         echo "Car added successfully.";
+     }
+   #+end_src
+
+2. *Add a New Client (=add_client.php=):*
+
+   #+begin_src php
+     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+         $stmt = $pdo->prepare("INSERT INTO Client (name) VALUES (:name)");
+         $stmt->execute([':name' => $_POST['name']]);
+         echo "Client added successfully.";
+     }
+   #+end_src
+
+*** Listing Data
+    :PROPERTIES:
+    :CUSTOM_ID: listing-data
+    :END:
+
+1. *List All Cars (=list_cars.php=):*
+
+   #+begin_src php
+     $stmt = $pdo->query("SELECT Car.model, Car.price, CarBrand.name AS brand, Seller.name AS seller FROM Car JOIN CarBrand ON Car.brand_id = CarBrand.id JOIN Seller ON Car.seller_id = Seller.id");
+     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+         echo "Model: " . $row['model'] . ", Price: " . $row['price'] . ", Brand: " . $row['brand'] . ", Seller: " . $row['seller'] . "<br>";
+     }
+   #+end_src
+
+2. *List Cars Bought by Clients (=cars_bought_by_clients.php=):*
+
+   #+begin_src php
+     $stmt = $pdo->query("SELECT Client.name AS client, Car.model FROM Purchase JOIN Client ON Purchase.client_id = Client.id JOIN Car ON Purchase.car_id = Car.id");
+     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+         echo "Client: " . $row['client'] . ", Car Model: " . $row['model'] . "<br>";
+     }
+   #+end_src
+
+3. *List Cars Sold by Sellers (=cars_selled_by_sellers.php=):*
+
+   #+begin_src php
+     $stmt = $pdo->query("SELECT Seller.name AS seller, COUNT(Car.id) AS cars_selled FROM Car JOIN Seller ON Car.seller_id = Seller.id GROUP BY Seller.id");
+     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+         echo "Seller: " . $row['seller'] . ", Cars Selled: " . $row['cars_selled'] . "<br>";
+     }
+   #+end_src
+
+*** Conclusion
+    :PROPERTIES:
+    :CUSTOM_ID: conclusion
+    :END:
+
+This setup provides a basic structure for a car dealership application
+with CRUD operations. The PHP scripts and HTML forms can be expanded and
+customized as needed. Security considerations, like input validation and
+prepared statements, have been included to prevent SQL injection. For a
+real-world application, you'd also need to handle
+
+This overview provides a foundation for working with MySQL and
+PostgreSQL databases in
+
+PHP. Each of these operations is fundamental for creating dynamic,
+data-driven web applications. Understanding how to connect to a
+database, perform CRUD operations, and manage different database engines
+is crucial for any PHP developer.
+
+** Prepared Statements
+Using prepared statements for querying databases
+is an essential practice in PHP to ensure security, particularly to
+prevent SQL injection attacks. Prepared statements separate SQL commands
+from the data, allowing the database to recognize and treat data as
+such, rather than as part of an SQL command.
+
+*** MySQLi and PDO
+    :PROPERTIES:
+    :CUSTOM_ID: mysqli-and-pdo
+    :END:
+
+PHP offers two main methods to interact with databases using prepared
+statements: MySQLi (MySQL Improved) and PDO (PHP Data Objects). Both
+support prepared statements, but PDO is more flexible as it can
+interface with various database systems.
+
+**** MySQLi Prepared Statement
+     :PROPERTIES:
+     :CUSTOM_ID: mysqli-prepared-statement
+     :END:
+
+*Connecting to the Database*:
+
+#+begin_src php
+  $mysqli = new mysqli("localhost", "username", "password", "database");
+  if ($mysqli->connect_error) {
+      die("Connection failed: " . $mysqli->connect_error);
+  }
+#+end_src
+
+*Prepared Statement*:
+
+#+begin_src php
+  // Prepare a statement
+  $stmt = $mysqli->prepare("SELECT * FROM table WHERE column = ?");
+  $stmt->bind_param("s", $param);
+
+  // Set parameters and execute
+  $param = "value";
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_assoc()) {
+      // process $row
+  }
+
+  $stmt->close();
+#+end_src
+
+**** PDO Prepared Statement
+     :PROPERTIES:
+     :CUSTOM_ID: pdo-prepared-statement
+     :END:
+
+*Connecting to the Database*:
+
+#+begin_src php
+  try {
+      $pdo = new PDO("mysql:host=localhost;dbname=database", "username", "password");
+      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  } catch(PDOException $e) {
+      die("Connection failed: " . $e->getMessage());
+  }
+#+end_src
+
+*Prepared Statement*:
+
+#+begin_src php
+  $stmt = $pdo->prepare("SELECT * FROM table WHERE column = :param");
+  $stmt->bindParam(':param', $param, PDO::PARAM_STR);
+
+  $param = "value";
+  $stmt->execute();
+
+  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      // process $row
+  }
+#+end_src
+
+*** CRUD Operations with Prepared Statements
+    :PROPERTIES:
+    :CUSTOM_ID: crud-operations-with-prepared-statements
+    :END:
+
+**** Insert Data
+     :PROPERTIES:
+     :CUSTOM_ID: insert-data-1
+     :END:
+
+*MySQLi*:
+
+#+begin_src php
+  $stmt = $mysqli->prepare("INSERT INTO table (column1, column2) VALUES (?, ?)");
+  $stmt->bind_param("ss", $column1, $column2);
+
+  $column1 = "data1";
+  $column2 = "data2";
+  $stmt->execute();
+#+end_src
+
+*PDO*:
+
+#+begin_src php
+  $stmt = $pdo->prepare("INSERT INTO table (column1, column2) VALUES (:column1, :column2)");
+  $stmt->bindParam(':column1', $column1);
+  $stmt->bindParam(':column2', $column2);
+
+  $column1 = "data1";
+  $column2 = "data2";
+  $stmt->execute();
+#+end_src
+
+**** Update Data
+     :PROPERTIES:
+     :CUSTOM_ID: update-data
+     :END:
+
+*MySQLi*:
+
+#+begin_src php
+  $stmt = $mysqli->prepare("UPDATE table SET column1 = ? WHERE column2 = ?");
+  $stmt->bind_param("ss", $column1, $column2);
+
+  $column1 = "newdata";
+  $column2 = "condition";
+  $stmt->execute();
+#+end_src
+
+*PDO*:
+
+#+begin_src php
+  $stmt = $pdo->prepare("UPDATE table SET column1 = :column1 WHERE column2 = :column2");
+  $stmt->bindParam(':column1', $column1);
+  $stmt->bindParam(':column2', $column2);
+
+  $column1 = "newdata";
+  $column2 = "condition";
+  $stmt->execute();
+#+end_src
+
+**** Delete Data
+     :PROPERTIES:
+     :CUSTOM_ID: delete-data
+     :END:
+
+*MySQLi*:
+
+#+begin_src php
+  $stmt = $mysqli->prepare("DELETE FROM table WHERE column = ?");
+  $stmt->bind_param("s", $param);
+
+  $param = "value";
+  $stmt->execute();
+#+end_src
+
+*PDO*:
+
+#+begin_src php
+  $stmt = $pdo->prepare("DELETE FROM table WHERE column = :param");
+  $stmt->bindParam(':param', $param);
+
+  $param = "value";
+  $stmt->execute();
+#+end_src
+
+*** Advantages of Using Prepared Statements
+    :PROPERTIES:
+    :CUSTOM_ID: advantages-of-using-prepared-statements
+    :END:
+
+1. *Security*: They prevent SQL injection attacks.
+2. *Performance*: They can improve performance, as the SQL statement
+   template is compiled once and can be reused with different
+   parameters.
+3. *Flexibility*: With PDO, you can switch between different database
+   systems without changing the PHP code for preparing and executing the
+   SQL.
+
+*** Conclusion
+    :PROPERTIES:
+    :CUSTOM_ID: conclusion-1
+    :END:
+
+Using prepared statements for database queries is a best practice in PHP
+development. It enhances the security of your applications and can
+improve performance. Whether using MySQLi or PDO, the concept remains
+the same: separate SQL structure from the data.

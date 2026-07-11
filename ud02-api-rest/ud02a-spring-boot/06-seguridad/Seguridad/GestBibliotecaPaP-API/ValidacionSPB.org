@@ -1,0 +1,225 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:nil num:nil -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* Java Bean Validation - Anotaciones útiles para la validación
+
+En **Java Bean Validation** (parte de la especificación **Jakarta EE**
+o **Java EE**) hay varias anotaciones que se pueden usar para validar
+diferentes tipos de datos en tus entidades, además de
+**`@NotNull`**. Estas anotaciones permiten asegurarse de que los datos
+que ingresan a tu aplicación sean válidos, evitando inconsistencias o
+errores antes de que los datos lleguen a la base de datos.
+
+Aquí te dejo algunas de las anotaciones más comunes y útiles que
+puedes usar en tus entidades.
+
+**1. `@Size`**
+   - Se utiliza para restringir el tamaño de una colección, mapa,
+     array, o la longitud de una cadena de texto.
+
+   #+begin_src java
+   @Size(min = 2, max = 100,
+       message = "El título debe tener entre 2 y 100 caracteres")
+   private String titulo;
+   #+end_src
+
+   - **`min`**: Mínimo número de caracteres o elementos.
+   - **`max`**: Máximo número de caracteres o elementos.
+   - **`message`**: Mensaje de error personalizado.
+
+**2. `@Min` y `@Max`**
+   - Se usan para especificar un valor mínimo o máximo para un campo numérico.
+
+   #+begin_src java
+   @Min(value = 1900,
+         message = "El año de publicación no puede ser menor a 1900")
+   @Max(value = 2024,
+         message = "El año de publicación no puede ser mayor al año actual")
+   private int añoPublicacion;
+   #+end_src
+
+   - **`@Min`**: Define el valor mínimo permitido.
+   - **`@Max`**: Define el valor máximo permitido.
+
+**3. `@Pattern`**
+   - Se utiliza para validar una cadena de texto basada en una
+     expresión regular (regex).
+
+   #+begin_src java
+   @Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z]{2,6}$",
+               message = "El email debe tener un formato válido")
+   private String email;
+   #+end_src
+
+   - **`regexp`**: Expresión regular que define el formato válido.
+   - **`message`**: Mensaje de error en caso de no coincidir con el patrón.
+
+**4. `@Email`**
+   - Valida que el campo tiene un formato de correo electrónico
+     válido. Es una validación específica para emails.
+
+   #+begin_src java
+   @Email(message = "El email debe ser válido")
+   private String email;
+   #+end_src
+
+**5. `@Future` y `@Past`**
+   - **`@Future`**: Verifica que una fecha debe estar en el futuro.
+   - **`@Past`**: Verifica que una fecha debe estar en el pasado.
+
+   #+begin_src java
+   @Future(message = "La fecha límite de devolución debe ser una fecha futura")
+   private LocalDate fechaLimiteDevolucion;
+
+   @Past(message = "La fecha de préstamo debe ser una fecha pasada")
+   private LocalDate fechaPrestamo;
+   #+end_src
+
+**6. `@Digits`**
+   - Se usa para limitar la cantidad de dígitos enteros y decimales en un número.
+
+   #+begin_src java
+   @Digits(integer = 4, fraction = 0,
+           message = "El año debe ser un número de 4 dígitos sin decimales")
+   private int añoPublicacion;
+   #+end_src
+
+   - **`integer`**: Número máximo de dígitos enteros permitidos.
+   - **`fraction`**: Número máximo de dígitos decimales permitidos.
+
+**7. `@Positive`, `@PositiveOrZero`, `@Negative`, `@NegativeOrZero`**
+   - Valida que el valor de un campo numérico es positivo, negativo, o cero.
+
+   #+begin_src java
+   @Positive(message = "El número de copias debe ser un valor positivo")
+   private int numeroCopias;
+
+   @PositiveOrZero(message = "El número de páginas no puede ser negativo")
+   private int numeroPaginas;
+   #+end_src
+
+**8. `@AssertTrue` y `@AssertFalse`**
+   - Verifica que un valor booleano es verdadero o falso.
+
+   #+begin_src java
+   @AssertTrue(message = "El usuario debe aceptar los términos y condiciones")
+   private boolean aceptaTerminos;
+
+   @AssertFalse(message = "El campo no debe ser verdadero")
+   private boolean esActivo;
+   #+end_src
+
+**9. `@Length`** (de Hibernate Validator)
+   - Similar a **`@Size`**, pero específica para validar cadenas de
+     texto. Es parte de **Hibernate Validator**.
+
+   #+begin_src java
+   @Length(min = 3, max = 100,
+     message = "El nombre debe tener entre 3 y 100 caracteres")
+   private String nombre;
+   #+end_src
+
+**10. `@CreditCardNumber`** (de Hibernate Validator)
+   - Valida que el número de una tarjeta de crédito tenga un formato
+     válido (usando el algoritmo de Luhn).
+
+   #+begin_src java
+   @CreditCardNumber(message = "Número de tarjeta de crédito no válido")
+   private String tarjetaCredito;
+   #+end_src
+
+**11. `@CNPJ`, `@CPF`** (de Hibernate Validator, específico para Brasil)
+   - Valida que un campo sea un **CNPJ** o un **CPF** en Brasil.
+
+   #+begin_src java
+   @CPF(message = "El CPF ingresado no es válido")
+   private String cpf;
+   #+end_src
+
+**12. `@Valid`**
+   - Se usa para validar objetos anidados. Cuando una entidad tiene
+     otra entidad dentro, puedes usar **`@Valid`** para asegurarte de
+     que las validaciones en los campos anidados también se ejecuten.
+
+   #+begin_src java
+   @Valid
+   private Direccion direccion;
+   #+end_src
+
+**13. `@NotEmpty` y `@NotBlank`**
+   - **`@NotEmpty`**: Se asegura de que la cadena, lista o colección
+     no esté vacía.
+   - **`@NotBlank`**: Valida que una cadena no esté vacía y que no sea
+     solo espacios en blanco.
+
+   #+begin_src java
+   @NotEmpty(message = "El nombre no puede estar vacío")
+   private String nombre;
+
+   @NotBlank(message =
+    "El campo de dirección no puede estar vacío o tener solo espacios en blanco")
+   private String direccion;
+   #+end_src
+
+**14. `@Range`** (de Hibernate Validator)
+   - Valida que un número esté dentro de un rango definido.
+
+   #+begin_src java
+   @Range(min = 1, max = 10, message =
+          "La calificación debe estar entre 1 y 10")
+   private int calificacion;
+   #+end_src
+
+**15. `@NotNull`** ()
+    - Verifica que el valor de un campo no sea null. Ideal para campos
+      que siempre deben tener un valor.
+    - Uso: Se aplica a cualquier tipo de datos.
+
+   #+begin_src java
+   @NotNull(message = "El campo no puede ser nulo")
+   private String nombre;
+   #+end_src
+
+*Conclusión* Además de **`@NotNull`**, tienes muchas otras anotaciones
+para validar diversos tipos de datos en tus entidades. Estas
+validaciones se ejecutan automáticamente cuando envías datos a tu API,
+y si los datos no cumplen con las restricciones, puedes devolver un
+mensaje de error claro al usuario.
+
+Puedes combinar múltiples anotaciones en los mismos campos para
+aplicar varias validaciones. Usar validaciones como estas ayuda a
+garantizar la integridad de los datos en tu aplicación y evita que
+lleguen datos incorrectos o incompletos a la base de datos.

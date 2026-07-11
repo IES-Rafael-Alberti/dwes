@@ -1,0 +1,323 @@
+% Created 2024-01-05 vie 19:11
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\date{}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.12)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+
+\section{PHP Functions}
+\label{sec:org19b1d5a}
+Functions are one of the most essential constructs in programming. They
+encapsulate code for specific tasks, enabling code reuse, logical
+organization, and the simplification of complex operations. In this
+chapter, we'll delve into defining and calling functions in PHP,
+managing data passed to and from these functions, and using some of the
+many built-in PHP functions.
+
+\subsection{Defining and Calling Functions}
+\label{sec:org2eef0dc}
+A function is a designated block of code designed to perform a
+particular task. In PHP, a function is defined using the \texttt{function}
+keyword, followed by a unique function name and a set of parentheses.
+Optional parameters can be specified within these parentheses, and these
+act as input variables for the function. The function's body, enclosed
+within curly braces, contains the code executed upon the function's
+invocation.
+
+Here's an example of a simple function definition that outputs a
+greeting message:
+
+\begin{minted}[]{php}
+<?=
+  function sayHello() {
+      echo "Hello, world!";
+  }
+\end{minted}
+
+To call this function, we use its name followed by parentheses. If the
+function has parameters, the corresponding arguments are passed within
+these parentheses. An argument is a value supplied to the function upon
+its call.
+
+Here's how we call the \texttt{sayHello} function:
+
+\begin{minted}[]{php}
+<?=
+  sayHello(); // Outputs: Hello, world!
+\end{minted}
+
+\subsection{Function Arguments, Value and Reference, and Return Values}
+\label{sec:orgc8734aa}
+\subsubsection{Passing Arguments}
+\label{sec:org3af60d5}
+Parameters allow functions to accept inputs. These inputs are termed as
+arguments when a function is called. Each argument corresponds to a
+function's parameter by order.
+
+Consider a function that greets a user by name:
+
+\begin{minted}[]{php}
+<?=
+  function greet($name) {
+      echo "Hello, $name!";
+  }
+
+  greet("Alice"); // Outputs: Hello, Alice!
+\end{minted}
+
+In this example, \texttt{"Alice"} is the argument passed to the \texttt{greet}
+function.
+
+\subsubsection{Value vs. Reference}
+\label{sec:org5b35754}
+In PHP, arguments can be passed by value or by reference. Passing by
+value means the function works with a copy of the argument, whereas
+passing by reference means the function works directly with the original
+variable.
+
+Example of passing by value:
+
+\begin{minted}[]{php}
+<?=
+  function addOne($number) {
+      $number++;
+      echo $number;
+  }
+
+  $originalNumber = 5;
+  addOne($originalNumber); // Outputs: 6
+  echo $originalNumber; // Still outputs: 5
+\end{minted}
+
+In contrast, passing by reference:
+
+\begin{minted}[]{php}
+<?=
+  function addOneByRef(&$number) {
+      $number++;
+  }
+
+  $originalNumber = 5;
+  addOneByRef($originalNumber);
+  echo $originalNumber; // Outputs: 6
+\end{minted}
+
+The \texttt{\&} symbol in the parameter list indicates that the argument is
+passed by reference.
+
+\subsubsection{Return Values}
+\label{sec:org0bfbf26}
+Functions can return values using the \texttt{return} statement. This ends the
+function's execution and optionally passes back a value.
+
+For example:
+
+\begin{minted}[]{php}
+<?=
+  function sum($a, $b) {
+      return $a + $b;
+  }
+
+  $total = sum(5, 3);
+  echo $total; // Outputs: 8
+\end{minted}
+
+\subsection{Built-in PHP Functions}
+\label{sec:org611d081}
+PHP offers an extensive collection of built-in functions that perform a
+wide range of tasks.
+
+\subsubsection{String Functions}
+\label{sec:orgf5cfbeb}
+String manipulation is a common requirement, and PHP provides many
+functions to handle strings. Functions like \texttt{strlen}, \texttt{str\_replace}, and
+\texttt{substr} are frequently used.
+
+Example of string functions:
+
+\begin{minted}[]{php}
+<?=
+  $text = "Hello, world!";
+  echo strlen($text); // Outputs the length of the string
+  echo str_replace("world", "PHP", $text); // Replaces 'world' with 'PHP'
+\end{minted}
+
+\subsubsection{Array Functions}
+\label{sec:org920feff}
+Arrays are essential in PHP, and functions like \texttt{array\_push}, \texttt{sort},
+and \texttt{count} are integral for array manipulation.
+
+Example of array functions:
+
+\begin{minted}[]{php}
+<?=
+  $fruits = ["apple", "banana"];
+  array_push($fruits, "orange"); // Adds 'orange' to the array
+  sort($fruits); // Sorts the array
+  echo count($fruits); // Outputs the number of elements in the array
+\end{minted}
+
+\subsubsection{Date and Time Functions}
+\label{sec:org3761a0d}
+Handling dates and times is another common requirement. Functions such
+as \texttt{date} and \texttt{strtotime} are useful for formatting and manipulating
+date and time.
+
+Example of date and time functions:
+
+\begin{minted}[]{php}
+<?=
+echo date("Y-m-d"); // Outputs the current date echo
+strtotime("next Monday"); // Converts the time string to a Unix
+timestamp
+\end{minted}
+
+\subsection{Summary}
+\label{sec:orgf7414ed}
+Functions in PHP are powerful tools for organizing and reusing code.
+Understanding how to define, call, and manipulate data with functions is
+key to effective PHP programming. Additionally, leveraging PHP's
+built-in functions can greatly simplify many common tasks in web
+development.
+
+In the next sections, we will explore further into more advanced aspects
+of PHP functions, including anonymous functions, variable scope, and
+recursive functions. Stay tuned to deepen your understanding and enhance
+your PHP programming skills.
+
+\begin{itemize}
+\item Anex I Below is a list of commonly used PHP built-in functions,
+categorized by their functionality. This list is by no means
+exhaustive, as PHP offers a vast library of built-in functions, but it
+covers some of the most frequently used ones in various aspects of PHP
+programming:
+\end{itemize}
+
+\section{Anex I: List of predefined and standard functions}
+\label{sec:org72f8e3a}
+
+\subsection{String Functions}
+\label{sec:org5c623a9}
+\begin{enumerate}
+\item \texttt{strlen(\$string)} - Returns the length of a string.
+\item \texttt{str\_replace(\$search, \$replace, \$subject)} - Replaces all occurrences
+of a search string with a replacement string.
+\item \texttt{strpos(\$haystack, \$needle)} - Finds the position of the first
+occurrence of a substring in a string.
+\item \texttt{strtolower(\$string)} - Converts a string to lowercase.
+\item \texttt{strtoupper(\$string)} - Converts a string to uppercase.
+\item \texttt{substr(\$string, \$start, \$length)} - Returns a part of a string.
+\item \texttt{trim(\$string)} - Strips whitespace from the beginning and end of a
+string.
+\end{enumerate}
+
+\subsection{Array Functions}
+\label{sec:org2fdcfbe}
+\begin{enumerate}
+\item \texttt{array\_push(\&\$array, \$value1, \$value2, ...)} - Pushes one or more
+elements onto the end of an array.
+\item \texttt{sort(\&\$array)} - Sorts an array.
+\item \texttt{count(\$array)} - Counts all elements in an array, or something in an
+object.
+\item \texttt{array\_merge(\$array1, \$array2, ...)} - Merges one or more arrays.
+\item \texttt{array\_slice(\$array, \$offset, \$length)} - Extracts a slice of the
+array.
+\item \texttt{in\_array(\$needle, \$haystack)} - Checks if a value exists in an
+array.
+\item \texttt{array\_keys(\$array)} - Returns all the keys or a subset of the keys
+of an array.
+\end{enumerate}
+
+\subsection{Mathematical Functions}
+\label{sec:org756a3e7}
+\begin{enumerate}
+\item \texttt{abs(\$number)} - Returns the absolute value of a number.
+\item \texttt{ceil(\$value)} - Rounds a number up to the nearest integer.
+\item \texttt{floor(\$value)} - Rounds a number down to the nearest integer.
+\item \texttt{rand(\$min, \$max)} - Generates a random integer.
+\item \texttt{max(\$value1, \$value2, ...)} - Finds the highest value.
+\item \texttt{min(\$value1, \$value2, ...)} - Finds the lowest value.
+\item \texttt{round(\$val, \$precision)} - Rounds a float.
+\end{enumerate}
+
+\subsection{Date and Time Functions}
+\label{sec:org88dda10}
+\begin{enumerate}
+\item \texttt{date(\$format, \$timestamp)} - Formats a local time/date.
+\item \texttt{strtotime(\$time)} - Parses an English textual datetime into a Unix
+timestamp.
+\item \texttt{time()} - Returns the current time as a Unix timestamp.
+\item \texttt{mktime(\$hour, \$minute, \$second, \$month, \$day, \$year)} - Gets Unix
+timestamp for a date.
+\item \texttt{date\_default\_timezone\_set(\$timezone\_identifier)} - Sets the default
+timezone used by all date/time functions.
+\end{enumerate}
+
+\subsection{File Handling Functions}
+\label{sec:org5c15f3d}
+\begin{enumerate}
+\item \texttt{fopen(\$filename, \$mode)} - Opens file or URL.
+\item \texttt{fclose(\$handle)} - Closes an open file pointer.
+\item \texttt{fwrite(\$handle, \$string)} - Writes to a file.
+\item \texttt{file\_get\_contents(\$filename)} - Reads entire file into a string.
+\item \texttt{file\_put\_contents(\$filename, \$data)} - Write data to a file.
+\item \texttt{file\_exists(\$filename)} - Checks whether a file or directory exists.
+\end{enumerate}
+
+\subsection{Miscellaneous Functions}
+\label{sec:org9a15a29}
+\begin{enumerate}
+\item \texttt{isset(\$var)} - Determine if a variable is set and is not NULL.
+\item \texttt{empty(\$var)} - Determine whether a variable is empty.
+\item \texttt{die(\$message)} - Equivalent to \texttt{exit()}, outputs a message and
+terminates the current script.
+\item \texttt{var\_dump(\$variable)} - Dumps information about a variable.
+\item \texttt{gettype(\$var)} - Gets the type of a variable.
+\end{enumerate}
+
+This list serves as a starting point for exploring PHP's built-in
+functions. Each function has its own set of parameters and behaviors,
+which can be further explored in the PHP official documentation for more
+detailed information and usage examples.
+\end{document}

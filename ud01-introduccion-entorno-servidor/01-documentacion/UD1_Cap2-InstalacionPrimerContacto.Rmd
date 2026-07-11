@@ -1,0 +1,358 @@
+---
+title: "Instalación y Primer Contacto"
+author: "José Manuel Sánchez Álvarez"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1.5cm
+header-includes:
+  - \renewcommand{\contentsname}{Índice de contenidos}
+---
+
+## **Capítulo 2. Instalación y Primer Contacto**
+
+### **2.1. Instalar JDK**
+
+El **Java Development Kit (JDK)** es esencial para desarrollar aplicaciones en Java. Proporciona las herramientas necesarias para compilar, ejecutar y depurar código Java.
+
+#### **Pasos para instalar JDK:**
+
+1.  **Descargar JDK:**
+    -   Visita el sitio oficial de Oracle o Adoptium (OpenJDK).
+    -   Descarga la versión más reciente compatible con tu sistema operativo.
+2.  **Instalar JDK:**
+    -   Ejecuta el instalador y sigue las instrucciones.
+    -   Asegúrate de agregar el JDK al `PATH` durante la instalación para poder usarlo desde la línea de comandos.
+3.  **Verificar la instalación:**
+    -   Abre una terminal o línea de comandos y ejecuta:
+
+        ``` bash
+        java -version
+        ```
+
+    -   Deberías ver algo como:
+
+        ```         
+        openjdk version "17.0.8" 2023-07-18
+        OpenJDK Runtime Environment (build 17.0.8+7)
+        ```
+4.  **Configurar variables de entorno (si es necesario):**
+    -   En Windows:
+        -   Ve a `Propiedades del sistema > Variables de entorno`.
+        -   Añade la ruta del JDK a la variable `PATH`.
+    -   En Linux/Mac:
+        -   Edita el archivo `.bashrc` o `.zshrc`:
+
+            ``` bash
+            export JAVA_HOME=/ruta/al/jdk
+            export PATH=$JAVA_HOME/bin:$PATH
+            ```
+
+------------------------------------------------------------------------
+
+### **2.2. IntelliJ IDEA**
+
+IntelliJ IDEA es uno de los IDEs más populares para desarrollar aplicaciones Java. Está disponible en dos versiones: **Community** (gratuita) y **Ultimate** (de pago). Ambas son excelentes herramientas, pero tienen diferencias clave que exploraremos a continuación.
+
+#### **2.2.1. IntelliJ IDEA Community**
+
+La versión **Community** es gratuita y de código abierto. Es ideal para proyectos básicos y desarrollo general en Java.
+
+##### **Características principales:**
+
+-   Soporte para Java SE (Standard Edition).
+-   Herramientas básicas para desarrollo web (HTML, CSS, JavaScript).
+-   Integración con Maven y Gradle.
+-   Depuración y pruebas unitarias básicas.
+
+##### **Pasos para configurar IntelliJ IDEA Community:**
+
+1.  **Descargar e instalar:**
+    -   Visita <https://www.jetbrains.com/idea/download/> y selecciona la versión **Community**.
+    -   Ejecuta el instalador y sigue las instrucciones.
+2.  **Configurar JDK:**
+    -   Abre IntelliJ IDEA y ve a `File > Project Structure > SDKs`.
+    -   Añade el JDK instalado previamente.
+3.  **Crear un proyecto básico:**
+    -   Selecciona `File > New > Project`.
+
+    -   Elige `Java` y configura el JDK.
+
+    -   Crea un archivo `HelloWorld.java`:
+
+        ``` java
+        public class HelloWorld {
+            public static void main(String[] args) {
+                System.out.println("¡Hola, mundo!");
+            }
+        }
+        ```
+
+    -   Ejecuta el programa haciendo clic derecho en el archivo y seleccionando `Run`.
+
+#### **2.2.2. IntelliJ IDEA Ultimate**
+
+La versión **Ultimate** es de pago y está diseñada para proyectos más avanzados, especialmente aquellos que involucran frameworks como Spring, Hibernate y desarrollo full-stack.
+
+##### **Características adicionales respecto a Community:**
+
+-   Soporte completo para frameworks como Spring Boot, Micronaut y Quarkus.
+-   Herramientas avanzadas para desarrollo web (JavaScript, TypeScript, Node.js).
+-   Integración con bases de datos y ORM.
+-   Soporte para Docker, Kubernetes y microservicios.
+
+##### **Pasos para configurar IntelliJ IDEA Ultimate:**
+
+1.  **Descargar e instalar:**
+    -   Visita <https://www.jetbrains.com/idea/download/> y selecciona la versión **Ultimate**.
+    -   Ejecuta el instalador y sigue las instrucciones.
+2.  **Configurar JDK:**
+    -   Igual que en la versión Community.
+3.  **Crear un proyecto Spring Boot:**
+    -   Selecciona `File > New > Project`.
+    -   Elige `Spring Initializr` y configura el proyecto (similar a Spring Initializr en línea).
+    -   Añade dependencias como `Spring Web` y `Spring Data JPA`.
+    -   Importa el proyecto y ejecútalo usando el botón `Run`.
+
+------------------------------------------------------------------------
+
+### **2.3. Primer Proyecto**
+
+Crear un proyecto básico te permitirá familiarizarte con el entorno de desarrollo.
+
+#### **Usando Spring Initializr:**
+
+1.  **Acceder a Spring Initializr:**
+    -   Visita <https://start.spring.io/>.
+2.  **Configurar el proyecto:**
+    -   **Project:** Maven Project.
+    -   **Language:** Java.
+    -   **Spring Boot:** Versión estable más reciente.
+    -   **Project Meta**
+        -   Group: `com.example`
+        -   Artifact: `demo`
+        -   Name: `demo`
+    -   **Dependencies:** Añade `Spring Web`.
+3.  **Generar y descargar el proyecto:**
+    -   Haz clic en "Generate" para descargar el archivo ZIP.
+4.  **Importar el proyecto:**
+    -   Extrae el archivo ZIP y ábrelo en IntelliJ IDEA o tu IDE preferido.
+5.  **Ejecutar el proyecto:**
+    -   Abre una terminal en el directorio del proyecto y ejecuta:
+
+        ``` bash
+        ./mvnw spring-boot:run
+        ```
+
+    -   Si todo está configurado correctamente, deberías ver un mensaje indicando que la aplicación está corriendo en `http://localhost:8080`.
+
+------------------------------------------------------------------------
+
+### **2.4. Contenido Estático**
+
+Las aplicaciones web suelen incluir contenido estático como HTML, CSS y JavaScript.
+
+#### **Agregar contenido estático en Spring Boot:**
+
+1.  **Crear una carpeta `resources/static`:**
+    -   Dentro de `src/main/resources`, crea una carpeta llamada `static`.
+2.  **Añadir archivos estáticos:**
+    -   Agrega un archivo `index.html`:
+
+        ``` html
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Bienvenido</title>
+        </head>
+        <body>
+            <h1>¡Bienvenido a mi aplicación web!</h1>
+        </body>
+        </html>
+        ```
+3.  **Probar el contenido estático:**
+    -   Ejecuta la aplicación y visita `http://localhost:8080` en tu navegador.
+    -   Deberías ver el mensaje "¡Bienvenido a mi aplicación web!".
+
+------------------------------------------------------------------------
+
+### **2.5. Visual Studio Code**
+
+Visual Studio Code (VS Code) es un editor de código ligero y altamente personalizable que es ideal para desarrollar aplicaciones web en Java.
+
+#### **Pasos para configurar VS Code para Java:**
+
+1.  **Descargar e instalar VS Code:**
+    -   Descarga desde <https://code.visualstudio.com/>.
+2.  **Instalar extensiones necesarias:**
+    -   Abre VS Code y ve a la sección de extensiones (`Ctrl+Shift+X`).
+    -   Busca e instala las siguientes extensiones:
+        -   **Extension Pack for Java:** Incluye soporte para Java, Maven y Spring Boot.
+        -   **Spring Boot Tools:** Para trabajar con proyectos Spring Boot.
+        -   **Debugger for Java:** Para depurar código Java.
+3.  **Configurar JDK en VS Code:**
+    -   Abre la paleta de comandos (`Ctrl+Shift+P`) y busca `Java: Configure Java Runtime`.
+    -   Selecciona el JDK instalado previamente.
+4.  **Verificar la configuración:**
+    -   Crea un archivo `HelloWorld.java` con el siguiente contenido:
+
+        ``` java
+        public class HelloWorld {
+            public static void main(String[] args) {
+                System.out.println("¡Hola, mundo!");
+            }
+        }
+        ```
+
+    -   Compila y ejecuta el archivo usando el terminal integrado de VS Code:
+
+        ``` bash
+        javac HelloWorld.java
+        java HelloWorld
+        ```
+
+------------------------------------------------------------------------
+
+### **2.6. Apache NetBeans**
+
+Apache NetBeans es un IDE completo para desarrollar aplicaciones Java. Es especialmente útil si prefieres una interfaz gráfica para gestionar tus proyectos.
+
+#### **Pasos para usar Apache NetBeans:**
+
+1.  **Descargar e instalar NetBeans:**
+    -   Visita <https://netbeans.apache.org/> y descarga la versión adecuada.
+2.  **Configurar JDK en NetBeans:**
+    -   Ve a `Tools > Java Platforms` y añade el JDK instalado.
+3.  **Crear un proyecto:**
+    -   Selecciona `File > New Project > Java with Maven`.
+    -   Configura el proyecto similar a Spring Initializr.
+4.  **Ejecutar el proyecto:**
+    -   Haz clic derecho en el proyecto y selecciona `Run`.
+
+------------------------------------------------------------------------
+
+### **Comprueba tu Aprendizaje**
+
+Responde las siguientes preguntas para verificar tu comprensión:
+
+1.  ¿Qué diferencias hay entre IntelliJ IDEA Community y Ultimate?
+2.  Explica cómo crear un proyecto Spring Boot usando Spring Initializr.
+3.  ¿Dónde se colocan los archivos estáticos en una aplicación Spring Boot?
+4.  Nombra tres características clave del lenguaje Java.
+5.  ¿Cómo configuras el JDK en Visual Studio Code?
+
+¡Perfecto! Vamos a crear un **Anexo** que explique cómo los estudiantes pueden obtener licencias gratuitas de IntelliJ IDEA Ultimate y otras herramientas de JetBrains, así como cómo usar **GitHub Campus** y **GitHub Classroom** para la entrega de actividades. Este anexo será útil para guiar a los estudiantes en la configuración de sus herramientas de desarrollo.
+
+------------------------------------------------------------------------
+
+## **Anexo: Herramientas para Estudiantes**
+
+### **1. Obtener Licencias Gratuitas de JetBrains (IntelliJ IDEA Ultimate y otras herramientas)**
+
+JetBrains ofrece licencias gratuitas para estudiantes a través de su programa **JetBrains Education**. Esto incluye acceso completo a herramientas como **IntelliJ IDEA Ultimate**, **PyCharm**, **WebStorm**, y más.
+
+#### **Pasos para obtener una licencia gratuita:**
+
+##### **Opción 1: A través de GitHub Student Developer Pack**
+
+Si ya tienes acceso al **GitHub Student Developer Pack**, puedes obtener automáticamente una licencia de JetBrains sin necesidad de registrar tu cuenta por separado.
+
+1.  **Registrarse en GitHub Education:**
+    -   Ve a <https://education.github.com/> y selecciona "Get benefits".
+    -   Regístrate con tu cuenta de GitHub personal o crea una nueva si no tienes.
+    -   Proporciona información sobre tu institución educativa (correo electrónico escolar, matrícula, etc.).
+2.  **Activar el GitHub Student Developer Pack:**
+    -   Una vez verificada tu cuenta, recibirás acceso al **GitHub Student Developer Pack**, que incluye licencias gratuitas de JetBrains.
+3.  **Activar la licencia de JetBrains:**
+    -   Ve a <https://www.jetbrains.com/shop/eform/students>.
+    -   Inicia sesión con tu cuenta de JetBrains asociada a GitHub.
+    -   Verifica que tu licencia esté activa.
+
+##### **Opción 2: Directamente a través de JetBrains Education**
+
+Si prefieres registrarte directamente con JetBrains:
+
+1.  **Acceder al formulario de solicitud:**
+    -   Visita <https://www.jetbrains.com/shop/eform/students>.
+2.  **Completar el formulario:**
+    -   Proporciona tu correo electrónico escolar o información que verifique tu estatus como estudiante (p. ej., certificado de matrícula).
+3.  **Recibir la licencia:**
+    -   Una vez verificada tu solicitud, recibirás un correo con las instrucciones para activar la licencia.
+4.  **Activar la licencia en IntelliJ IDEA Ultimate:**
+    -   Abre IntelliJ IDEA Ultimate.
+    -   Ve a `Help > Register...` y selecciona "Activate with License".
+    -   Introduce la clave recibida por correo.
+
+------------------------------------------------------------------------
+
+### **2. GitHub Campus y GitHub Classroom**
+
+#### **¿Qué es GitHub Campus?**
+
+GitHub Campus es un programa diseñado para instituciones educativas que permite a profesores y estudiantes colaborar en proyectos de código abierto, gestionar repositorios privados y acceder a herramientas premium de GitHub de forma gratuita.
+
+#### **¿Cómo registrarse en GitHub Campus?**
+
+1.  **Crear una cuenta institucional (si no tienes una):**
+    -   Si tu instituto aún no está registrado en GitHub Campus, el profesor puede solicitar una cuenta institucional:
+        -   Ve a <https://education.github.com/schools>.
+        -   Completa el formulario con los datos de la institución.
+2.  **Invitar a los estudiantes:**
+    -   Una vez creada la cuenta institucional, el profesor puede invitar a los estudiantes a través de su correo electrónico escolar.
+    -   Los estudiantes recibirán un correo con instrucciones para unirse.
+3.  **Beneficios de GitHub Campus:**
+    -   Repositorios privados ilimitados.
+    -   Acceso al GitHub Student Developer Pack.
+    -   Integración con herramientas como GitHub Actions.
+
+#### **¿Qué es GitHub Classroom?**
+
+GitHub Classroom es una herramienta que facilita la creación y gestión de tareas de programación para estudiantes. Permite a los profesores crear asignaciones, distribuir repositorios y revisar el código de los estudiantes.
+
+#### **Cómo usar GitHub Classroom:**
+
+1.  **Configurar GitHub Classroom:**
+    -   El profesor debe iniciar sesión en GitHub Classroom (<https://classroom.github.com/>) con su cuenta de GitHub.
+    -   Crear un "Classroom" asociado a la cuenta institucional.
+2.  **Crear una tarea:**
+    -   Dentro del Classroom, selecciona "New Assignment".
+    -   Configura la tarea (nombre, descripción, repositorio base, plazos, etc.).
+    -   Genera un enlace para compartir con los estudiantes.
+3.  **Entregar la tarea (desde la perspectiva del estudiante):**
+    -   Los estudiantes acceden al enlace proporcionado por el profesor.
+    -   Se les asignará automáticamente un repositorio privado basado en el repositorio base.
+    -   Los estudiantes pueden clonar el repositorio, trabajar en él y subir sus cambios.
+4.  **Revisar entregas:**
+    -   El profesor puede revisar los repositorios de los estudiantes directamente desde GitHub Classroom.
+    -   También puede usar herramientas como GitHub Actions para automatizar pruebas y evaluaciones.
+
+#### **Si los estudiantes no están en GitHub Campus:**
+
+-   **Paso 1:** El profesor crea cuentas institucionales para los estudiantes usando su correo escolar.
+-   **Paso 2:** Envía invitaciones a los estudiantes para unirse al GitHub Campus y al Classroom correspondiente.
+-   **Paso 3:** Los estudiantes deben aceptar las invitaciones y configurar sus cuentas.
+
+------------------------------------------------------------------------
+
+### **3. Resumen de Herramientas para Estudiantes**
+
+| Herramienta | Descripción | Cómo Obtenerla |
+|----------------|-------------------------------|-------------------------|
+| **JetBrains IDEs** | Acceso gratuito a IntelliJ IDEA Ultimate, PyCharm, WebStorm, etc. | A través de GitHub Student Developer Pack o directamente en JetBrains Education |
+| **GitHub Campus** | Repositorios privados ilimitados y acceso a herramientas premium de GitHub | Solicitar una cuenta institucional en <https://education.github.com/schools> |
+| **GitHub Classroom** | Herramienta para crear y gestionar tareas de programación | Profesores configuran el Classroom y comparten enlaces con los estudiantes |
+
+------------------------------------------------------------------------
+
+Este anexo proporciona una guía detallada para que podáis obtener licencias gratuitas de herramientas como IntelliJ IDEA Ultimate y aprovechar al máximo recursos como GitHub Campus y GitHub Classroom. Estas herramientas son esenciales para el desarrollo de proyectos y la entrega de actividades en entornos educativos.
+
+**Recomendación personal:** Para el desarrollo de aplicaciones en entorno servidor, te recomiendo usar Linux debido a su facilidad para instalar y gestionar las herramientas necesarias, especialmente cuando se trabaja con tecnologías como Docker (que veremos más adelante en el módulo de despliegue). Linux ofrece un entorno más flexible y optimizado para estas tareas.
+
+------------------------------------------------------------------------

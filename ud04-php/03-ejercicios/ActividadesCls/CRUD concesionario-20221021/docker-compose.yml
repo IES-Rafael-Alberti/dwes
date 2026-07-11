@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  server:
+    image: fjortegan/nginx-fpm
+    ports:
+      - "80:80"
+    volumes:
+      - ./codigophp:/usr/share/nginx/html
+    links:
+      - fpm
+
+  fpm:
+    image: fjortegan/php-xdebug
+    volumes:
+      - ./codigophp:/var/www/html
+    # Sólo en máquinas Linux, comentar estas dos líneas en otros sistemas de lusers
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: mysql:latest
+    #ports:
+    #  - "3306:3306"
+    volumes:
+      - ./db-data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: pestillo
+      #MYSQL_USER: usu_con
+      #MYSQL_PASSWORD: cerrojo  
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+

@@ -1,0 +1,195 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+
+* To-Do App
+  :PROPERTIES:
+  :CUSTOM_ID: to-do-app
+  :END:
+
+Database design for a To-Do App with user registration and role
+management, refined version of your database schema, including a table for
+categories and foreign key constraints for relational integrity:
+
+*** Refined Database Schema
+    :PROPERTIES:
+    :CUSTOM_ID: refined-database-schema
+    :END:
+
+**** Table: =todos=
+     :PROPERTIES:
+     :CUSTOM_ID: table-todos
+     :END:
+
+#+BEGIN_SRC sql
+  CREATE TABLE todos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category_id INT,
+    done BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+  );
+#+END_SRC
+
+**** Table: =users=
+     :PROPERTIES:
+     :CUSTOM_ID: table-users
+     :END:
+
+#+BEGIN_SRC sql
+  CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL DEFAULT 'user'
+  );
+#+END_SRC
+
+**** Table: =categories=
+     :PROPERTIES:
+     :CUSTOM_ID: table-categories
+     :END:
+
+#+BEGIN_SRC sql
+  CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE
+  );
+#+END_SRC
+
+*** Additional Considerations
+    :PROPERTIES:
+    :CUSTOM_ID: additional-considerations
+    :END:
+
+1. *Categories Table*: A separate table for categories allows more
+   flexibility and normalization. Users can create custom categories, or
+   you can pre-populate it with common categories.
+
+2. *Foreign Keys*: These ensure relational integrity. For example,
+   =user_id= in the =todos= table references =id= in the =users= table.
+
+3. *Timestamps*: Consider automatically updating the =updated_at=
+   timestamp. In MySQL, you can use =ON UPDATE CURRENT_TIMESTAMP=.
+
+4. *Password Storage*: Ensure you store hashed passwords, not plain
+   text. Use PHP's =password_hash()= and =password_verify()= for
+   handling passwords.
+
+5. *Indexes*: Depending on your queries, consider adding indexes to
+   frequently searched fields for performance optimization.
+
+6. *Roles Management*: If your application's roles have different
+   permissions or capabilities, consider having a separate =roles= table
+   and link it to the =users= table. This allows for easier management
+   and scalability of roles.
+
+*** PHP OOP Approach
+    :PROPERTIES:
+    :CUSTOM_ID: php-oop-approach
+    :END:
+
+For the PHP backend, consider the following OOP structure:
+
+- *Classes for Database Tables*: Create classes like =Todo=, =User=,
+  =Category= each encapsulating CRUD operations for their respective
+  tables.
+- *Session Management*: Use PHP sessions for handling user logins.
+- *Authentication and Authorization*: Implement methods in your =User=
+  class for handling user authentication and role-based authorization.
+- *Validation and Sanitization*: Include methods for validating and
+  sanitizing input data to ensure security and data integrity.
+- *Error Handling*: Robust error handling mechanisms to manage and
+  respond to any exceptions or errors that occur during database
+  operations.
+
+*** Example: PHP Class for =Todo=
+    :PROPERTIES:
+    :CUSTOM_ID: example-php-class-for-todo
+    :END:
+
+Here's a basic structure for the =Todo= class:
+
+#+begin_src php
+  class Todo {
+      private $pdo;
+
+      public function __construct($pdo) {
+          $this->pdo = $pdo;
+      }
+
+      public function create($userId, $title, $description, $categoryId) {
+          // Insert a new todo into the database
+      }
+
+      public function markDone($todoId) {
+          // Mark a specific todo as done
+      }
+
+      // Additional CRUD methods...
+  }
+#+end_src
+
+Each class (=Todo=, =User=, =Category=) will follow a similar pattern,
+with methods for each CRUD operation.
+
+*** Web Interface
+    :PROPERTIES:
+    :CUSTOM_ID: web-interface
+    :END:
+
+For the web interface, you'll create HTML forms and PHP scripts to
+interact with these classes. For example, forms for adding a todo, user
+registration, login, etc., and corresponding PHP scripts to process
+these forms and call the appropriate class methods.
+
+*** Security
+    :PROPERTIES:
+    :CUSTOM_ID: security
+    :END:
+
+- Use prepared statements to prevent SQL injection.
+- Implement CSRF tokens in forms to prevent cross-site request forgery.
+- Hash passwords using =password_hash()= for storage.
+- Implement proper session management for user authentication.
+
+By combining these database structures and OOP principles in PHP, you'll
+create a robust, scalable, and secure To-Do application.

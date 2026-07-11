@@ -1,0 +1,481 @@
+#+TITLE:
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:3 num:3 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+
+* Chapter 4: Loops in PHP
+  :PROPERTIES:
+  :CUSTOM_ID: chapter-4-loops-in-php
+  :END:
+
+Loops are a fundamental part of programming in PHP, allowing you to
+execute a block of code repeatedly under certain conditions. This
+ability to iterate over data or execute code multiple times is crucial
+in many programming scenarios. In this chapter, we will cover the four
+primary types of loops in PHP: =for=, =foreach=, =while=, and
+=do-while=, along with guidance on when to use each type for optimal
+results.
+
+** For Loop
+   :PROPERTIES:
+   :CUSTOM_ID: for-loop
+   :END:
+
+The =for= loop is ideal when you know in advance how many times you want
+to execute a statement or a block of statements.
+
+*** Syntax
+    :PROPERTIES:
+    :CUSTOM_ID: syntax
+    :END:
+
+#+begin_src php
+  for (initialization; condition; increment) {
+      // Code to be executed
+  }
+#+end_src
+
+*** Example
+    :PROPERTIES:
+    :CUSTOM_ID: example
+    :END:
+
+For example, to print numbers from 1 to 10:
+
+#+begin_src php
+  for ($i = 0; $i < 10; $i++) {
+      echo $i . " ";
+  }
+#+end_src
+#+begin_src php
+for ($i = 1; $i <= 10; $i++) {
+    echo $i . "\n";
+}
+#+end_src
+
+*** When to Use
+    :PROPERTIES:
+    :CUSTOM_ID: when-to-use
+    :END:
+
+- *Count-Controlled Iteration*: Ideal for looping a specific number of
+  times.
+- *Array Indexing*: Useful for iterating over array elements when the
+  index is needed.
+
+** Foreach Loop
+   :PROPERTIES:
+   :CUSTOM_ID: foreach-loop
+   :END:
+
+The =foreach=` loop is specifically designed for iterating over arrays
+or objects, making it simpler to work with elements without worrying
+about indexes or keys.
+
+*** Syntax
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-1
+    :END:
+
+#+begin_src php
+  foreach ($array as $value) {
+      // Code to be executed
+  }
+#+end_src
+
+Or, to access both the key and the value:
+
+#+begin_src php
+  foreach ($array as $key => $value) {
+      // Code to be executed
+  }
+#+end_src
+
+*** Example
+    :PROPERTIES:
+    :CUSTOM_ID: example-1
+    :END:
+
+To print all elements of an array>
+#+begin_src php
+  $colors = ["red", "green", "blue"];
+
+  foreach ($colors as $color) {
+      echo $color . " ";
+  }
+#+end_src
+
+
+To print all values of an associative array:
+
+#+begin_src php
+$colors = ["red" => "#FF0000", "green" => "#00FF00", "blue" => "#0000FF"];
+
+foreach ($colors as $color) {
+    echo $color . "\n";
+}
+#+end_src
+
+*** When to Use
+    :PROPERTIES:
+    :CUSTOM_ID: when-to-use-1
+    :END:
+
+- *Array Iteration*: for iterating through arrays or objects where the
+  order and number of elements are unknown or irrelevant.
+- *Readable Code*: Offers clearer and more readable code when dealing
+  with array or objects elements.
+
+** While Loop
+   :PROPERTIES:
+   :CUSTOM_ID: while-loop
+   :END:
+
+The =while= loop is used when you want to execute a block of code as
+long as a specified condition is true.
+
+*** Syntax
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-2
+    :END:
+
+#+begin_src php
+  while (condition) {
+      // Code to be executed
+  }
+#+end_src
+
+*** Example
+    :PROPERTIES:
+    :CUSTOM_ID: example-2
+    :END:
+
+#+begin_src php
+  $i = 0;
+  while ($i < 10) {
+      echo $i . " ";
+      $i++;
+  }
+#+end_src
+
+*** When to Use
+    :PROPERTIES:
+    :CUSTOM_ID: when-to-use-2
+    :END:
+
+- *Unknown Iterations*: Suitable when the number of iterations is not
+  known in advance.
+- *Conditional Control*: Useful when the continuation condition might be
+  affected by processes within the loop.
+
+** Do-While Loop
+   :PROPERTIES:
+   :CUSTOM_ID: do-while-loop
+   :END:
+
+The =do-while= loop is a variant of the while loop. This loop will
+execute the code block once before checking if the condition is true,
+then it will repeat the loop as long as the condition is true.
+
+*** Syntax
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-3
+    :END:
+
+#+begin_src php
+  do {
+      // Code to be executed
+  } while (condition);
+#+end_src
+
+*** Example
+    :PROPERTIES:
+    :CUSTOM_ID: example-3
+    :END:
+
+#+begin_src php
+  $i = 0;
+  do {
+      echo $i . " ";
+      $i++;
+  } while ($i < 10);
+#+end_src
+
+*** When to Use
+    :PROPERTIES:
+    :CUSTOM_ID: when-to-use-3
+    :END:
+
+- *Guaranteed Execution*: Ensures that the loop body is executed at
+  least once.
+- *Post-Condition Looping*: Ideal when the condition for continuation is
+  determined at the end of each iteration.
+
+*** Conclusion
+    :PROPERTIES:
+    :CUSTOM_ID: conclusion
+    :END:
+
+Understanding the different types of loops and their appropriate use
+cases is crucial for efficient PHP programming. While =for= loops are
+best for fixed iterations, =foreach= is optimal for array traversal
+without needing to know the array size. =while= loops suit scenarios
+where the number of iterations is not predetermined, and =do-while=
+loops guarantee at least one iteration, regardless of the condition. As
+you continue to develop your PHP skills, experiment with these loops to
+find the best fit for various coding challenges.
+
+* Loops alternative syntax
+In PHP, the alternative syntax for loops provides a way to write loops
+that is often more readable, especially when embedding PHP within HTML.
+This syntax is available in PHP 8 and earlier versions. The alternative
+syntax is particularly useful in templating where PHP is interspersed
+with HTML.
+
+** Alternative Syntax for =for= Loop
+    :PROPERTIES:
+    :CUSTOM_ID: alternative-syntax-for-for-loop
+    :END:
+
+Instead of using curly braces ={}=, you use =:= to start and =endfor;=
+to end the loop.
+
+*Standard Syntax:*
+
+#+begin_src php
+  for ($i = 0; $i < 10; $i++) {
+      // Code to execute
+  }
+#+end_src
+
+*Alternative Syntax:*
+
+#+begin_src php
+  for ($i = 0; $i < 10; $i++):
+      // Code to execute
+  endfor;
+#+end_src
+
+** Alternative Syntax for =foreach= Loop
+    :PROPERTIES:
+    :CUSTOM_ID: alternative-syntax-for-foreach-loop
+    :END:
+
+Similar to the =for= loop, the =foreach= loop can use =endforeach;= in
+place of curly braces.
+
+*Standard Syntax:*
+
+#+begin_src php
+  foreach ($array as $element) {
+      // Code to execute
+  }
+#+end_src
+
+*Alternative Syntax:*
+
+#+begin_src php
+  foreach ($array as $element):
+      // Code to execute
+  endforeach;
+#+end_src
+
+** Alternative Syntax for =while= Loop
+    :PROPERTIES:
+    :CUSTOM_ID: alternative-syntax-for-while-loop
+    :END:
+
+The =while= loop can use =endwhile;= at the end instead of curly braces.
+
+*Standard Syntax:*
+
+#+begin_src php
+  while ($condition) {
+      // Code to execute
+  }
+#+end_src
+
+*Alternative Syntax:*
+
+#+begin_src php
+  while ($condition):
+      // Code to execute
+  endwhile;
+#+end_src
+
+** Alternative Syntax for =do-while= Loop
+    :PROPERTIES:
+    :CUSTOM_ID: alternative-syntax-for-do-while-loop
+    :END:
+
+The =do-while= loop can also be written using alternative syntax, though
+it's less common.
+
+*Standard Syntax:*
+
+#+begin_src php
+  do {
+      // Code to execute
+  } while ($condition);
+#+end_src
+
+*Alternative Syntax:*
+
+#+begin_src php
+  do:
+      // Code to execute
+  while ($condition);
+#+end_src
+
+** Example in an HTML Template
+    :PROPERTIES:
+    :CUSTOM_ID: example-in-an-html-template
+    :END:
+
+Here's how you might use the alternative syntax in an HTML template:
+
+#+begin_src php
+  <ul>
+  <?php foreach ($items as $item): ?>
+      <li><?php echo htmlspecialchars($item); ?></li>
+  <?php endforeach; ?>
+  </ul>
+#+end_src
+
+This example demonstrates how the alternative syntax can make PHP code
+embedded in HTML more readable.
+
+** Conclusion
+    :PROPERTIES:
+    :CUSTOM_ID: conclusion
+    :END:
+
+The alternative syntax for loops in PHP doesn't change the functionality
+of the loops but offers a way to write code that can be easier to read
+and maintain, especially in the context of PHP/HTML templates. This
+syntax is a matter of preference and style, and its usage often depends
+on the coding standards of a particular project or team.
+
+* Break and Continue in PHP
+In PHP, =break= and =continue= are important control structures used
+within loops (=for=, =foreach=, =while=, =do-while=) to alter the normal
+flow of the loop. Understanding how to use them correctly can make your
+loops more efficient and powerful.
+
+** The =break= Statement
+    :PROPERTIES:
+    :CUSTOM_ID: the-break-statement
+    :END:
+
+=break= is used to terminate the execution of a loop prematurely. When
+=break= is encountered inside a loop, the loop is immediately stopped,
+and the program control resumes at the next statement following the
+loop.
+
+*** Use Case of =break=:
+     :PROPERTIES:
+     :CUSTOM_ID: use-case-of-break
+     :END:
+
+- To exit a loop when a certain condition is met.
+- Commonly used in switch-case statements to terminate a case.
+
+*** Example:
+     :PROPERTIES:
+     :CUSTOM_ID: example
+     :END:
+
+#+BEGIN_EXAMPLE
+  for ($i = 0; $i < 10; $i++) {
+      if ($i == 5) {
+          break; // Exit the loop when $i equals 5
+      }
+      echo $i . " ";
+  }
+  // Output: 0 1 2 3 4
+#+END_EXAMPLE
+
+** The =continue= Statement
+    :PROPERTIES:
+    :CUSTOM_ID: the-continue-statement
+    :END:
+
+=continue= is used to skip the rest of the current loop iteration and
+proceed with the next iteration. Unlike =break=, =continue= does not
+terminate the loop but just skips the remaining statements in the
+current iteration and continues with the next iteration.
+
+*** Use Case of =continue=:
+     :PROPERTIES:
+     :CUSTOM_ID: use-case-of-continue
+     :END:
+
+- To skip certain iterations based on a condition.
+- Useful for avoiding nested if-else statements inside loops.
+
+*** Example:
+     :PROPERTIES:
+     :CUSTOM_ID: example-1
+     :END:
+
+#+BEGIN_EXAMPLE
+  for ($i = 0; $i < 10; $i++) {
+      if ($i % 2 == 0) {
+          continue; // Skip the rest of the loop for even numbers
+      }
+      echo $i . " ";
+  }
+  // Output: 1 3 5 7 9
+#+END_EXAMPLE
+
+** Note on Using =break= and =continue=
+    :PROPERTIES:
+    :CUSTOM_ID: note-on-using-break-and-continue
+    :END:
+
+- =break= and =continue= only affect the innermost loop that encloses
+  them.
+- In nested loops, you can specify a numeric argument to indicate how
+  many levels of enclosing loops should be broken out of or continued.
+  For example, =break 2;= will break out of two levels of loops.
+
+** Conclusion
+    :PROPERTIES:
+    :CUSTOM_ID: conclusion
+    :END:
+
+=break= and =continue= are powerful tools for controlling the execution
+flow inside loops. They can make your code more readable and efficient
+by preventing unnecessary iterations or exiting a loop as soon as a
+certain condition is met. However, they should be used judiciously to
+keep the logic of your loops clear and understandable.

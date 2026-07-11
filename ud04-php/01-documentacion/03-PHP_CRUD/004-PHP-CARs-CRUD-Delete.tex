@@ -1,0 +1,157 @@
+% Created 2024-01-08 lun 09:16
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\usepackage{parskip}
+\usepackage[utf8]{inputenc} %% For unicode chars
+\usepackage{placeins}
+\usepackage[margin=2.50cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[scaled]{helvet}
+\usepackage{courier}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\RequirePackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+\usepackage{mdframed}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\setcounter{secnumdepth}{3}
+\author{José Manuel Sánchez Álvarez}
+\date{}
+\title{PHP CRUD Car Dealership. Delete}
+\hypersetup{
+ pdfauthor={José Manuel Sánchez Álvarez},
+ pdftitle={PHP CRUD Car Dealership. Delete},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.5.5)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+\setlength\parindent{10pt}
+To add the functionality of deleting a car from your CRUD application,
+you'll need both a PHP script to handle the deletion process and an HTML
+interface for users to trigger this action. Below is a basic example of
+how you can implement this.
+
+\section{Step 1: HTML Interface for Car Deletion}
+\label{sec:org76d21f1}
+You can provide a simple form for users to input the ID of the car they
+wish to delete. This form will send the data to a PHP script
+(\texttt{delete\_car.php}) for processing.
+
+\textbf{HTML (part of your existing interface, e.g., \texttt{delete\_car.html}):}
+
+\begin{minted}[]{php}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Car</title>
+</head>
+<body>
+    <h1>Delete Car</h1>
+    <form action="delete_car.php" method="post">
+        Car ID to Delete: <input type="text" name="car_id" required>
+        <input type="submit" value="Delete Car">
+    </form>
+</body>
+</html>
+\end{minted}
+
+\section{Step 2: PHP Script for Deleting a Car}
+\label{sec:org32c5ad0}
+This script (\texttt{delete\_car.php}) will receive the car ID from the form and
+use it to delete the corresponding record from the database.
+
+\textbf{PHP (delete\_car.php):}
+
+\begin{minted}[]{php}
+<?php
+require_once 'db_connect.php'; // Database connection file
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['car_id'])) {
+    $carId = $_POST['car_id'];
+
+    // Prepare a delete statement
+    $stmt = $pdo->prepare("DELETE FROM Car WHERE id = :carId");
+    $stmt->bindParam(':carId', $carId, PDO::PARAM_INT);
+
+    try {
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            echo "Car with ID $carId has been deleted.";
+        } else {
+            echo "No car found with ID $carId.";
+        }
+    } catch (PDOException $e) {
+        echo "Error deleting car: " . $e->getMessage();
+    }
+} else {
+    echo "Car ID is required.";
+}
+?>
+\end{minted}
+
+\section{Explanation:}
+\label{sec:org5feed95}
+\begin{enumerate}
+\item \textbf{Form Submission}: The HTML form provides a field for the user to
+enter the ID of the car to be deleted.
+
+\item \textbf{PHP Processing}:
+
+\begin{itemize}
+\item The PHP script checks if the form has been submitted and if the
+\texttt{car\_id} field is not empty.
+\item It then prepares a SQL DELETE statement to remove the car from the
+database.
+\item The car ID from the form is bound to the prepared statement and
+executed.
+\item The script checks if a row was affected (i.e., a car was deleted)
+and provides appropriate feedback.
+\end{itemize}
+\end{enumerate}
+
+\section{Security and Error Handling:}
+\label{sec:orgeeb2897}
+\begin{itemize}
+\item \textbf{Prepared Statements}: This method prevents SQL injection attacks.
+\item \textbf{Error Handling}: Try-catch blocks are used to handle any exceptions
+that may occur during the database operation.
+\item \textbf{Validation}: The script checks if the \texttt{car\_id} field is filled before
+attempting a delete operation.
+\end{itemize}
+
+\section{Integration:}
+\label{sec:org1a1a7a6}
+\begin{itemize}
+\item Integrate this functionality into your existing CRUD application,
+ensuring that the database connection file (\texttt{db\_connect.php}) and any
+other required files are correctly included.
+\item Enhance user experience by adding confirmation prompts or messages,
+and redirecting or refreshing the page as needed after deletion.
+\end{itemize}
+
+This setup provides basic functionality for deleting a car from the
+database. For a production-level application, you might want to
+implement more robust validation, error handling, and user feedback
+mechanisms.
+\end{document}

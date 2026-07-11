@@ -1,0 +1,7 @@
+-- Crear rol ADMIN si no existe
+MERGE INTO role (id, name) VALUES (1, 'ADMIN');
+MERGE INTO role (id, name) VALUES (2, 'USER');
+
+-- Crear usuario admin con rol ADMIN si no existe
+INSERT INTO user (id, username, password) VALUES (1, 'admin', '$2a$10$DUMMYHASH123456789012345678901234567890123456');
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
