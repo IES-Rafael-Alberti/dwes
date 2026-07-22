@@ -40,8 +40,8 @@ UD5 se reforma como **Laravel 12 API-first**. Laravel Sail es el entorno oficial
 |---|---|---|---|
 | `Laravel10-api/laravel-api10` | `c5443a4` | controladores, rutas, seeders y reglas de ignorado | Histórico saneado; no consolidar ni migrar. |
 | `Laravel10-api/laravel-client` | `ff63290` | `002-ClienteVue_Laravel10-api.org` | Histórico saneado; no consolidar ni migrar. |
-| `Laravel12-api/recetas2-api-laravel12` | `5fb533a` | README, controladores, requests, tests y documentación | Ejemplo canónico; estos cambios se validan y se versionan en su propio repositorio. |
-| `03-ejercicios/Proyecto` | `7e9933a` | enunciado Markdown, README y HTML/PDF heredados | No publicar HTML/PDF; el enunciado Markdown es la fuente pública. |
+| `Laravel12-api/recetas2-api-laravel12` | `747f030` | Ninguno | Ejemplo canónico validado y versionado en su propio repositorio. |
+| `03-ejercicios/Proyecto` | `origin/main: 7e9933a`; local: `dba131f` | HTML/PDF heredados | El enunciado Markdown y README están listos; no publicar HTML/PDF. |
 
 ### P1 - ejemplo canónico reproducible
 
