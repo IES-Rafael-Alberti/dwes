@@ -47,6 +47,13 @@ udXX-nombre/
 - **Seguridad** transversal con carpeta en cada unidad
 - **IA**: 0 uso → supervisada → crítica. Declaración obligatoria
 
+## Trazabilidad del trabajo
+
+- Cada unidad mantiene su inventario o lista de pendientes como documento vivo.
+- Al completar una tarea, el mismo corte debe actualizar su estado y registrar la evidencia relevante: archivos, pruebas o commit.
+- Una tarea no se considera cerrada mientras continúe marcada como pendiente, aunque su implementación ya exista.
+- Si el trabajo descubre nuevos pendientes, se anotan antes de cerrar el corte para evitar decisiones implícitas o trabajo invisible.
+
 ## Publicación
 
 ```bash
