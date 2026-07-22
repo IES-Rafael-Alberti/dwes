@@ -4,6 +4,8 @@
 
 UD6 está infradotada: solo contiene `01-documentacion/UD6-AplicacionesHibridas.md`. No hay índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
+**Estado:** alcance auditado y reforma pausada hasta cerrar formalmente UD1, UD2 y UD3, que constituyen el bloque prioritario anterior a Navidad.
+
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
 ## Decisión
