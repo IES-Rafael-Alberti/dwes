@@ -4,6 +4,8 @@
 
 UD5 se reforma como **Laravel 12 API-first**. Laravel Sail es el entorno oficial para aislar PHP, Composer, extensiones y servicios. El ejemplo conductor es la API de recetas en `02-ejemplos/sail/Laravel12-api/recetas2-api-laravel12/`.
 
+**Estado:** cerrada para impartición. La revisión P3 agrupa flecos de limpieza histórica y no bloquea el paso a UD6.
+
 ## Clasificación del material recibido
 
 | Grupo | Diagnóstico | Destino |
