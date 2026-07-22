@@ -10,7 +10,8 @@ UD5 se reforma como **Laravel 12 API-first**. Laravel Sail es el entorno oficial
 |---|---|---|
 | API de Recetas Laravel 12 | Contiene Sail, PostgreSQL, Redis, Sanctum, Policies, Resources, servicios y pruebas | Ejemplo canónico validado con Sail |
 | Guía larga de Recetas | Contenido útil pero monolítico y con repeticiones | Fuente de consolidación para el recorrido canónico |
-| Laravel 10 y 11 | Ejemplos de versiones anteriores, algunos duplicados | Referencia histórica, fuera del itinerario obligatorio |
+| Laravel 10 | Permite comparar la estructura anterior a los cambios introducidos en Laravel 11 y consolidados en Laravel 12 | Conservar un único proyecto comparativo, fuera del itinerario evaluable |
+| Laravel 11 | Ejemplos intermedios y parcialmente duplicados por Laravel 12 | No conservar como versión docente; eliminar o migrar a Laravel 12 solo contenido único |
 | Blog Blade y cliente Vue | Tecnologías válidas pero no alineadas con la ruta API-first | Complemento histórico, no evaluable en UD5 |
 | `90-archivo/laravel-24_25` | Copia histórica con derivados y dependencias instaladas | Archivo local ignorado, fuera del recorrido y de GitHub Pages |
 | Proyecto heredado | Enunciado Laravel 10, contenido ajeno y repositorio anidado | Reescrito como proyecto Laravel 12 API-first |
@@ -56,3 +57,21 @@ UD5 se reforma como **Laravel 12 API-first**. Laravel Sail es el entorno oficial
 - [x] Crear seguridad transversal y definir qué evidencias se evalúan.
 - [x] Mover Laravel 10/11, Blade y Vue a una referencia histórica explícita.
 - [x] Mantener rúbrica y verificación docente de la extensión de Recetas en `99-profesor/` local e ignorado.
+
+### P3 - revisión de material local e histórico
+
+Esta revisión no bloquea la impartición de UD5, pero debe resolverse antes de considerar terminada su limpieza de repositorios:
+
+- [ ] **Laravel 10 comparativo**: revisar `Laravel10-api/laravel-api10` y conservar un único proyecto funcional que muestre cómo se estructuraba Laravel antes de la simplificación iniciada en Laravel 11 y acentuada en Laravel 12. Evaluar los cambios locales de controladores, rutas, seeder y reglas de ignorado; no migrar este proyecto a Laravel 12 porque su valor es precisamente el contraste.
+- [ ] **Cliente Laravel 10/Vue**: revisar el cambio local de `Laravel10-api/laravel-client/002-ClienteVue_Laravel10-api.org`. Conservarlo solo si aporta valor al contraste histórico o al consumo de la API; no forma parte del recorrido evaluable.
+- [ ] **Ejemplos Laravel 11**: comparar `Laravel11-api/laravel11-api-old` y `Laravel11-api/laravel11-api` con los ejemplos canónicos de Laravel 12. Eliminar los duplicados. Si contienen una técnica necesaria que no esté cubierta, trasladarla a un ejemplo Laravel 12 y retirar la etiqueta y el proyecto Laravel 11.
+- [ ] **Plantillas de entorno**: revisar los `.env.example` no versionados del Blog Laravel 10, los dos ejemplos Laravel 11 y `recetas-api-laravel12`. Solo versionar plantillas reproducibles, sin secretos, rutas personales ni valores locales; descartar las de proyectos que se eliminen.
+- [ ] **Derivados del proyecto**: decidir si eliminar `001-Proyecto_DWES_Cliente-Servidor.html` y `001-Proyecto_DWES_Cliente-Servidor.pdf`. El Markdown publicado continúa siendo la única fuente canónica.
+
+#### Criterio de aceptación
+
+- Laravel 12 sigue siendo la única ruta obligatoria y evaluable.
+- Laravel 10 conserva exactamente un caso comparativo intencional y claramente rotulado como histórico.
+- No queda ningún ejemplo presentado como Laravel 11.
+- Cualquier contenido rescatado de Laravel 11 se valida y publica como Laravel 12 únicamente si cubre algo ausente en los ejemplos actuales.
+- No se publican derivados ni plantillas de entorno sin revisar.
