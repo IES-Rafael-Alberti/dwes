@@ -18,22 +18,46 @@ Construir una API REST para gestionar **Recetas**, con:
 
 ## 1. Crear el proyecto con Laravel Build + Sail
 
-### 1.1 Crear proyecto (Sail + pgsql + redis)
+### 1.1 Preparación según el sistema operativo
 
-En tu máquina:
+| Sistema | Requisito |
+|---|---|
+| Linux | Docker Engine y Docker Compose. Configura el grupo `docker` para no usar `sudo` con Sail. |
+| macOS | Docker Desktop en ejecución. |
+| Windows | Docker Desktop con integración WSL2 y una distribución Linux. Trabaja desde esa terminal y guarda el proyecto en su sistema de archivos. |
+
+No ejecutes Sail desde CMD, PowerShell ni Git Bash. Sail está soportado en Windows mediante WSL2; usar la terminal Linux evita problemas de permisos, montajes de volúmenes y rendimiento.
+
+---
+
+### 1.2 Crear el proyecto (Sail + pgsql + redis)
+
+Ejecuta el siguiente comando en una terminal Linux. En Windows, usa la terminal de tu distribución WSL2:
 
 ```bash
 curl -s "https://laravel.build/recetas-api?with=pgsql,redis" | bash
+```
+
+Si Docker creó archivos propiedad de `root` en Linux, corrige la propiedad antes de abrir el proyecto en el IDE:
+
+```bash
+sudo chown -R "$USER":"$USER" recetas-api
+```
+
+Entra en la carpeta:
+```bash
 cd recetas-api
 ```
 
-Arrancar contenedores:
+### 1.3 Arrancar contenedores
+
+Inicia el entorno en segundo plano:
 
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-Comprobar que Sail funciona:
+Comprueba que Sail funciona correctamente:
 
 ```bash
 ./vendor/bin/sail php -v
