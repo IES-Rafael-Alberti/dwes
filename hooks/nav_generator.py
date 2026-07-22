@@ -8,6 +8,7 @@ EXCLUDE_DIRS = {
 }
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',
+    'UD1_Plan_Sesion3.md',
 }
 
 SECTION_ORDER = {
