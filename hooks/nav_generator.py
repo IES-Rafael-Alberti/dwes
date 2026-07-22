@@ -2,7 +2,10 @@ import os
 import re
 from pathlib import Path
 
-EXCLUDE_DIRS = {'90-archivo', '99-profesor', '_profesor', 'Presentaciones', '__pycache__'}
+EXCLUDE_DIRS = {
+    '90-archivo', '99-profesor', '_profesor', 'Presentaciones', '__pycache__',
+    'vendor', 'node_modules', '.git', '.idea', '.settings', 'build', 'target', 'bin',
+}
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',
 }

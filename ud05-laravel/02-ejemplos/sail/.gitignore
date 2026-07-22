@@ -1,0 +1,9 @@
+.Rhistory
+*.zip
+*.tar.gz
+*.log
+**/storage/logs/*
+!**/storage/logs/.gitignore
+**/database/*.sqlite
+**/vendor/
+**/node_modules/

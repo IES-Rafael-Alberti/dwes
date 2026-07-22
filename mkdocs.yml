@@ -30,6 +30,8 @@ exclude_docs: |
   **/target/
   **/.gradle/
   **/build/
+  ud05-laravel/02-ejemplos/sail/Laravel10-api/laravel-client/index.html
+  ud05-laravel/03-ejercicios/Proyecto/*.html
   *.py
   *.csv
   *.zip
