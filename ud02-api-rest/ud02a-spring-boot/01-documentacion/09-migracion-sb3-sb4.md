@@ -1,143 +1,137 @@
 # Migración de Spring Boot 3 a Spring Boot 4
 
-En la empresa te vas a encontrar proyectos en **Spring Boot 3** durante años. Este documento recoge los cambios importantes al migrar a SB4 para que puedas reconocerlos y actuar en ambos sentidos.
+Los proyectos Spring Boot 3 seguirán presentes durante años. Esta guía resume cambios que afectan al material del módulo; no sustituye las notas oficiales de cada versión.
 
-## 1. Cambios en el POM
+## Baseline
 
-### Starter web partido
+Spring Boot 4 requiere Java 17 como mínimo. DWES adopta **Java 25 LTS** como baseline curricular, por lo que todos los proyectos de la ruta se compilan y verifican con Java 25.
 
-| SB3 | SB4 |
-|-----|-----|
+## Starters web y módulos de prueba
+
+Spring Boot 4 modulariza el soporte MVC y sus tests:
+
+| Spring Boot 3 | Spring Boot 4 |
+|---|---|
 | `spring-boot-starter-web` | `spring-boot-starter-webmvc` |
-| (incluido en starter-test) | `spring-boot-starter-webmvc-test` (explícito) |
+| slices incluidos por el starter de test clásico | módulos de test explícitos según la tecnología |
 
 ```xml
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webmvc</artifactId>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-webmvc</artifactId>
 </dependency>
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webmvc-test</artifactId>
-    <scope>test</scope>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-test</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-webmvc-test</artifactId>
+  <scope>test</scope>
 </dependency>
 ```
 
-### Flag `-parameters` obligatorio
+Para slices JPA añade `spring-boot-data-jpa-test` con alcance `test`.
 
-SB4 **necesita** los nombres de los parámetros en tiempo de ejecución. Sin esto, `@RequestParam` sin `name` explícito lanza un 404 silencioso.
+## Imports de slices
 
-```xml
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <configuration>
-        <source>21</source>
-        <target>21</target>
-        <parameters>true</parameters>   <!-- ← necesario -->
-    </configuration>
-</plugin>
-```
-
-En SB3 esto funcionaba sin `-parameters` porque Spring Boot lo configuraba automáticamente al usar el parent POM. Con BOM (sin parent), hay que declararlo.
-
-### Hibernate 7 cambió la estrategia de nombres
-
-En SB3, Hibernate convertía camelCase a snake_case automáticamente (`taskTitle` → `task_title`). En Hibernate 7 (SB4) ya no: usa el nombre exacto del campo.
-
-| SB3 | SB4 |
-|-----|-----|
-| `private String taskTitle;` → columna `task_title` | `private String taskTitle;` → columna `taskTitle` |
-
-Si necesitas snake_case, usa `@Column(name = "task_title")` explícito.
-
-## 2. Anotaciones eliminadas o renombradas
-
-### `@DataJpaTest` — eliminado
-
-No existe en SB4. No hay un starter sustituto. Usa `@SpringBootTest`:
+### Web MVC
 
 ```java
-// SB3 — eliminado
-@WebMvcTest(TaskControllerV4.class)
-
-// SB4
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest(properties = "spring.jpa.defer-datasource-initialization=true")
-class RepoTest {
-    @Autowired TaskRepository repo;
-}
-```
-
-La property `defer-datasource-initialization=true` evita que `data.sql` se ejecute antes de que Hibernate cree las tablas.
-
-### `@WebMvcTest` — nuevo paquete
-
-```java
-// SB3
+// Spring Boot 3
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
-// SB4
+// Spring Boot 4
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 ```
 
-### `@MockBean` → `@MockitoBean`
+### Repositorios JPA
+
+`@DataJpaTest` **no ha desaparecido**. Se trasladó al módulo y paquete de prueba JPA:
 
 ```java
-// SB3
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+
+@DataJpaTest
+class GameRepositoryTest {
+}
+```
+
+No sustituyas automáticamente un slice por `@SpringBootTest`: cargar todo el contexto cambia el aislamiento, el tiempo de ejecución y la semántica transaccional de la prueba.
+
+### Beans Mockito
+
+```java
+// Spring Boot 3
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-// SB4
+// Spring Boot 4 / Spring Framework 7
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 ```
 
-### Ojo: `@SpringBootTest` con `@DataJpaTest` anterior
+## Nombres de parámetros
 
-Si ves código SB3 con `@DataJpaTest`, al migrar ten en cuenta que:
-- `@DataJpaTest` configuraba H2, desactivaba la inicialización automática de `data.sql`, y cargaba solo la capa JPA.
-- `@SpringBootTest` carga el contexto completo. Es más lento y ejecuta `data.sql` de `src/main/resources` a menos que difieras la inicialización.
+Spring MVC puede resolver nombres implícitos de parámetros cuando el compilador conserva metadatos con `-parameters`. El parent de Spring Boot configura esta opción; si el proyecto importa solo el BOM o personaliza el compilador, verifícala explícitamente:
 
-## 3. Jackson 3
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <parameters>true</parameters>
+  </configuration>
+</plugin>
+```
 
-SB4 migró a Jackson 3.x. La mayoría de las APIs son compatibles hacia atrás, pero:
-- Algunas clases de Jackson se movieron de paquete (ej. `JsonProcessingException`).
-- Si usas serialización/deserialización personalizada, revisa los imports.
+También puedes declarar `name` explícitamente en `@RequestParam` y `@PathVariable` cuando forme parte del contrato.
 
-## 4. Flyway
+## JPA e Hibernate 7
 
-En SB3, Flyway se auto-configuraba con `spring-boot-starter-web`. En SB4 se eliminó `FlywayAutoConfiguration` del autoconfigure global:
+Spring Boot mantiene por defecto una estrategia física que convierte camelCase a nombres con guiones bajos. Si seleccionas la estrategia estándar de Hibernate, los identificadores se mantienen sin esa conversión:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```
+
+Para esquemas duraderos, migraciones Flyway o nombres que formen parte de un contrato, usa `@Column(name = "...")` de forma explícita en lugar de depender de una estrategia implícita.
+
+## Flyway
+
+Spring Boot 4 separa Flyway en un módulo propio de auto-configuración. Declara el starter y el módulo de base de datos necesario:
 
 ```xml
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-flyway</artifactId>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-flyway</artifactId>
 </dependency>
 ```
 
-## 5. Resumen: checklist de migración SB3 → SB4
+La presencia del starter web nunca sustituye la dependencia de Flyway. Verifica las migraciones desde una base vacía.
 
-- [ ] Cambiar `spring-boot-starter-web` → `spring-boot-starter-webmvc`
-- [ ] Añadir `spring-boot-starter-webmvc-test` en test
-- [ ] Añadir `<parameters>true</parameters>` en maven-compiler-plugin
-- [ ] Cambiar `@WebMvcTest` al nuevo paquete
-- [ ] Cambiar `@MockBean` → `@MockitoBean`
-- [ ] Cambiar `@DataJpaTest` → `@SpringBootTest` con `defer-datasource-initialization=true`
-- [ ] Si usas Flyway, añadir `spring-boot-starter-flyway` explícito
-- [ ] Revisar `@Column(name = "...")` si dependías de la naming strategy de Hibernate
-- [ ] Revisar imports de Jackson si usas serialización personalizada
-- [ ] Java 21+ (SB4 requiere Java 21 como mínimo)
-- [ ] Actualizar versión de Spring Boot BOM a `4.0.5` (o la vigente)
+## Jackson 3
 
-## 6. Lo que NO cambia
+Spring Boot 4 utiliza Jackson 3. La serialización habitual de DTOs requiere pocos cambios, pero módulos personalizados, tipos avanzados e imports de excepciones deben revisarse contra la versión administrada por Spring Boot.
 
-| Concepto | Sigue igual |
-|----------|-------------|
-| Anotaciones REST (`@RestController`, `@GetMapping`, `@PostMapping`, etc.) | Mismas anotaciones, mismos imports |
-| `ResponseEntity` | Sin cambios |
-| `@Service`, `@Repository`, `@Component` | Sin cambios |
-| `@SpringBootApplication` | Sin cambios |
-| `application.properties` / `application.yml` | Mismas propiedades (algunas nuevas, pero compatibles) |
-| JPA (`@Entity`, `@Id`, `@OneToMany`, etc.) | Sin cambios (Hibernate 7, pero API compatible) |
-| Validación (`@Valid`, `@NotBlank`, etc.) | Sin cambios |
-| MockMvc | Sin cambios en la API de uso |
+## Checklist
+
+- [ ] Fijar Spring Boot y Java 25 en el build.
+- [ ] Cambiar a `spring-boot-starter-webmvc`.
+- [ ] Añadir los módulos de test MVC/JPA utilizados.
+- [ ] Actualizar imports de `@WebMvcTest` y `@DataJpaTest`.
+- [ ] Sustituir `@MockBean` por `@MockitoBean`.
+- [ ] Conservar slices; usar `@SpringBootTest` solo cuando se necesite el contexto completo.
+- [ ] Verificar `-parameters` o declarar nombres explícitos.
+- [ ] Añadir el starter Flyway y probar una base vacía.
+- [ ] Revisar naming JPA e imports personalizados de Jackson.
+- [ ] Ejecutar toda la suite con Java 25.
+
+## Referencias
+
+- [Spring Boot system requirements](https://docs.spring.io/spring-boot/system-requirements.html)
+- [Spring Boot testing](https://docs.spring.io/spring-boot/reference/testing/index.html)
+- [Spring Boot data access](https://docs.spring.io/spring-boot/how-to/data-access.html)

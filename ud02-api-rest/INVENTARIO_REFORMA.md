@@ -73,7 +73,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [x] Excluir temporalmente de MkDocs claves y material no verificado de seguridad, .NET y GraphQL.
 - [ ] Eliminar la credencial administrativa conocida de las migraciones normales.
 - [ ] Corregir `.dockerignore` y verificar que claves/keystores no entren en JAR ni imagen.
-- [ ] Corregir slicing y migración SB3/SB4 según Spring Boot 4.
+- [x] Corregir slicing y migración SB3/SB4 según los módulos, paquetes y requisitos oficiales de Spring Boot 4.
 - [ ] Resolver o retirar gitlinks sin `.gitmodules`.
 
 ### P1 - ruta canónica

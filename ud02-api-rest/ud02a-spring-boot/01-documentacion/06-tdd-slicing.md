@@ -1,13 +1,4 @@
----
-title: "Untitled"
-author: "José MSA"
-date: "2025-10-22"
-output: pdf_document
----
-# `docs/Cap02bis_Tests_Tasks_Slicing.md`
-
-```markdown
-# Capítulo 2 bis — Slicing de tests: Web, Servicio y Repositorio
+# Slicing de tests: web, servicio y repositorio
 
 **Módulo:** DWES  
 **Capítulos:** 2 bis (Tests, ampliación)  
@@ -21,6 +12,23 @@ Aprender a **probar por capas** usando *slices* de Spring Boot:
 
 > Para esta sección **evolucionamos** el ejemplo “Tasks” introduciendo **Service** y **Repository** de forma mínima.  
 > *En el Cap. 2 bis principal seguimos sin servicios; aquí solo para practicar tests por capas.*
+
+## Dependencias de test en Spring Boot 4
+
+Además de `spring-boot-starter-test`, añade los módulos de los slices que utilices:
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-webmvc-test</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-data-jpa-test</artifactId>
+  <scope>test</scope>
+</dependency>
+```
 
 ## 1. Estructura mínima con servicio y repositorio
 
@@ -42,7 +50,7 @@ public class Task {
 
   private boolean done;
 }
-````
+```
 
 ### 1.2 Repositorio
 
@@ -160,9 +168,9 @@ import com.example.tasks.domain.Task;
 import com.example.tasks.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -177,7 +185,7 @@ class TaskWebSliceTest {
 
   @Autowired MockMvc mvc;
 
-  @MockBean TaskService service; // mock del servicio
+  @MockitoBean TaskService service; // mock del servicio
 
   @Test
   void list_shouldReturnTasksFromService() throws Exception {
@@ -218,7 +226,7 @@ package com.example.tasks.repo;
 import com.example.tasks.domain.Task;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
 
@@ -302,7 +310,3 @@ Separar tests por capas:
 * y ayuda a detectar errores **en el sitio correcto**.
 
 Más adelante añadiremos **tests para seguridad (JWT)** y **documentación (OpenAPI)**.
-
-```
-
----
