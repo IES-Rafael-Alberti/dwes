@@ -5,6 +5,7 @@ from pathlib import Path
 EXCLUDE_DIRS = {
     '90-archivo', '99-profesor', '_profesor', 'Presentaciones', '__pycache__',
     'vendor', 'node_modules', '.git', '.idea', '.settings', 'build', 'target', 'bin',
+    'Seguridad',
 }
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',
@@ -119,8 +120,11 @@ def on_config(config):
         'ud06-aplicaciones-hibridas': ('UD6 — Aplicaciones Híbridas', 'unidades/ud06.md'),
         'ud07-proyecto-integrador': ('UD7 — Proyecto Integrador', 'unidades/ud07.md'),
     }
+    disabled_units = {'ud02b-dotnet', 'ud02c-graphql'}
 
     for unit_dirname in sorted(UNIT_NAMES):
+        if unit_dirname in disabled_units:
+            continue
         # Search for symlink in docs/ subdirectories
         unit_symlink = None
         for candidate in docs_dir.rglob(unit_dirname):

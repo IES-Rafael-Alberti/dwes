@@ -67,9 +67,8 @@ app.cors.allowed-origins=https://mialumno.centro.edu
 server.ssl.enabled=true
 ```
 
-## Referencias
+## Estado del material heredado
 
-- [`Seguridad/`](./Seguridad/): Proyectos de ejemplo completos (Ejemplo1 JWT básico, GestionBiblioteca)
-- [`seguridadSpringBoot-V1.md`](./Seguridad/Ejemplo1/seguridadSpringBoot-V1.md): Guía completa de seguridad (2006 l.)
-- [`SeguridadSpringBoot-V2.md`](./Seguridad/Ejemplo1/SeguridadSpringBoot-V2.md): Versión condensada (406 l.)
-- Documentación relacionada en `02-ejemplos/Documentacion-SpringBoot/02-intermedio/07-cors/`
+Los proyectos y documentos de `Seguridad/` permanecen fuera de la publicación mientras se revisan. Mezclan versiones antiguas de Spring Security, secretos de demostración, soluciones completas y formatos generados; no son referencias vigentes para el alumnado.
+
+El contrato canónico de seguridad se consolidará a partir de Battleship y deberá cubrir autenticación, autorización, ownership, `401`/`403`, CORS, CSRF, gestión de claves y pruebas con filtros activos antes de cerrar UD2.

@@ -24,7 +24,9 @@ exclude_docs: |
   **/.git/
   **/.idea/
   **/.settings/
+  **/keys/
   **/bin/
+  **/obj/
   **/vendor/
   **/node_modules/
   **/target/
@@ -32,6 +34,9 @@ exclude_docs: |
   **/build/
   ud05-laravel/02-ejemplos/sail/Laravel10-api/laravel-client/index.html
   ud05-laravel/03-ejercicios/Proyecto/*.html
+  ud02a-spring-boot/06-seguridad/Seguridad/
+  ud02b-dotnet/
+  ud02c-graphql/
   *.py
   *.csv
   *.zip
@@ -39,6 +44,8 @@ exclude_docs: |
   *.docx
   *.rmd
   *.Rhistory
+  *.pem
+  *.p12
   *.gift
   *.json
   *.gitignore

@@ -1,0 +1,109 @@
+# Inventario de reforma de UD2
+
+## Estado
+
+UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad activa es consolidar la ruta Spring Boot; .NET y GraphQL quedan como demostraciones opcionales y no evaluables.
+
+## Decisión
+
+- Spring Boot 4 con Java 25 será la única ruta principal y evaluable.
+- Battleship será el proyecto conductor canónico.
+- Mini Tasks, Book Catalog y Gestión de Eventos serán ejercicios con papeles delimitados, no rutas paralelas.
+- .NET conservará como máximo una demostración mínima verificada.
+- GraphQL conservará como máximo una demostración mínima verificada.
+- OpenAPI versionado y el flujo SDD deben convertirse en fuentes verificables, no limitarse a documentación generada desde código.
+
+## Hallazgos verificados
+
+### Seguridad y publicación
+
+- `V4__seed_admin.sql` crea `admin/admin123` como migración normal. Es una credencial privilegiada conocida y bloquea cualquier presentación del perfil como desplegable.
+- Las claves RSA y el keystore de Battleship existen localmente bajo `src/main/resources/keys/`, pero Git los ignora y **no están versionados**. Aun así, MkDocs podía copiarlos desde el árbol local porque Git ignore no controla la publicación.
+- `.dockerignore` usa `keys/*.pem` y `keys/*.p12`, pero los archivos reales viven en `src/main/resources/keys/`; esas reglas no protegen el contexto real.
+- `06-seguridad/Seguridad/` contiene soluciones completas, APIs antiguas, secretos de demostración, `.Rhistory`, ZIP, PDF, HTML, Org y residuos conversacionales.
+- Se excluyen temporalmente de MkDocs las claves, el árbol heredado de seguridad y las rutas opcionales .NET/GraphQL hasta clasificarlos.
+
+### Reproducibilidad
+
+- Existen gitlinks para `demo`, Mini Tasks, Book Catalog, Gestión de Eventos, Gestión Biblioteca, Recetas .NET y ToDo .NET.
+- No existe `.gitmodules`; un clon limpio no puede reconstruir esos repositorios anidados.
+- Hay cambios locales preservados en Battleship y varios repositorios anidados; no se consolidarán sin revisar cada unidad de trabajo.
+- Las afirmaciones de tests verdes deben volver a verificarse desde los wrappers y revisiones exactas que se publiquen.
+
+### Documentación principal
+
+- `06-tdd-slicing.md` usa imports de Spring Boot 3 y `@MockBean`.
+- `09-migracion-sb3-sb4.md` afirma erróneamente que `@DataJpaTest` desapareció; Spring Boot 4 lo mantiene en un paquete y módulo nuevos.
+- La introducción mezcla starters, Java 21 y dependencias anteriores con el baseline Spring Boot 4/Java 25.
+- La secuencia duplica introducción y controladores, y sitúa funcionamiento interno demasiado tarde.
+- La página pública de UD2a no enlaza recorrido, RA/CE, seguridad, proyecto canónico ni criterio de cierre.
+- No existe un contrato OpenAPI versionado ni pruebas de conformidad; SpringDoc generado desde código no equivale a SDD contract-first.
+
+### Rutas opcionales
+
+- .NET ocupa cientos de MB locales por `bin/`, `obj/`, bases SQLite y metadatos; mezcla .NET 8 y 10 y contiene tareas obligatorias incompatibles con su papel opcional.
+- Los proyectos .NET útiles son gitlinks irreproducibles y mantienen cambios locales; no deben publicarse desde el repositorio principal en este estado.
+- GraphQL es un único documento extenso sin proyecto, versión fijada ni pruebas, con APIs Hot Chocolate incompatibles entre secciones.
+
+## Alcance de cierre
+
+### Obligatorio
+
+- Ruta canónica Spring Boot 4/Java 25 coherente y enlazada.
+- Battleship reproducible, sin credenciales conocidas ni claves empaquetadas.
+- Tests de dominio, HTTP, persistencia y seguridad verificados.
+- OpenAPI versionado con autenticación, errores y ejemplos.
+- Flujo SDD trazable desde requisitos hasta pruebas de conformidad.
+- Seguridad moderna con 401/403, ownership/BOLA, CORS, CSRF, JWT y gestión de claves justificadas.
+- Matriz RA/CE a-g/evidencias para la unidad y sus ejercicios.
+- Publicación limitada a material intencional y revisado.
+
+### Fuera del núcleo
+
+- Mantener varias APIs completas como proyectos conductores.
+- Evaluar .NET o GraphQL como recorridos equivalentes a Spring Boot.
+- GraalVM, Kubernetes, BSON y persistencias alternativas como requisitos de cierre.
+- Publicar soluciones, archivos generados, secretos de demostración o bases locales.
+
+## Plan por prioridad
+
+### P0 - contención y exactitud
+
+- [x] Auditar documentación, proyectos, seguridad y rutas opcionales.
+- [x] Excluir temporalmente de MkDocs claves y material no verificado de seguridad, .NET y GraphQL.
+- [ ] Eliminar la credencial administrativa conocida de las migraciones normales.
+- [ ] Corregir `.dockerignore` y verificar que claves/keystores no entren en JAR ni imagen.
+- [ ] Corregir slicing y migración SB3/SB4 según Spring Boot 4.
+- [ ] Resolver o retirar gitlinks sin `.gitmodules`.
+
+### P1 - ruta canónica
+
+- [ ] Fijar Java 25 y Spring Boot 4 de forma uniforme.
+- [ ] Reordenar y consolidar la documentación sin duplicados.
+- [ ] Completar README, página pública, RA/CE y evaluación.
+- [ ] Verificar Battleship desde wrapper, perfiles y base limpia.
+- [ ] Convertir seguridad en un contrato canónico y probado.
+
+### P2 - SDD y contrato
+
+- [ ] Diseñar y versionar OpenAPI como fuente de verdad.
+- [ ] Añadir autenticación, autorización, errores y ejemplos al contrato.
+- [ ] Verificar conformidad entre contrato e implementación.
+- [ ] Documentar requisitos, decisiones, tareas y evidencias SDD.
+
+### P3 - opcionales y limpieza
+
+- [ ] Reducir .NET a una demostración limpia, fijada y no evaluable, o retirarla.
+- [ ] Sustituir GraphQL por una demostración mínima ejecutable o retirarla.
+- [ ] Eliminar material generado, duplicado, conversacional y obsoleto.
+- [ ] Clasificar ejercicios y previews sin competir con Battleship.
+
+## Criterio de cierre
+
+- Un clon limpio reproduce todo el material obligatorio.
+- No hay secretos ni credenciales conocidas en artefactos desplegables.
+- Java 25/Spring Boot 4 y los tests están verificados.
+- OpenAPI y SDD tienen artefactos versionados y evidencia automática.
+- Seguridad y RA/CE están trazadas a pruebas y actividades.
+- .NET/GraphQL están claramente aislados como opcionales.
+- MkDocs no publica material interno, soluciones ni archivos sensibles.
