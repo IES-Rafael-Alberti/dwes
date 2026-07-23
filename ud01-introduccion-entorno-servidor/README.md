@@ -44,12 +44,11 @@ La documentación canónica se publica en `01-documentacion/` siguiendo este ord
 
 ## Evaluación
 
-- Laboratorio HTTP con trazas sanitizadas.
-- Comparación razonada de tecnologías y mecanismos de ejecución.
-- Demostración reproducible del entorno y del servidor mínimo.
-- Cuestionario que cubra RA1.a-g.
+La [evaluación de UD1](EVALUACION.md) combina:
 
-La ponderación definitiva se fijará al reformar los instrumentos. Hasta entonces, ninguna actividad aislada representa por sí sola toda la evaluación de UD1.
+- laboratorio HTTP con trazas sanitizadas: 40 %;
+- extensión TDD reproducible de Hello Server: 30 %;
+- cuestionario Moodle RA1.a-g: 30 %.
 
 ## Seguridad
 
