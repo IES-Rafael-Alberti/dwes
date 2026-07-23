@@ -30,10 +30,10 @@ Esta unidad trabaja RA1: seleccionar arquitecturas y tecnologías de programaci�
 
 ## Recorrido
 
-1. Cliente, servidor y contenido dinámico.
-2. Mecanismos de ejecución en servidor.
-3. Servidores web, proxies, contenedores y servidores de aplicaciones.
-4. Lenguajes, runtimes, librerías y frameworks.
+1. [Cliente, servidor y contenido dinámico](01-documentacion/01-cliente-servidor-y-contenido-dinamico.md).
+2. [Mecanismos de ejecución en servidor](01-documentacion/02-mecanismos-ejecucion-servidor.md).
+3. [Servidores web, proxies y contenedores](01-documentacion/03-infraestructura-web.md).
+4. [Tecnologías, frameworks e integración](01-documentacion/04-tecnologias-e-integracion.md).
 5. Integración entre HTML y código servidor.
 6. HTTP actual: versiones, métodos, estados, cabeceras, contenido y caché.
 7. HTTP seguro: TLS, certificados, cookies, cabeceras y trazas.
@@ -41,7 +41,7 @@ Esta unidad trabaja RA1: seleccionar arquitecturas y tecnologías de programaci�
 9. Hello Server con HTML, JSON, `/health` y pruebas.
 10. [Laboratorio de análisis HTTP](03-ejercicios/01-analisis-http/README.md).
 
-La documentación canónica se irá publicando en `01-documentacion/` siguiendo este orden. Los Rmd, PDF y planes de sesión heredados permanecen fuera de la navegación mientras se consolida su contenido válido.
+La documentación canónica se publica en `01-documentacion/` siguiendo este orden. Los Rmd, PDF y planes de sesión heredados permanecen fuera de la navegación mientras se consolida su contenido válido.
 
 ## Evaluación
 

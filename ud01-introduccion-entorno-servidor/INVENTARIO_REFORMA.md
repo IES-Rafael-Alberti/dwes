@@ -80,7 +80,8 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 - [x] Auditar todos los materiales y mapear la cobertura actual de RA1.a-g.
 - [x] Excluir de MkDocs las fuentes Rmd, PDF y el plan docente desincronizados.
 - [x] Crear el README con propósito, baseline, RA/CE, secuencia, evaluación y frontera con UD2.
-- [ ] Sustituir los documentos heredados por un recorrido Markdown canónico.
+- [x] Consolidar cliente/servidor, mecanismos de ejecución, infraestructura y selección de tecnologías en cuatro lecciones Markdown.
+- [ ] Consolidar HTTP, seguridad y entorno en lecciones Markdown canónicas.
 - [x] Corregir la portada `docs/unidades/ud01.md` y enlazar el recorrido.
 
 ### P1 - entorno y ejemplo
