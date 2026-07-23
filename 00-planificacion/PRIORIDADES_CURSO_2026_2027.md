@@ -8,8 +8,8 @@ Después de Navidad, el tiempo disponible es limitado porque el alumnado se inco
 
 ## Orden de trabajo inmediato
 
-1. **UD1 - Introducción y entorno servidor**: auditar, reformar, verificar y cerrar.
-2. **UD2 - API REST**: cerrar el recorrido principal de Spring Boot, incluida la fase SDD/OpenAPI pendiente; mantener .NET y GraphQL como demostraciones opcionales.
+1. **UD1 - Introducción y entorno servidor — CERRADA**: recorrido RA1.a-g, Java 25/Spring Boot 4, Hello Server, seguridad y evaluación verificados el 23 de julio de 2026. Solo queda validar el GIFT en Moodle.
+2. **UD2 - API REST — PRIORIDAD ACTIVA**: cerrar el recorrido principal de Spring Boot, incluida la fase SDD/OpenAPI pendiente; mantener .NET y GraphQL como demostraciones opcionales.
 3. **UD3 - MVC Spring Boot**: revisar el núcleo ya implementado, resolver incoherencias o pendientes bloqueantes y declararlo formalmente cerrado.
 4. Retomar UD6 solo después de cerrar UD1-UD3.
 

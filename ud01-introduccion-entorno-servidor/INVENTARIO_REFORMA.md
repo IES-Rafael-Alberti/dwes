@@ -2,7 +2,7 @@
 
 ## Estado
 
-UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritaria anterior a Navidad y debe cumplir la definición de cierre de `00-planificacion/PRIORIDADES_CURSO_2026_2027.md`.
+UD1 está **cerrada para impartición desde el 23 de julio de 2026**. Cumple la definición de cierre de `00-planificacion/PRIORIDADES_CURSO_2026_2027.md`. Solo queda la comprobación operativa no bloqueante del banco GIFT mediante importación real en Moodle.
 
 ## Diagnóstico
 
@@ -107,11 +107,11 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 
 ## Criterio de cierre
 
-- El recorrido es único, navegable y técnicamente actual.
-- Java 25/Spring Boot 4 se reproducen con comandos documentados.
-- El ejemplo mínimo y sus pruebas funcionan.
-- RA1.a-g tienen contenido, actividad y evidencia de evaluación.
-- Seguridad y privacidad aparecen desde el primer laboratorio.
-- No se publican conversaciones, fuentes o derivados contradictorios.
-- El inventario y la planificación reflejan el estado real.
-- `mkdocs build --strict` termina sin errores nuevos.
+- [x] El recorrido es único, navegable y técnicamente actual.
+- [x] Java 25/Spring Boot 4 se reproducen con comandos documentados.
+- [x] El ejemplo mínimo ejecuta 3 pruebas verdes y sus endpoints se verificaron por HTTP.
+- [x] RA1.a-g tienen contenido, actividad y evidencia de evaluación.
+- [x] Seguridad y privacidad aparecen desde el primer laboratorio.
+- [x] No se publican conversaciones, fuentes o derivados contradictorios.
+- [x] El inventario y la planificación reflejan el estado real.
+- [x] `mkdocs build --strict` termina sin errores nuevos.
