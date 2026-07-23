@@ -1,49 +1,137 @@
-# Ejercicio 01 — Análisis de protocolo HTTP y Modelo de Ejecución
+# Laboratorio HTTP y ejecución cliente-servidor
 
 ## Objetivo
 
-Consolidar los conceptos del protocolo HTTP y diferenciar de forma práctica los modelos de ejecución cliente-servidor, así como la identificación de tecnologías de backend.
+Observar el recorrido real de una petición contra Hello Server, interpretar mensajes HTTP sin exponer información sensible y relacionar la evidencia con los mecanismos de ejecución estudiados en UD1.
 
-## Requisitos técnicos
+## Requisitos
 
-- Herramientas de consola: `httpie` (recomendado por su salida coloreada y sintaxis amigable, comando `http`) o `curl` / `netcat` como alternativas clásicas.
-- Navegador web con Herramientas de Desarrollador (Chrome, Firefox o Edge).
-- Un editor de texto para redactar el documento final en formato Markdown.
+- Java 25.
+- [Hello Server](../../02-ejemplos/hello-server/README.md).
+- HTTPie o cURL.
+- Navegador con herramientas de desarrollo.
+- Editor de Markdown.
 
-## Tareas
+No se inspeccionan cuentas personales ni sitios públicos arbitrarios. El objetivo controlado es `http://localhost:8080`.
 
-### 1. Interacción HTTP mediante consola (HTTPie / cURL)
+## Preparación
 
-Utiliza la consola para lanzar una petición HTTP básica a un sitio público de tu elección (por ejemplo: `https://httpbin.org/headers` o `https://www.google.com`):
+Desde `02-ejemplos/hello-server/`:
 
-1. Envía una petición `GET` usando `http -v` (con HTTPie) o `curl -v` (con cURL) para ver tanto la solicitud como la respuesta con todas sus cabeceras.
-2. Identifica y explica en tu entrega el propósito de al menos 3 cabeceras de solicitud y 3 cabeceras de respuesta que hayas capturado.
-3. Envía una petición `OPTIONS` (ej. `http OPTIONS https://httpbin.org/get` o `curl -X OPTIONS -v ...`) e investiga qué métodos están permitidos.
-4. **Reflexión sobre el nuevo método QUERY**: Explica teóricamente qué ventajas aporta el método QUERY (aprobado en junio de 2026) frente a una consulta masiva usando GET con parámetros en la URL o el uso de POST.
+```bash
+./mvnw test
+./mvnw spring-boot:run
+```
 
-### 2. Inspección del navegador y Modelo de Ejecución
+Mantén el servidor activo y trabaja desde otra terminal.
 
-Abre tu navegador, entra en una web dinámica (por ejemplo, un periódico o una tienda online) y abre las Herramientas de Desarrollador (pestaña **Red** / **Network**):
+## 1. Tres representaciones
 
-1. Recarga la página y selecciona la primera petición (el documento HTML principal). Captura sus cabeceras.
-2. Explica qué ocurre desde que pulsas "Enter" hasta que se renderiza el HTML. ¿Qué parte se ejecuta en el servidor y qué parte se ejecuta en tu navegador?
-3. Sabiendo que el navegador puede ejecutar JavaScript (JS) en cliente, ¿por qué es necesaria la generación dinámica de páginas en el servidor? Enumera 3 ventajas críticas.
-4. Intenta identificar qué tecnología de backend (lenguaje o servidor de aplicaciones) está detrás de la web elegida buscando cabeceras como `Server`, `X-Powered-By` o mediante cookies típicas de sesión (como `JSESSIONID`, `PHPSESSID`, `ASP.NET_SessionId`).
+Ejecuta con HTTPie:
 
-## Entregables
+```bash
+http --print=HBhb GET http://localhost:8080/
+http --print=HBhb GET http://localhost:8080/api/hello
+http --print=HBhb GET http://localhost:8080/health
+```
 
-- Documento `entrega.md` que contenga las respuestas a los apartados anteriores, las trazas de cabeceras HTTP capturadas y tus explicaciones técnicas.
-- Declaración de uso de IA cumplimentada (ver plantilla en `00-recursos-comunes/plantillas/`).
+O con cURL:
+
+```bash
+curl --include http://localhost:8080/
+curl --include http://localhost:8080/api/hello
+curl --include http://localhost:8080/health
+```
+
+Para cada respuesta registra:
+
+- método y destino;
+- estado;
+- `Content-Type`;
+- tipo de representación;
+- método Java que produjo la respuesta.
+
+Explica por qué `/` devuelve HTML y `/api/hello` devuelve JSON aunque ambos se implementen en el mismo controlador.
+
+## 2. Solicitud, respuesta y errores
+
+Obtén una traza detallada de `GET /api/hello` con `http --verbose` o `curl --verbose`. Conserva solo los campos necesarios.
+
+Después ejecuta:
+
+```bash
+curl --head http://localhost:8080/api/hello
+curl --include --request OPTIONS http://localhost:8080/api/hello
+curl --include http://localhost:8080/no-existe
+```
+
+Responde:
+
+1. ¿Qué diferencia hay entre método, destino, cabeceras y contenido?
+2. ¿Qué información aporta cada estado recibido?
+3. ¿Devuelve `OPTIONS` una cabecera `Allow`? Describe únicamente la evidencia observada; no presupongas que todos los servidores responden igual.
+4. ¿Qué información interna sería peligroso incluir en una respuesta de error?
+
+## 3. Navegador y frontera de ejecución
+
+Abre `http://localhost:8080/` y utiliza la pestaña **Red**:
+
+1. Localiza la petición del documento HTML.
+2. Identifica qué ocurrió en el navegador y qué ocurrió en Java.
+3. Explica por qué modificar el HTML en las herramientas del navegador no modifica el código servidor.
+4. Indica una validación que podría mejorar la experiencia en cliente, pero que el servidor tendría que repetir.
+5. Justifica tres ventajas y dos costes de generar contenido dinámico en servidor.
+
+## 4. Del socket al controlador
+
+Dibuja el recorrido de `GET /health`:
+
+```text
+cliente -> Tomcat embebido -> DispatcherServlet -> HelloController -> conversor JSON -> respuesta
+```
+
+Compara este proceso persistente con CGI y PHP-FPM/FastCGI. Debes identificar qué proceso permanece activo y qué componente ejecuta el código de aplicación.
+
+Aclara por qué `Server` o `X-Powered-By` serían como máximo indicios y no una prueba fiable de toda la arquitectura.
+
+## 5. Selección tecnológica
+
+Compara Spring Boot y Laravel usando al menos estos criterios:
+
+- lenguaje y runtime;
+- mecanismo habitual de ejecución;
+- tipado y herramientas de prueba;
+- despliegue y operación;
+- papel didáctico dentro del módulo.
+
+Concluye cuándo elegirías cada uno. No se acepta "es mejor" sin contexto ni criterios.
+
+## 6. QUERY
+
+Lee [RFC 10008](https://www.rfc-editor.org/rfc/rfc10008.html) y el apartado QUERY de la guía HTTP. No ejecutes QUERY contra Hello Server: este laboratorio no ha demostrado soporte en toda la cadena.
+
+Explica:
+
+1. Qué problema resuelve frente a GET y POST.
+2. Por qué es seguro e idempotente.
+3. Por qué requiere contenido y `Content-Type` coherentes.
+4. Qué tendría que verificarse antes de adoptarlo en una aplicación real.
+
+## Seguridad de la entrega
+
+Aplica la [guía de seguridad HTTP](../../06-seguridad/README.md):
+
+- redacta cookies, tokens y `Authorization` como `<REDACTED>`;
+- no incluyas rutas personales, variables de entorno ni pestañas ajenas;
+- usa texto copiable en lugar de capturas cuando sea posible;
+- si expones un secreto real, revócalo; borrar la captura no basta.
+
+## Entrega
+
+Entrega un único `entrega.md` basado en [plantilla-entrega.md](plantilla-entrega.md). Las trazas deben ser breves, textuales y sanitizadas.
+
+Consulta [rubrica.md](rubrica.md) y [ra-ce.md](ra-ce.md) antes de empezar.
 
 ## Política de IA
 
-| Aspecto | |
-|---------|-|
-| Uso de IA permitido | Sí, como soporte para buscar información sobre cabeceras HTTP específicas o depurar comandos `http` (HTTPie) o `curl`. |
-| Declaración obligatoria | Sí. |
-| Herramientas permitidas | ChatGPT, Claude, Gemini, GitHub Copilot. |
-| Qué NO está permitido | Generar de forma totalmente automatizada las reflexiones del modelo de ejecución cliente-servidor o copiar explicaciones teóricas sin haber hecho la inspección real de cabeceras en consola. |
-
-## Evaluación
-
-Ver `rubrica.md` y `ra-ce.md` en este directorio.
+En esta primera unidad no se permite usar IA generativa para resolver o redactar el laboratorio. El objetivo es construir una línea base propia sobre HTTP y ejecución servidor que permita evaluar críticamente estas herramientas más adelante.

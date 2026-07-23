@@ -93,8 +93,8 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 
 ### P2 - práctica, seguridad y evaluación
 
-- [ ] Reformar el laboratorio HTTP con evidencias sanitizadas y objetivos reproducibles.
-- [ ] Corregir la rúbrica y el mapa RA/CE del ejercicio.
+- [x] Reformar el laboratorio HTTP con Hello Server local, evidencias sanitizadas y objetivos reproducibles.
+- [x] Corregir la rúbrica y el mapa RA/CE del ejercicio para cubrir RA1.a-g.
 - [x] Crear la guía de HTTPS/TLS, cookies y cabeceras de seguridad.
 - [ ] Completar la evaluación de RA1.a-g y revisar el banco GIFT.
 - [ ] Importar el GIFT en Moodle antes de marcar su validación como realizada.

@@ -1,16 +1,29 @@
-# RA/CE — Ejercicio Análisis HTTP y Modelo de Ejecución
+# RA/CE del laboratorio HTTP
 
-## Resultados de Aprendizaje y Criterios de Evaluación
+## Resultado de aprendizaje
 
-| RA | CE | Descripción | ¿Cómo se evidencia en esta tarea? |
-|----|----|-------------|----------------------------------|
-| **RA1** | **a** | Se han caracterizado y diferenciado los modelos de ejecución de código en el servidor y en el cliente web. | Elaborar una comparativa técnica detallada sobre qué operaciones ocurren en el navegador (cliente) y cuáles en el servidor (backend). |
-| **RA1** | **b** | Se han reconocido las ventajas que proporciona la generación dinámica de páginas. | Explicar las ventajas de la generación dinámica (bases de datos, personalización) frente al servicio de HTML estático. |
-| **RA1** | **c** | Se han identificado los mecanismos de ejecución de código en los servidores web. | Analizar las cabeceras de respuesta de un servidor web para identificar qué tecnología o motor está procesando la petición (CGI, Servlets, Node, PHP). |
-| **RA1** | **e** | Se han identificado y caracterizado los principales lenguajes y tecnologías relacionados con la programación web en entorno servidor. | Utilizar herramientas de consola (`curl`, `netcat` o similares) para enviar y recibir mensajes HTTP e identificar los diferentes métodos y cabeceras. |
+RA1: selecciona las arquitecturas y tecnologías de programación web en entorno servidor, analizando sus capacidades y características propias.
 
-## Contribución a la nota
+| CE | Evidencia en el laboratorio |
+|---|---|
+| a | Distingue código ejecutado en navegador y servidor a partir de `/`, `/api/hello` y las herramientas de red. |
+| b | Justifica ventajas y costes de la generación dinámica frente al servicio de archivos estáticos. |
+| c | Describe el proceso persistente de Hello Server y lo compara con CGI y PHP-FPM/FastCGI. |
+| d | Sitúa Tomcat embebido, `DispatcherServlet`, controlador y conversor dentro del recorrido de una petición. |
+| e | Caracteriza Java/Spring Boot y PHP/Laravel mediante criterios técnicos y operativos. |
+| f | Demuestra integración del código Java con una representación HTML y con JSON. |
+| g | Evalúa herramientas y frameworks y justifica una selección según el contexto. |
 
-- Peso sobre la evaluación de la unidad: **40%**
-- Tipo: Individual
-- Entrega: Documento markdown con las capturas de pantalla, las trazas de cabeceras HTTP y las respuestas a las preguntas de reflexión.
+## Instrumentos relacionados
+
+- El laboratorio aporta evidencia práctica para RA1.a-g.
+- Las pruebas de Hello Server verifican el ejemplo usado, pero no sustituyen la explicación individual.
+- El cuestionario de UD1 comprueba conceptos; no sustituye la evidencia práctica.
+
+## Contribución
+
+- Peso previsto en UD1: **40 %**.
+- Tipo: individual.
+- Entrega: `entrega.md` textual, reproducible y sanitizado.
+
+El 60 % restante se distribuye entre demostración del entorno/Hello Server, comparación conceptual y cuestionario. La ponderación global se cerrará junto con todos los instrumentos de UD1.
