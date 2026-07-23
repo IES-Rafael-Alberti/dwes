@@ -42,9 +42,9 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 ### Evidencia de ejecución
 
 - El 23 de julio de 2026, `./mvnw clean test` ejecutó 49 pruebas verdes con OpenJDK 25.0.3 tras retirar la migración del administrador conocido.
-- El compilador continúa usando `release 21`; la migración curricular a Java 25 sigue pendiente.
-- Spring Data advierte que serializar `PageImpl` directamente no garantiza un contrato JSON estable; debe adoptarse un DTO/paged model probado.
+- Tras migrar el build y añadir `PageResponse`, `./mvnw clean test` ejecuta 50 pruebas verdes con `release 25` y ya no aparece la advertencia por serialización directa de `PageImpl`.
 - Flyway advierte que H2 2.4.240 supera la última versión verificada por la versión de Flyway utilizada; debe revisarse la compatibilidad o fijarse una versión probada.
+- Lombok advierte que `@Builder` ignora una inicialización en `Game`; debe declararse `@Builder.Default` o impedir que el builder modifique ese campo.
 
 ### Rutas opcionales
 
@@ -85,9 +85,10 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 ### P1 - ruta canónica
 
-- [ ] Fijar Java 25 y Spring Boot 4 de forma uniforme.
-- [ ] Estabilizar el contrato JSON paginado sin serializar `PageImpl` directamente.
+- [x] Fijar Java 25 en el proyecto canónico Battleship; queda revisar ejemplos y documentación secundaria.
+- [x] Estabilizar el contrato JSON paginado de Battleship mediante `PageResponse` y una prueba HTTP dedicada.
 - [ ] Alinear H2/Flyway con una combinación oficialmente compatible o explícitamente probada.
+- [ ] Resolver la inicialización ignorada por `@Builder` en `Game` y añadir una prueba del valor por defecto.
 - [ ] Reordenar y consolidar la documentación sin duplicados.
 - [ ] Completar README, página pública, RA/CE y evaluación.
 - [ ] Verificar Battleship desde wrapper, perfiles y base limpia.

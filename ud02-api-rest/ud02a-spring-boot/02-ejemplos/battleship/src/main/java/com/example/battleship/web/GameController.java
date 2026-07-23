@@ -3,12 +3,12 @@ package com.example.battleship.web;
 import com.example.battleship.dto.AttackDTO;
 import com.example.battleship.dto.CreateGameDTO;
 import com.example.battleship.dto.GameResponseDTO;
+import com.example.battleship.dto.PageResponse;
 import com.example.battleship.dto.PlaceShipDTO;
 import com.example.battleship.repository.GameSpecifications;
 import com.example.battleship.service.GameService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,7 +38,7 @@ public class GameController {
     }
 
     @GetMapping
-    public Page<GameResponseDTO> list(
+    public PageResponse<GameResponseDTO> list(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) @Min(1) Integer minBoardSize,
             @RequestParam(required = false) LocalDateTime createdAfter,
@@ -49,7 +49,7 @@ public class GameController {
                 .and(GameSpecifications.boardSizeAtLeast(minBoardSize != null ? minBoardSize : 0))
                 .and(GameSpecifications.createdAfter(createdAfter));
 
-        return gameService.listGames(spec, pageable);
+        return PageResponse.from(gameService.listGames(spec, pageable));
     }
 
     @GetMapping("/{id}")
