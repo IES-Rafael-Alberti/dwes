@@ -4,13 +4,7 @@
 
 | Ruta | Elemento | Tipo | Bloque/Unidad | Descripción breve | Herramientas detectadas | Estado aparente | requires_review | Observaciones |
 | ---- | -------- | ---- | ------------- | ----------------- | ----------------------- | --------------- | --------------- | ------------- |
-| U1/UD1_Cap1-Introduccion.Rmd | UD1_Cap1-Introduccion.Rmd | Apunte (Rmd fuente) | U1 | Introducción al módulo, conceptos de servidor web | R Markdown | Vigente | false | Fuente editable |
-| U1/UD1_Cap1-Introduccion.pdf | UD1_Cap1-Introduccion.pdf | Apunte (PDF) | U1 | Versión publicada de la introducción | - | Vigente | false | Derivado del .Rmd |
-| U1/UD1_Cap1-protocoloHTTP.Rmd | UD1_Cap1-protocoloHTTP.Rmd | Apunte (Rmd fuente) | U1 | Protocolo HTTP: métodos, cabeceras, códigos de estado | R Markdown | Vigente | false | Fuente editable |
-| U1/UD1_Cap1-protocoloHTTP.pdf | UD1_Cap1-protocoloHTTP.pdf | Apunte (PDF) | U1 | Versión publicada del tema HTTP | - | Vigente | false | Derivado |
-| U1/UD1_Cap2-InstalacionPrimerContacto.Rmd | UD1_Cap2-InstalacionPrimerContacto.Rmd | Apunte (Rmd fuente) | U1 | Instalación de entorno y primer contacto con servidor | R Markdown | Vigente | false | Fuente editable |
-| U1/UD1_Cap2-InstalacionPrimerContacto.pdf | UD1_Cap2-InstalacionPrimerContacto.pdf | Apunte (PDF) | U1 | Versión publicada | - | Vigente | false | Derivado |
-| U1/UD1_Plan_Sesion3.md | UD1_Plan_Sesion3.md | Plan de sesión | U1 | Planificación de la sesión 3 de U1 | - | Vigente | false | |
+| `ud01-introduccion-entorno-servidor/` | Recorrido canónico UD1 | Documentación, ejemplo y evaluación | U1 | Material heredado sustituido por Markdown RA1.a-g y Hello Server | Markdown, Java 25, Spring Boot 4 | Reformado | false | Rmd, PDF y plan efímero retirados el 23 julio 2026 |
 | U2a_ApiRest_SpBoot/00-BattleShip.md | 00-BattleShip.md | Enunciado de práctica | U2a | Enunciado del proyecto Battleship (hundir la flota) como práctica de API REST | Spring Boot | Vigente | false | Proyecto principal de la unidad |
 | U2a_ApiRest_SpBoot/03-bis-UD2_Cap3-Vistas-Thymeleaf.md | 03-bis-UD2_Cap3-Vistas-Thymeleaf.md | Apunte | U2a | Vistas con Thymeleaf en Spring Boot | Spring Boot, Thymeleaf | Vigente | false | |
 | U2a_ApiRest_SpBoot/Documentacion/Laravel/ | Laravel/ | Documentación | U2a (comparativa) | Documentación comparativa sobre Laravel (quizás de cuando se valoró como alternativa) | Laravel | Pendiente revisión | true | ¿Por qué hay docs de Laravel en U2a? Posible material reubicable o comparativa docente |

@@ -32,9 +32,6 @@ exclude_docs: |
   **/build/
   ud05-laravel/02-ejemplos/sail/Laravel10-api/laravel-client/index.html
   ud05-laravel/03-ejercicios/Proyecto/*.html
-  ud01-introduccion-entorno-servidor/01-documentacion/*.Rmd
-  ud01-introduccion-entorno-servidor/01-documentacion/*.pdf
-  ud01-introduccion-entorno-servidor/01-documentacion/UD1_Plan_Sesion3.md
   *.py
   *.csv
   *.zip

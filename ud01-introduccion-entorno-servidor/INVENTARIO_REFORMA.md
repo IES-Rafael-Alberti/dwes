@@ -101,9 +101,9 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 
 ### P3 - limpieza
 
-- [ ] Archivar o eliminar Rmd y PDF tras consolidar todo el contenido útil.
-- [ ] Retirar definitivamente la planificación efímera de la ruta pública.
-- [ ] Actualizar los inventarios generales que todavía califican UD1 como sólida y vigente.
+- [x] Eliminar Rmd y PDF tras consolidar todo el contenido útil en Markdown.
+- [x] Retirar definitivamente la planificación efímera.
+- [x] Actualizar los inventarios generales que calificaban como vigentes los materiales heredados.
 
 ## Criterio de cierre
 

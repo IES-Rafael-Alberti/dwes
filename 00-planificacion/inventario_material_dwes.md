@@ -5,7 +5,7 @@
 **Material predominante**: Apuntes en formato editable (R Markdown, org-mode, LaTeX, Markdown) con sus derivados publicados (PDF, HTML). Gran cantidad de proyectos base y plantillas, especialmente en Spring Boot y Laravel. PHP domina en volumen de ejercicios estructurados.
 
 **Partes bien cubiertas**:
-- **U1 (Introducción)**: Sólida, con apuntes Rmd + PDF sobre HTTP, instalación y conceptos de servidor.
+- **U1 (Introducción)**: Reformada con recorrido Markdown RA1.a-g, Java 25/Spring Boot 4, Hello Server probado y evaluación reproducible.
 - **U2a (Spring Boot REST)**: Muy completa: apuntes, anexos, proyectos base (Battleship, GestionEventos, mini-spring-boot-tasks), seguridad JWT, testing, Postman/Insomnia.
 - **U4 (PHP)**: Progresión pedagógica clara: básico → avanzado → CRUD → OOP → OOP-CRUD. Formato org-mode + LaTeX de alta calidad.
 - **Java/Previos**: Guión de clase Java 17-21 para estudiantes de Kotlin excepcionalmente bueno (433 líneas, 6+ sesiones). Ideal para 00-unidad-0-previos.
@@ -34,13 +34,7 @@
 
 | Ruta | Elemento | Tipo | Bloque/Unidad | Descripción | Herramientas | Estado aparente | Observaciones |
 | ---- | -------- | ---- | ------------- | ----------- | ------------ | --------------- | ------------- |
-| U1/UD1_Cap1-Introduccion.Rmd | UD1_Cap1-Introduccion.Rmd | Apunte (fuente) | U1 | Introducción al módulo, conceptos de servidor web | R Markdown | Vigente | Fuente editable |
-| U1/UD1_Cap1-Introduccion.pdf | UD1_Cap1-Introduccion.pdf | Apunte (publicado) | U1 | Versión publicada | - | Vigente | Derivado |
-| U1/UD1_Cap1-protocoloHTTP.Rmd | UD1_Cap1-protocoloHTTP.Rmd | Apunte (fuente) | U1 | Protocolo HTTP: métodos, cabeceras, códigos | R Markdown | Vigente | |
-| U1/UD1_Cap1-protocoloHTTP.pdf | UD1_Cap1-protocoloHTTP.pdf | Apunte (publicado) | U1 | Versión publicada | - | Vigente | |
-| U1/UD1_Cap2-InstalacionPrimerContacto.Rmd | UD1_Cap2-InstalacionPrimerContacto.Rmd | Apunte (fuente) | U1 | Instalación de entorno y primer contacto | R Markdown | Vigente | |
-| U1/UD1_Cap2-InstalacionPrimerContacto.pdf | UD1_Cap2-InstalacionPrimerContacto.pdf | Apunte (publicado) | U1 | Versión publicada | - | Vigente | |
-| U1/UD1_Plan_Sesion3.md | UD1_Plan_Sesion3.md | Plan de sesión | U1 | Planificación de la sesión 3 | - | Vigente | |
+| `ud01-introduccion-entorno-servidor/` | Recorrido canónico UD1 | Documentación, ejemplo y evaluación | U1 | RA1.a-g, HTTP actual, seguridad, Java 25/Spring Boot 4 y Hello Server | Markdown, Java, Maven | Reformado | Rmd, PDF y plan efímero retirados el 23 julio 2026 |
 
 ### U2a — API REST con Spring Boot
 
