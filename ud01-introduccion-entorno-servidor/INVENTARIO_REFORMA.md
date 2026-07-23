@@ -81,7 +81,8 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 - [x] Excluir de MkDocs las fuentes Rmd, PDF y el plan docente desincronizados.
 - [x] Crear el README con propósito, baseline, RA/CE, secuencia, evaluación y frontera con UD2.
 - [x] Consolidar cliente/servidor, mecanismos de ejecución, infraestructura y selección de tecnologías en cuatro lecciones Markdown.
-- [ ] Consolidar HTTP, seguridad y entorno en lecciones Markdown canónicas.
+- [x] Consolidar HTTP moderno y seguridad en lecciones Markdown canónicas verificadas contra los RFC vigentes.
+- [ ] Consolidar el entorno reproducible en una lección Markdown canónica.
 - [x] Corregir la portada `docs/unidades/ud01.md` y enlazar el recorrido.
 
 ### P1 - entorno y ejemplo
@@ -94,7 +95,7 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 
 - [ ] Reformar el laboratorio HTTP con evidencias sanitizadas y objetivos reproducibles.
 - [ ] Corregir la rúbrica y el mapa RA/CE del ejercicio.
-- [ ] Crear la guía de HTTPS/TLS, cookies y cabeceras de seguridad.
+- [x] Crear la guía de HTTPS/TLS, cookies y cabeceras de seguridad.
 - [ ] Completar la evaluación de RA1.a-g y revisar el banco GIFT.
 - [ ] Importar el GIFT en Moodle antes de marcar su validación como realizada.
 
