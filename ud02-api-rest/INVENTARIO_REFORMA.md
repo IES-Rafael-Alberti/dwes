@@ -39,6 +39,13 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - La página pública de UD2a no enlaza recorrido, RA/CE, seguridad, proyecto canónico ni criterio de cierre.
 - No existe un contrato OpenAPI versionado ni pruebas de conformidad; SpringDoc generado desde código no equivale a SDD contract-first.
 
+### Evidencia de ejecución
+
+- El 23 de julio de 2026, `./mvnw clean test` ejecutó 49 pruebas verdes con OpenJDK 25.0.3 tras retirar la migración del administrador conocido.
+- El compilador continúa usando `release 21`; la migración curricular a Java 25 sigue pendiente.
+- Spring Data advierte que serializar `PageImpl` directamente no garantiza un contrato JSON estable; debe adoptarse un DTO/paged model probado.
+- Flyway advierte que H2 2.4.240 supera la última versión verificada por la versión de Flyway utilizada; debe revisarse la compatibilidad o fijarse una versión probada.
+
 ### Rutas opcionales
 
 - .NET ocupa cientos de MB locales por `bin/`, `obj/`, bases SQLite y metadatos; mezcla .NET 8 y 10 y contiene tareas obligatorias incompatibles con su papel opcional.
@@ -71,14 +78,16 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 - [x] Auditar documentación, proyectos, seguridad y rutas opcionales.
 - [x] Excluir temporalmente de MkDocs claves y material no verificado de seguridad, .NET y GraphQL.
-- [ ] Eliminar la credencial administrativa conocida de las migraciones normales.
-- [ ] Corregir `.dockerignore` y verificar que claves/keystores no entren en JAR ni imagen.
+- [x] Eliminar la credencial administrativa conocida de las migraciones normales.
+- [ ] Verificar que claves/keystores no entren en JAR ni imagen; `.dockerignore` ya excluye su ruta real.
 - [x] Corregir slicing y migración SB3/SB4 según los módulos, paquetes y requisitos oficiales de Spring Boot 4.
 - [ ] Resolver o retirar gitlinks sin `.gitmodules`.
 
 ### P1 - ruta canónica
 
 - [ ] Fijar Java 25 y Spring Boot 4 de forma uniforme.
+- [ ] Estabilizar el contrato JSON paginado sin serializar `PageImpl` directamente.
+- [ ] Alinear H2/Flyway con una combinación oficialmente compatible o explícitamente probada.
 - [ ] Reordenar y consolidar la documentación sin duplicados.
 - [ ] Completar README, página pública, RA/CE y evaluación.
 - [ ] Verificar Battleship desde wrapper, perfiles y base limpia.
