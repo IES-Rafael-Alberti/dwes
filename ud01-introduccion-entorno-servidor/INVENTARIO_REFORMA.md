@@ -82,14 +82,14 @@ UD1 está **en reforma y no puede declararse cerrada**. Es una unidad prioritari
 - [x] Crear el README con propósito, baseline, RA/CE, secuencia, evaluación y frontera con UD2.
 - [x] Consolidar cliente/servidor, mecanismos de ejecución, infraestructura y selección de tecnologías en cuatro lecciones Markdown.
 - [x] Consolidar HTTP moderno y seguridad en lecciones Markdown canónicas verificadas contra los RFC vigentes.
-- [ ] Consolidar el entorno reproducible en una lección Markdown canónica.
+- [x] Consolidar el entorno reproducible en una lección Markdown canónica.
 - [x] Corregir la portada `docs/unidades/ud01.md` y enlazar el recorrido.
 
 ### P1 - entorno y ejemplo
 
-- [ ] Documentar un entorno reproducible con Java 25, Spring Boot 4 y Maven Wrapper.
-- [ ] Crear Hello Server con HTML, JSON, `/health` y al menos una prueba.
-- [ ] Validar los comandos en el entorno real del repositorio.
+- [x] Documentar un entorno reproducible con Java 25, Spring Boot 4 y Maven Wrapper 3.9.11.
+- [x] Crear Hello Server con HTML, JSON, `/health` y tres pruebas MockMvc.
+- [x] Validar con OpenJDK 25.0.3 y Spring Boot 4.0.5: 3 pruebas verdes y respuestas HTTP `200` en los tres endpoints.
 
 ### P2 - práctica, seguridad y evaluación
 

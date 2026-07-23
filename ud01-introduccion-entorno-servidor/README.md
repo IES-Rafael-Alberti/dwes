@@ -36,8 +36,8 @@ Esta unidad trabaja RA1: seleccionar arquitecturas y tecnologías de programaci�
 4. [Tecnologías, frameworks e integración](01-documentacion/04-tecnologias-e-integracion.md).
 5. [HTTP actual: versiones, semántica y QUERY](01-documentacion/05-http-actual.md).
 6. [HTTP seguro: TLS, cookies, cabeceras y trazas](06-seguridad/README.md).
-7. Entorno reproducible con Java 25 y Spring Boot 4.
-8. Hello Server con HTML, JSON, `/health` y pruebas.
+7. [Entorno reproducible con Java 25 y Spring Boot 4](01-documentacion/06-entorno-java25-spring-boot4.md).
+8. [Hello Server con HTML, JSON, `/health` y pruebas](02-ejemplos/hello-server/README.md).
 9. [Laboratorio de análisis HTTP](03-ejercicios/01-analisis-http/README.md).
 
 La documentación canónica se publica en `01-documentacion/` siguiendo este orden. Los Rmd, PDF y planes de sesión heredados permanecen fuera de la navegación mientras se consolida su contenido válido.
