@@ -1,10 +1,19 @@
-# Guion de clase — Java (hasta 21) para estudiantes de Kotlin
+# Guion de clase — Java moderno hasta Java 25 LTS para estudiantes de Kotlin
 
-**Perfil del alumnado:** Programadores con base en Kotlin que necesitan trasladar sus conocimientos a Java moderno (Java 17–21).
+**Perfil del alumnado:** Programadores con base en Kotlin que necesitan trasladar sus conocimientos a Java moderno. Java 17 y 21 se estudian como hitos; Java 25 LTS es la versión de trabajo del curso.
 
-**Producto final del módulo:** Mini‑proyecto **GeoNotes** (CLI + librería) que usa *records*, *sealed types*, *pattern matching* (incl. *record patterns*), *switch expressions*, *text blocks*, *sequenced collections* y una pincelada de *virtual threads*.
+**Producto final del módulo:** Mini-proyecto **GeoNotes** (CLI + librería) que usa *records*, *sealed types*, *pattern matching* (incl. *record patterns*), *switch expressions*, *text blocks*, *sequenced collections* y una pincelada de *virtual threads*. Las ampliaciones incorporan características finalizadas entre Java 22 y 25.
 
-**Prerequisitos:** JDK 21, Gradle 8+, editor (IntelliJ IDEA recomendado), Java habilitado en PATH.
+**Prerrequisitos:** JDK 25 LTS, Gradle Wrapper 9.1 o superior, editor (IntelliJ IDEA recomendado) y Java habilitado en `PATH`.
+
+Verificación del entorno:
+
+```bash
+java --version
+./gradlew --version
+```
+
+Ambos comandos deben informar de Java 25. No es necesario instalar Gradle globalmente cuando el proyecto incluye el wrapper.
 
 ---
 
@@ -22,8 +31,8 @@ Al incorporarse al mercado laboral, el alumnado se encontrará con proyectos en 
   - *Pattern Matching* básico para `instanceof` (Java 16).
 - **Limitaciones**: No se pueden usar de forma nativa las novedades de Java 21+ (como *Record Patterns*, *Sequenced Collections* o *Virtual Threads*).
 
-### 2. Spring Boot 4 (Greenfield / Futuro inmediato)
-- **Línea base**: Requiere **Java 21** como mínimo (con soporte completo para Java 25 LTS).
+### 2. Spring Boot 4 (línea principal del curso 2026/2027)
+- **Línea base técnica**: Requiere **Java 17** como mínimo. En el curso se adopta **Java 25 LTS** como baseline curricular.
 - **Características habilitadas**:
   - *Sequenced Collections* (`putFirst`, `reversed`, etc.).
   - *Record Patterns* (desestructuración de records en switch/instanceof).
@@ -32,7 +41,25 @@ Al incorporarse al mercado laboral, el alumnado se encontrará con proyectos en 
   - Variables y patrones anónimos `_` (Java 22, estándar en Java 25).
 
 ### ¿Por qué conocer ambos?
-Un desarrollador senior debe saber escribir código robusto en Java 17 para mantener sistemas heredados en Spring Boot 3, pero también debe conocer las APIs modernas de Java 21/25 para proponer refactorizaciones eficientes al migrar proyectos a Spring Boot 4 (por ejemplo, simplificar el acceso a colecciones o habilitar Virtual Threads para mejorar el rendimiento de APIs de bloqueos de red).
+Un desarrollador debe saber leer y mantener código Java 17 de proyectos Spring Boot 3, pero los proyectos nuevos del curso se compilan con Java 25 LTS y Spring Boot 4. La versión de la JVM no activa por sí sola nuevas características del lenguaje: el proyecto debe configurar también su toolchain y nivel de compilación.
+
+## Delta Java 22-25
+
+Estas características están finalizadas y disponibles en Java 25. Se estudian después de dominar la base Java 17-21:
+
+| Característica | Versión final | Uso didáctico |
+|---|---:|---|
+| Variables y patrones sin nombre (`_`) | 22 | Indicar valores descartados sin inventar nombres |
+| Comentarios Markdown para Javadoc | 23 | Documentar APIs públicas de los proyectos |
+| Stream Gatherers | 24 | Crear ventanas y transformaciones de streams con estado |
+| Scoped Values | 25 | Propagar contexto inmutable, especialmente con hilos virtuales |
+| Cuerpos flexibles de constructores | 25 | Validar y transformar antes de invocar `super(...)` |
+| Archivos fuente compactos y `main` de instancia | 25 | Ejemplos introductorios pequeños, no la arquitectura de proyectos |
+| Importación de módulos | 25 | Simplificar imports de módulos estándar; no sustituye Gradle |
+
+Las características *preview* o *incubator* no se usan en código evaluable ni se activa `--enable-preview` en los builds principales.
+
+> **Después de Java 25:** Java 26 y Java 27 son versiones no LTS. Pueden comentarse como evolución de la plataforma, pero no son requisito del curso ni deben introducirse en ejercicios evaluables.
 
 ---
 
@@ -157,9 +184,26 @@ package com.example.geonotes.model;
 
 // Jerarquía cerrada como en Kotlin sealed
 public sealed interface Attachment permits Photo, Audio, Link {}
+```
+
+`src/main/java/com/example/geonotes/model/Photo.java`
+```java
+package com.example.geonotes.model;
 
 public record Photo(String url, int width, int height) implements Attachment {}
+```
+
+`src/main/java/com/example/geonotes/model/Audio.java`
+```java
+package com.example.geonotes.model;
+
 public record Audio(String url, int seconds) implements Attachment {}
+```
+
+`src/main/java/com/example/geonotes/model/Link.java`
+```java
+package com.example.geonotes.model;
+
 public record Link(String url, String label) implements Attachment {}
 ```
 
@@ -456,6 +500,5 @@ public final class AsyncDemo {
 ./gradlew jar
 
 # Ejecutar jar
-java -jar build/libs/geonotes.jar
+java -jar build/libs/geonotes-teaching.jar
 ```
-

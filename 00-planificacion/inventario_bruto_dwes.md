@@ -113,7 +113,7 @@
 | Java/GeonotesTarea.md | GeonotesTarea.md | Enunciado de tarea | Java/Previos | Enunciado de la tarea GeoNotes | Java 21 | Vigente | false | |
 | Java/GeonotesTarea.html | GeonotesTarea.html | Enunciado de tarea (HTML) | Java/Previos | Versión HTML del enunciado | Java 21 | Vigente | false | Derivado |
 | Java/GeonotesTarea.pdf | GeonotesTarea.pdf | Enunciado de tarea (PDF) | Java/Previos | Versión PDF del enunciado | Java 21 | Vigente | false | Derivado |
-| Java/guion_de_clase_java_hasta_21_para_estudiantes_de_kotlin.md | guion_de_clase_java_hasta_21_para_estudiantes_de_kotlin.md | Guión de clase | Java/Previos | Guión completo de Java 17-21 para estudiantes con base en Kotlin. 433 líneas con sesiones detalladas | Java 17-21, Kotlin, Gradle, JUnit | Vigente | false | Material de alta calidad para la unidad 0 de previos |
+| Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md | guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md | Guión de clase | Java/Previos | Guión completo de Java 17-25 para estudiantes con base en Kotlin | Java 17-25, Kotlin, Gradle, JUnit | Vigente | false | Material de alta calidad para la unidad 0 de previos |
 | Java/java_vs_kotlin_excepciones.pdf | java_vs_kotlin_excepciones.pdf | Apunte | Java/Previos | Comparativa excepciones Java vs Kotlin | Java, Kotlin | Vigente | false | |
 | Java/java_vs_kotlin_excepciones_extendido.pdf | java_vs_kotlin_excepciones_extendido.pdf | Apunte | Java/Previos | Versión extendida del mismo tema | Java, Kotlin | Vigente | false | |
 | Java/java_vs_kotlin_excepciones_presentacion.pdf | java_vs_kotlin_excepciones_presentacion.pdf | Presentación | Java/Previos | Presentación sobre excepciones Java vs Kotlin | Java, Kotlin | Vigente | false | |

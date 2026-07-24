@@ -158,7 +158,7 @@
 
 | Ruta | Elemento | Tipo | Bloque/Unidad | Descripción | Herramientas | Estado aparente | Observaciones |
 | ---- | -------- | ---- | ------------- | ----------- | ------------ | --------------- | ------------- |
-| Java/guion_de_clase_java_hasta_21_para_estudiantes_de_kotlin.md | Guión Java 17-21 | Guión de clase | Previos | 6+ sesiones Java moderno para estudiantes con base Kotlin | Java 17-21, Gradle, JUnit | Vigente | Material excelente para 00-unidad-0-previos |
+| Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md | Guión Java 17-25 | Guión de clase | Previos | 6+ sesiones Java moderno para estudiantes con base Kotlin | Java 17-25, Gradle, JUnit | Vigente | Material excelente para 00-unidad-0-previos |
 | Java/GeonotesTarea.md | GeonotesTarea.md | Enunciado tarea | Previos | Tarea GeoNotes (proyecto Java) | Java 21 | Vigente | |
 | Java/calc-api.zip | calc-api.zip | Proyecto base | Previos | API calculadora Java | Java | Vigente | |
 | Java/calc21/ | calc21/ | Proyecto base | Previos | Calculadora Java 21 | Java 21 | Vigente | |

@@ -6,7 +6,7 @@ Material didáctico del módulo **Desarrollo Web en Entorno Servidor (DWES)** �
 
 | Unidad | Descripción |
 |--------|-------------|
-| [UD0 — Previos](unidades/ud00.md) | Java 17-21, MongoDB, PostgreSQL JSON |
+| [UD0 — Previos](unidades/ud00.md) | Java moderno hasta Java 25 LTS, MongoDB, PostgreSQL JSON |
 | [UD1 — Introducción](unidades/ud01.md) | HTTP, servidores, instalación, primer contacto |
 | [UD2a — API REST Spring Boot](unidades/ud02a.md) | REST, Spring Boot 4, JPA, seguridad JWT |
 | [UD2b — API REST .NET](unidades/ud02b.md) | REST con .NET/C# |
@@ -33,4 +33,4 @@ Material didáctico del módulo **Desarrollo Web en Entorno Servidor (DWES)** �
 
 ## Tecnologías
 
-Java 21+, Kotlin, Spring Boot 4, .NET/C#, PHP 8.x, Laravel 12, Docker, PostgreSQL, MongoDB, JUnit, Postman, Git.
+Java 25 LTS, Kotlin, Spring Boot 4, .NET/C#, PHP 8.x, Laravel 12, Docker, PostgreSQL, MongoDB, JUnit, Postman, Git.
