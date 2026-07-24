@@ -18,6 +18,7 @@
     <properties>
         <java.version>25</java.version>
         <jjwt.version>0.12.6</jjwt.version>
+        <h2.version>2.3.232</h2.version>
     </properties>
 
     <dependencies>
@@ -147,6 +148,14 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>keys/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

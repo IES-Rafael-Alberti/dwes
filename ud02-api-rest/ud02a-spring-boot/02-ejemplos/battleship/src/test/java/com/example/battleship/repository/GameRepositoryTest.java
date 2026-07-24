@@ -34,6 +34,11 @@ class GameRepositoryTest {
     }
 
     @Test
+    void builderCreatesActiveGameByDefault() {
+        assertThat(Game.builder().build().isActive()).isTrue();
+    }
+
+    @Test
     void findAllByActiveTrue_excludesCancelledGames() {
         Game active1 = gameRepository.save(new Game());
         Game active2 = gameRepository.save(Game.builder().boardSize(8).build());

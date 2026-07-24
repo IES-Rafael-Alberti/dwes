@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -41,9 +41,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                @SuppressWarnings("unchecked")
-                List<String> roles = claims.get("roles", List.class);
+                Object rawRoles = claims.get("roles");
+                if (!(rawRoles instanceof Collection<?> roles)
+                        || roles.isEmpty()
+                        || roles.stream().anyMatch(role -> !(role instanceof String value)
+                                || !value.startsWith("ROLE_"))) {
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.getWriter().write("{\"error\": \"Invalid access token claims\"}");
+                    return;
+                }
                 var authorities = roles.stream()
+                        .map(String.class::cast)
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 

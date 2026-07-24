@@ -99,6 +99,14 @@ class GameServiceTest {
     }
 
     @Test
+    void placeShip_overlappingExistingShip_throws() {
+        gameService.placeShip(gameId, new PlaceShipDTO("Destroyer", 3, 1, 2, true));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> gameService.placeShip(gameId, new PlaceShipDTO("Submarine", 3, 2, 1, false)));
+    }
+
+    @Test
     void attack_miss_recordsMiss() {
         gameService.placeShip(gameId, new PlaceShipDTO("Destroyer", 2, 0, 0, true));
         GameResponseDTO result = gameService.attack(gameId, new AttackDTO(9, 9));

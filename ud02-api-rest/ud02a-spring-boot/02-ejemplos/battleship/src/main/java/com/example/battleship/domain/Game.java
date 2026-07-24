@@ -24,6 +24,7 @@ public class Game {
     private LocalDateTime createdAt;
 
     // Sesión 4b — soft delete
+    @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
 

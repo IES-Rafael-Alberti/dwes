@@ -38,7 +38,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody TokenRefreshRequest request) {
         Claims claims = jwtService.parseClaims(request.refreshToken());
         if (!jwtService.isRefreshToken(claims)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(401).build();
         }
         var tokens = authService.refresh(claims.getSubject());
         return ResponseEntity.ok(tokens);

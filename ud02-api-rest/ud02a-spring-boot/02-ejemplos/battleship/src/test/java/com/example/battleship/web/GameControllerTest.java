@@ -36,7 +36,7 @@ class GameControllerTest {
 
     @Test
     void createGame_returns201() throws Exception {
-        GameResponseDTO response = new GameResponseDTO(1L, 10, "IN_PROGRESS",
+        GameResponseDTO response = new GameResponseDTO(1L, 10, "PENDING",
                 LocalDateTime.now(), List.of(), List.of());
         when(gameService.createGame(any())).thenReturn(response);
 
@@ -45,7 +45,7 @@ class GameControllerTest {
                         .content("{\"boardSize\":10}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+                .andExpect(jsonPath("$.status").value("PENDING"));
     }
 
     @Test

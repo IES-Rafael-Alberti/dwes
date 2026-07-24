@@ -3,6 +3,9 @@ package com.example.battleship.web;
 import com.example.battleship.domain.exceptions.GameNotFoundException;
 import com.example.battleship.dto.ErrorPayload;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +36,18 @@ public class GlobalExceptionHandler {
         String msg = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         var payload = new ErrorPayload("VALIDATION_ERROR", msg);
         return ResponseEntity.badRequest().body(payload);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorPayload> handleAccessDenied(AuthorizationDeniedException ex) {
+        var payload = new ErrorPayload("FORBIDDEN", "Insufficient permissions");
+        return ResponseEntity.status(403).body(payload);
+    }
+
+    @ExceptionHandler({AuthenticationException.class, JwtException.class})
+    public ResponseEntity<ErrorPayload> handleUnauthorized(RuntimeException ex) {
+        var payload = new ErrorPayload("UNAUTHORIZED", "Invalid credentials or token");
+        return ResponseEntity.status(401).body(payload);
     }
 
     @ExceptionHandler(Exception.class)
