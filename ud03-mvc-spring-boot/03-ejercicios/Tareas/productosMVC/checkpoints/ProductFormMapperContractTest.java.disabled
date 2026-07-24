@@ -1,0 +1,12 @@
+package com.example.productosmvc;
+import com.example.productosmvc.form.ProductForm;
+import com.example.productosmvc.mapper.ProductFormMapper;
+import com.example.productosmvc.model.Product;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+class ProductFormMapperTest {
+ private final ProductFormMapper mapper = new ProductFormMapper();
+ @Test void mapsWebInputToANewDomainEntity(){ProductForm form=new ProductForm("Keyboard",new BigDecimal("19.90"),"Mechanical");Product product=mapper.toNewProduct(form);assertThat(product.getId()).isNull();assertThat(product.getName()).isEqualTo("Keyboard");assertThat(product.getPrice()).isEqualByComparingTo("19.90");assertThat(product.getDescription()).isEqualTo("Mechanical");}
+ @Test void mapsStoredEntityToAnEditForm(){Product product=new Product();product.setId(7L);product.setName("Mouse");product.setPrice(new BigDecimal("9.99"));ProductForm form=mapper.toForm(product);assertThat(form.name()).isEqualTo("Mouse");assertThat(form.price()).isEqualByComparingTo("9.99");}
+}

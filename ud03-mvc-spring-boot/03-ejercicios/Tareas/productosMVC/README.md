@@ -1,39 +1,23 @@
-# Aplicación de Gestión de Productos
+# Starter — Productos MVC
 
-Este proyecto es una plantilla para que implementes una **Aplicación de Gestión de Productos** usando **Spring MVC** y **Mustache**.
+Este repositorio es un **punto de partida**, no una solución incompleta por accidente.
 
-## Objetivo
+## Arranque rápido
 
-Crear una aplicación que permita realizar operaciones CRUD sobre una lista de productos:
-- **Crear productos.**
-- **Listar productos.**
-- **Editar productos.**
-- **Eliminar productos.**
+```bash
+./mvnw test
+./mvnw spring-boot:run
+```
 
-## Requisitos Técnicos
+Requiere Java 25. La consola H2 está deshabilitada por defecto: la práctica se verifica mediante la aplicación y los tests, no manipulando directamente la base de datos. Al abrir `http://localhost:8080/` verás únicamente la portada: el CRUD se construye por etapas.
 
-1. Usa **Spring MVC** para implementar la arquitectura del proyecto.
-2. Diseña las vistas utilizando **Mustache**.
-3. Configura una base de datos en memoria H2 para persistir los datos.
+## Itinerario
 
-## Tareas
+Sigue el único enunciado canónico: [`../../TareaSpringMVC-Productos/TareaSpringMVC-Productos.md`](../../TareaSpringMVC-Productos/TareaSpringMVC-Productos.md).
+Los contratos de cada etapa están en `checkpoints/`. Copia **solo el test de la etapa actual** a `src/test/java/...`, observa RED, implementa lo mínimo y vuelve a ejecutar hasta GREEN.
 
-1. Implementa las vistas para listar, crear, editar y eliminar productos.
-2. Diseña formularios funcionales para añadir y editar productos.
-3. Agrega validaciones en los campos (por ejemplo, el precio debe ser mayor que 0).
-4. Crea una tabla para mostrar los productos con acciones para editar y eliminar.
+> No copies todos los checkpoints a la vez: expresan el destino de etapas futuras y deben fallar antes de implementarlas.
 
-## Entrega
+## Frontera formulario–dominio
 
-1. Sube tu proyecto al repositorio de GitHub proporcionado por **GitHub Classroom**.
-2. Verifica que todas las operaciones CRUD funcionan antes de la entrega.
-
-## Tareas Extra
-1. Usar **Thymeleaf** en lugar de **Mustache**, **MySql** o **PostgreSQL** en lugar de **H2**.
-2. Agregar una página de detalles para mostrar la información de un producto.
-3. Implementar un filtro de búsqueda para filtrar los productos por nombre.
-4. Agregar paginación a la lista de productos.
-5. Implementar un sistema de autenticación para proteger las operaciones CRUD.
-6. Agregar un sistema de roles para permitir que solo los usuarios con el rol de administrador puedan realizar operaciones CRUD.
-
-¡Buena suerte!
+La solución objetivo usa `ProductForm` para binding y validación web, `Product` para persistencia y un mapper explícito entre ambos. No coloques reglas específicas del formulario en la entidad JPA ni uses la entidad como `@ModelAttribute`.

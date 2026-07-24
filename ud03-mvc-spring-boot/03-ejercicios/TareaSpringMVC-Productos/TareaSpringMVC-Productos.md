@@ -1,187 +1,132 @@
-### **Tarea Práctica: Aplicación de Gestión de Productos**
+# Laboratorio incremental: Productos MVC
 
-#### **Descripción**
-El objetivo de esta práctica es desarrollar una aplicación web sencilla utilizando **Spring MVC** y plantillas **Mustache**, siguiendo el patrón **Modelo-Vista-Controlador (MVC)**. La aplicación permitirá gestionar una lista de productos con funcionalidades CRUD (Crear, Leer, Actualizar, Eliminar).
+Construye un CRUD de productos con Spring MVC y Thymeleaf siguiendo ciclos cortos **RED → GREEN → REFACTOR**. El starter solo contiene la portada y la configuración: cada etapa añade un comportamiento observable.
 
-Se evaluará el uso correcto de las plantillas Mustache, la separación de responsabilidades entre modelo, vista y controlador, y la funcionalidad general de la aplicación.
+## Resultado final
 
----
+La aplicación permitirá listar, crear, validar, editar y eliminar productos persistidos en H2. Mantendrá separadas las responsabilidades de controlador, servicio y repositorio.
 
-### **Requisitos**
+| Componente | Responsabilidad |
+| --- | --- |
+| `ProductForm` | Binding y validación de la entrada web |
+| `Product` | Entidad persistente, sin reglas específicas de la interfaz web |
+| `ProductFormMapper` | Traducción explícita entre formulario y entidad |
+| `ProductRepository` | Persistencia JPA |
+| `ProductService` | Casos de uso y producto inexistente |
+| `ProductController` | Rutas MVC, binding y navegación |
+| Thymeleaf | Renderizado y errores de formulario |
 
-1. **Funcionalidades**
-   - Listar productos: Mostrar todos los productos en una tabla con su nombre, precio y descripción.
-   - Añadir producto: Formulario para agregar un nuevo producto.
-   - Editar producto: Formulario para actualizar los datos de un producto existente.
-   - Eliminar producto: Opción para eliminar productos de la lista.
+## Cómo trabajar
 
-2. **Arquitectura del Proyecto**
-   - Seguir el patrón MVC:
-     - **Modelo**: Una clase `Product` para representar los datos de los productos.
-     - **Vista**: Usar plantillas Mustache para diseñar las páginas de la aplicación.
-     - **Controlador**: Manejar las rutas y la lógica para interactuar con las vistas y el modelo.
-   - Organizar el proyecto en paquetes:
-     - `model`: Para la clase `Product`.
-     - `repository`: Para el repositorio de productos.
-     - `service`: Para la lógica de negocio.
-     - `controller`: Para manejar las rutas HTTP.
-     - `templates`: Para las vistas Mustache.
+En cada etapa:
 
-3. **Base de Datos**
-   - Utilizar una base de datos en memoria H2 para almacenar los datos de los productos.
-   - La tabla `product` debe incluir los campos:
-     - `id` (clave primaria autoincremental).
-     - `name` (nombre del producto, obligatorio).
-     - `price` (precio del producto, debe ser mayor o igual a 0).
-     - `description` (descripción opcional).
+1. Lee el contrato correspondiente en `checkpoints/`.
+2. Convierte ese contrato en un test ejecutable para la capa indicada.
+3. Ejecuta `./mvnw test` y conserva la evidencia de que falla por el motivo esperado (**RED**).
+4. Implementa solo lo necesario para hacerlo pasar (**GREEN**).
+5. Refactoriza sin cambiar el comportamiento y vuelve a ejecutar los tests.
 
-4. **Validaciones**
-   - Validar que el nombre del producto no esté vacío.
-   - Validar que el precio no sea negativo.
+El test de contexto del starter debe estar verde. El rojo aparece al incorporar el contrato de la etapa actual; esto evita que el repositorio parezca roto accidentalmente.
 
----
+## Etapa 0 — Reconocer el starter
 
-### **Rutas Requeridas**
+**Demo docente breve:** recorrer el flujo petición → controlador → vista usando únicamente `/`.
 
-| **Ruta**              | **Descripción**                                                                 |
-|------------------------|---------------------------------------------------------------------------------|
-| `GET /products`        | Muestra la lista de productos en una tabla.                                    |
-| `GET /products/new`    | Muestra un formulario para agregar un nuevo producto.                          |
-| `POST /products`       | Procesa el formulario y guarda el nuevo producto.                              |
-| `GET /products/{id}/edit` | Muestra un formulario para editar los detalles de un producto existente.    |
-| `POST /products/{id}`  | Procesa el formulario y actualiza el producto existente.                       |
-| `POST /products/{id}/delete` | Elimina el producto especificado.                                       |
+**Trabajo del alumnado:** ejecutar tests y aplicación; localizar configuración, clase principal, controlador y plantilla.
 
----
+**Criterio observable:** `/` responde con la portada y `./mvnw test` termina correctamente.
 
-### **Pautas**
+## Etapa 1 — Listado
 
-#### **1. Modelo**
+**Demo docente breve:** escribir un primer test MVC con `MockMvc` y un servicio sustituido mediante `@MockitoBean`.
 
-Crea una clase `Product` con los atributos:
-- `id` (Long)
-- `name` (String)
-- `price` (BigDecimal)
-- `description` (String)
+**Trabajo del alumnado:** crear la entidad persistente, repositorio, servicio, `GET /products` y `products.html`. La entidad representa datos persistidos y no recibe directamente el formulario web.
 
-Ejemplo:
+**Checkpoint RED:** `GET /products` aún no existe o no entrega el modelo `products` a la vista `products`.
 
-```java
-@Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+**Criterio observable:** una lista vacía muestra “No hay productos”; una lista con datos genera una fila por producto.
 
-    @Column(nullable = false)
-    private String name;
+## Etapa 2 — Alta
 
-    @Column(nullable = false)
-    private BigDecimal price;
+**Demo docente breve:** explicar el binding de `th:object` y `th:field` sin resolver el formulario completo.
 
-    private String description;
+**Trabajo del alumnado:** crear `ProductForm`, implementar `GET /products/new`, el formulario reutilizable y `POST /products`. Usa `ProductForm` como `th:object`; no enlaces la petición directamente a la entidad JPA.
 
-    // Getters y setters
-}
-```
+**Checkpoint RED:** un POST válido no invoca todavía el caso de uso de creación.
 
-#### **2. Controlador**
+**Criterio observable:** guardar un producto válido redirige a `/products` y aparece en el listado.
 
-El controlador debe manejar las rutas descritas en la tabla anterior.
+## Etapa 3 — Validación
 
-Ejemplo:
+**Demo docente breve:** provocar un error con `@Valid` y observar `BindingResult`.
 
-```java
-@Controller
-@RequestMapping("/products")
-public class ProductController {
-    private final ProductService productService;
+**Trabajo del alumnado:** declarar en `ProductForm` las restricciones de entrada —nombre no vacío y precio obligatorio mayor o igual que cero— y representar los errores junto a cada campo. Las reglas de binding pertenecen al formulario; una regla de dominio independiente de la web pertenecería al dominio.
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+**Checkpoint RED:** un nombre en blanco o un precio negativo se persisten o no generan errores de campo.
 
-    @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
-        return "products";
-    }
+**Criterio observable:** el formulario conserva los datos, muestra errores y el servicio no guarda la entrada inválida. No basta con validación HTML: debe validarse en servidor.
 
-    @GetMapping("/new")
-    public String showAddProductForm(Model model) {
-        model.addAttribute("product", new Product());
-        return "product-form";
-    }
+## Etapa 4 — Edición
 
-    @PostMapping
-    public String addProduct(@ModelAttribute Product product) {
-        productService.saveProduct(product);
-        return "redirect:/products";
-    }
+**Demo docente breve:** distinguir el identificador de la URL del contenido recibido por binding.
 
-    @GetMapping("/{id}/edit")
-    public String showEditProductForm(@PathVariable Long id, Model model) {
-        model.addAttribute("product", productService.getProductById(id));
-        return "product-form";
-    }
+**Trabajo del alumnado:** implementar `GET /products/{id}/edit` y `POST /products/{id}`. Añade un mapper explícito `ProductForm` ↔ `Product`. El servicio carga la entidad existente y modifica sus campos; no confía en un identificador enviado en el cuerpo.
 
-    @PostMapping("/{id}")
-    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product) {
-        productService.updateProduct(id, product);
-        return "redirect:/products";
-    }
+**Checkpoints RED:** el controlador no usa `ProductForm`, el mapeo pierde campos, se ignora el `id` de ruta o el servicio confía en el identificador recibido. Activa los contratos de controlador, mapper y servicio de esta etapa.
 
-    @PostMapping("/{id}/delete")
-    public String deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return "redirect:/products";
-    }
-}
-```
+**Criterio observable:** editar conserva el identificador y modifica exactamente el producto indicado.
 
-#### **3. Vistas**
+## Etapa 5 — Eliminación
 
-1. **`products.mustache`**:
-   - Mostrar los productos en una tabla.
-   - Añadir botones de "Editar" y "Eliminar" para cada producto.
-   - Un enlace para agregar un nuevo producto.
+**Demo docente breve:** razonar por qué una operación destructiva no debe ser un enlace GET.
 
-2. **`product-form.mustache`**:
-   - Formulario reutilizable para agregar o editar productos.
+**Trabajo del alumnado:** añadir `POST /products/{id}/delete` y su formulario Thymeleaf.
 
----
+**Checkpoint RED:** la petición no elimina mediante el servicio o no redirige.
 
-### **Criterios de Evaluación**
+**Criterio observable:** el producto desaparece y refrescar la página no repite la operación.
 
-1. **Correcta implementación del patrón MVC (40%)**
-   - Separación adecuada entre modelo, vista y controlador.
-   - Uso de servicios para la lógica de negocio.
+## Etapa 6 — Persistencia
 
-2. **Funcionalidad de las Vistas con Mustache (30%)**
-   - Listado y formularios funcionales.
-   - Diseño consistente y uso de plantillas reutilizables.
+**Demo docente breve:** comparar un test unitario con `@DataJpaTest`.
 
-3. **Validaciones (20%)**
-   - Validaciones del lado del servidor.
-   - Mensajes de error mostrados correctamente en las vistas.
+**Trabajo del alumnado:** verificar generación de identificador y precisión monetaria con `BigDecimal`; configurar H2 y JPA para recrear el esquema al arrancar.
 
-4. **Funcionalidad Completa (10%)**
-   - Operaciones CRUD funcionales para los productos.
+**Checkpoint RED:** el repositorio no persiste o el precio pierde su valor decimal exacto.
 
----
+**Criterio observable:** el producto se recupera por su identificador durante la ejecución y todos los tests quedan verdes.
 
-### **Entrega**
-- Sube el proyecto a un repositorio Git.
-- Proporciona un enlace al repositorio.
-- Incluir un archivo `README.md` que explique cómo ejecutar la aplicación.
+## Contrato HTTP final
 
----
+| Método | Ruta | Resultado |
+| --- | --- | --- |
+| GET | `/products` | Listado |
+| GET | `/products/new` | Formulario vacío |
+| POST | `/products` | Crear o volver al formulario con errores |
+| GET | `/products/{id}/edit` | Formulario con datos |
+| POST | `/products/{id}` | Actualizar o volver al formulario con errores |
+| POST | `/products/{id}/delete` | Eliminar |
 
-### **Puntos Extra**
-- Diseño atractivo utilizando CSS o un framework como Bootstrap.
-- Implementar fragmentos para encabezado y pie de página (`header.mustache` y `footer.mustache`).
-- Agregar búsqueda y filtrado de productos.
+## Criterios de evaluación
 
----
+| Área | Peso | Evidencia |
+| --- | ---: | --- |
+| Arquitectura MVC | 35 % | Responsabilidades separadas y dependencias por constructor |
+| TDD y pruebas | 25 % | Evidencias RED/GREEN y contratos suministrados de controlador, `ProductForm`, mapper, actualización en servicio y persistencia JPA |
+| Formularios y Thymeleaf | 20 % | Binding, navegación, mensajes y reutilización del formulario |
+| Validación y persistencia | 20 % | Restricciones en servidor, `BigDecimal`, JPA y H2 |
 
-**¡Buena suerte!** Si tienes dudas durante la implementación, no dudes en consultarlas.
+## Entrega
+
+Incluye el proyecto y un README propio con requisitos, comandos de ejecución y decisiones relevantes. Antes de entregar:
+
+- [ ] `./mvnw test` está verde.
+- [ ] No hay plantillas Mustache ni código de solución ajeno.
+- [ ] Las operaciones destructivas usan POST.
+- [ ] Los errores se muestran sin perder los datos introducidos.
+- [ ] El controlador enlaza `ProductForm`, nunca directamente la entidad JPA.
+- [ ] Los commits representan incrementos funcionales, no capas aisladas.
+
+## Ampliaciones opcionales
+
+Solo después de completar el núcleo: detalles de producto, búsqueda por nombre, paginación, fragmentos Thymeleaf o una base de datos externa. Autenticación y roles quedan fuera de esta práctica.

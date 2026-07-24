@@ -31,6 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/templates/product-form.mustache
-/src/main/resources/templates/product-form.html
-/src/main/resources/templates/products.mustache

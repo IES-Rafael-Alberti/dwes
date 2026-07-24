@@ -1,0 +1,68 @@
+package com.example.productosmvc;
+
+import com.example.productosmvc.controller.ProductController;
+import com.example.productosmvc.form.ProductForm;
+import com.example.productosmvc.mapper.ProductFormMapper;
+import com.example.productosmvc.model.Product;
+import com.example.productosmvc.service.ProductService;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(ProductController.class)
+class ProductControllerTest {
+    @Autowired MockMvc mvc;
+    @MockitoBean ProductService service;
+    @MockitoBean ProductFormMapper mapper;
+
+    @Test void listsProducts() throws Exception {
+        when(service.findAll()).thenReturn(List.of());
+        mvc.perform(get("/products")).andExpect(status().isOk())
+                .andExpect(view().name("products")).andExpect(model().attributeExists("products"));
+    }
+
+    @Test void newFormUsesAWebSpecificFormObject() throws Exception {
+        mvc.perform(get("/products/new")).andExpect(status().isOk())
+                .andExpect(model().attribute("productForm", org.hamcrest.Matchers.instanceOf(ProductForm.class)));
+    }
+
+    @Test void rejectsInvalidFormBeforeMappingOrPersistence() throws Exception {
+        mvc.perform(post("/products").param("name", " ").param("price", "-1"))
+                .andExpect(status().isOk()).andExpect(view().name("product-form"))
+                .andExpect(model().attributeHasFieldErrors("productForm", "name", "price"));
+        verifyNoInteractions(mapper, service);
+    }
+
+    @Test void createsFromAMappedValidForm() throws Exception {
+        Product mapped = new Product();
+        when(mapper.toNewProduct(any(ProductForm.class))).thenReturn(mapped);
+        mvc.perform(post("/products").param("name", "Mouse").param("price", "9.99"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/products"));
+        verify(mapper).toNewProduct(any(ProductForm.class));
+        verify(service).create(mapped);
+    }
+
+    @Test void updatesThePathIdFromAMappedForm() throws Exception {
+        Product mapped = new Product();
+        when(mapper.toNewProduct(any(ProductForm.class))).thenReturn(mapped);
+        mvc.perform(post("/products/7").param("name", "Mouse").param("price", "9.99"))
+                .andExpect(status().is3xxRedirection());
+        verify(service).update(7L, mapped);
+    }
+
+    @Test void deletesProduct() throws Exception {
+        mvc.perform(post("/products/7/delete")).andExpect(status().is3xxRedirection());
+        verify(service).delete(7L);
+    }
+}

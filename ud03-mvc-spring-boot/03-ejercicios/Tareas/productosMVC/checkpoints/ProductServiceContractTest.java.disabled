@@ -1,0 +1,43 @@
+package com.example.productosmvc;
+
+import com.example.productosmvc.model.Product;
+import com.example.productosmvc.repository.ProductRepository;
+import com.example.productosmvc.service.ProductService;
+import java.math.BigDecimal;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ProductServiceTest {
+    @Mock ProductRepository repository;
+    @InjectMocks ProductService service;
+
+    @Test
+    void updatesTheStoredEntityWithoutTrustingAnInputId() {
+        Product stored = product(7L, "Old", "1.00");
+        Product input = product(99L, "New", "2.50");
+        when(repository.findById(7L)).thenReturn(Optional.of(stored));
+        when(repository.save(stored)).thenReturn(stored);
+
+        Product result = service.update(7L, input);
+
+        assertThat(result.getId()).isEqualTo(7L);
+        assertThat(result.getName()).isEqualTo("New");
+        assertThat(result.getPrice()).isEqualByComparingTo("2.50");
+        verify(repository).save(stored);
+    }
+
+    private Product product(Long id, String name, String price) {
+        Product product = new Product();
+        product.setId(id); product.setName(name); product.setPrice(new BigDecimal(price));
+        return product;
+    }
+}
