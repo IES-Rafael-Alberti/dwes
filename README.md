@@ -54,6 +54,15 @@ udXX-nombre/
 - Una tarea no se considera cerrada mientras continúe marcada como pendiente, aunque su implementación ya exista.
 - Si el trabajo descubre nuevos pendientes, se anotan antes de cerrar el corte para evitar decisiones implícitas o trabajo invisible.
 
+### Confirmación y publicación de cambios
+
+- Toda incorporación con entidad propia —una funcionalidad, proyecto, recorrido documental, migración o decisión estructural— se verifica y se confirma en Git antes de cambiar de unidad de trabajo.
+- Las correcciones pequeñas y relacionadas pueden agruparse, pero se confirman como máximo al cerrar el corte o la sesión; no se acumulan reformas completas sin commit.
+- Cada commit representa una unidad funcional revisable e incluye sus pruebas, documentación e inventario cuando correspondan.
+- Antes de confirmar se revisan el diff, los archivos nuevos y la ausencia de secretos, soluciones privadas o artefactos generados.
+- Tras superar la verificación, los commits se suben al repositorio remoto en lotes pequeños y coherentes, sin esperar a que se acumulen cambios de otras unidades.
+- Si un cambio no está listo para publicarse, se registra explícitamente qué falta y se mantiene fuera del commit sin bloquear unidades independientes ya verificadas.
+
 ## Publicación
 
 ```bash
