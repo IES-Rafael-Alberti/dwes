@@ -1,0 +1,39 @@
+# Archivos y carpetas generados por Gradle
+/build/
+/.gradle/
+
+# Archivos generados por IntelliJ IDEA
+/.idea/
+*.iml
+out/
+
+# Archivos de logs y temporales
+*.log
+*.tmp
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de entorno
+.env
+
+# Archivos de compilación de Java
+*.class
+
+# Material local no publicable
+/retos/
+/lexer_parser_flow.pdf
+
+# Archivos de usuario
+*.swp
+*.swo
+
+# Otros archivos ignorados comunes
+.gradle/
+
+# Ignorar archivos de ejecución
+*.jar
+!/gradle/wrapper/gradle-wrapper.jar
+*.war
+*.ear

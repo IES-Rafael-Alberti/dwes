@@ -1,4 +1,4 @@
-# Rúbrica — Tarea Calculadora (Java 21)
+# Rúbrica — Tarea Calculadora (Java 25)
 
 ## Criterios de evaluación
 
