@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'com.example.geonotesteaching.GeoNotes'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('examples', JavaExec) {
+    group = 'application'
+    description = 'Ejecuta un flujo de ejemplo (opcional)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.example.geonotesteaching.GeoNotes'
+    args = ['examples']
+}

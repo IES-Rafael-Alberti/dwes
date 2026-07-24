@@ -14,12 +14,12 @@ header-includes:
   - \renewcommand{\contentsname}{Índice de contenidos}
 ---
 
-# Hoja de ejercicios — GeoNotesTeaching (Java 21)
+# Hoja de ejercicios — GeoNotesTeaching (Java 25)
 
 ## Cómo empezar (5′)
 
-1. Abre el proyecto en IntelliJ (File → Open… → `geonotes-teaching-java21/`).
-2. Asegúrate de **JDK 21**.
+1. Abre el proyecto en IntelliJ (File → Open… → `geonotes-teaching-java25/`).
+2. Asegúrate de **JDK 25**.
 3. Ejecuta:
 
    * CLI: `Tasks > application > run`
@@ -88,8 +88,8 @@ header-includes:
 
 **Objetivo:** mejorar legibilidad del JSON.
 
-* En `Timeline.Render.export()`, ajusta el *text block* para alinear y sangrar mejor.
-* Escapa comillas del `content` si hiciera falta (p. ej., `replace("\"","\\\"")` antes de `formatted`).
+* En `JsonExporter.export()`, ajusta el *text block* para alinear y sangrar mejor.
+* Revisa su método de escape para comprobar cómo trata comillas, barras inversas y caracteres de control JSON.
 
 ### C2. Export Markdown (extra)
 
@@ -132,7 +132,7 @@ header-includes:
 
 ---
 
-## Bloque E — *Pattern Matching* + *Record Patterns* (Java 21) (20–30′)
+## Bloque E — *Pattern Matching* + *Record Patterns* (Java 25) (20–30′)
 
 > El proyecto docente usa un enfoque clásico en `Match`, pero ahora practicaremos lo nuevo.
 
@@ -157,7 +157,7 @@ header-includes:
 
 **Objetivo:** desestructurar con patrón.
 
-* Crea método en `Match`:
+* Analiza el método existente en `Match`:
 
   ```java
   static String where(GeoPoint p)
@@ -173,7 +173,7 @@ header-includes:
     case GeoPoint(double lat, double lon) -> "(" + lat + "," + lon + ")";
   };
   ```
-* Añade opción CLI para consultar `where`.
+* Añade tests para sus cuatro resultados: origen, ecuador, Greenwich y punto genérico.
 
 ---
 
@@ -195,7 +195,7 @@ header-includes:
 
 ## Bloque G — Extensión opcional (si hay tiempo)
 
-### G1. Vista invertida (java 21, **Sequenced**)
+### G1. Vista invertida (Java 21+, **Sequenced**)
 
 **Objetivo:** mostrar la API moderna sin cambiar el enfoque clásico.
 

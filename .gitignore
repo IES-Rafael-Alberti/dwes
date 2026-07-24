@@ -32,6 +32,8 @@ build/
 dist/
 .gradle/
 *.jar
+!/00-unidad-0-previos/03-ejercicios/01-geonotes/recursos/geonotes-teaching-java25/gradle/wrapper/gradle-wrapper.jar
+!/00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.class

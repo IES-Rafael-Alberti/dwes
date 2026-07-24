@@ -1,4 +1,4 @@
-# Rúbrica — Tarea GeoNotes (Java 21)
+# Rúbrica — Tarea GeoNotes (Java 25)
 
 ## Criterios de evaluación
 
