@@ -4,9 +4,9 @@
 
 Lee los documentos:
 
-- [`07-funcionamiento-spring-boot.md`](../../01-documentacion/07-funcionamiento-spring-boot.md) — flujo de petición, filtros
-- [`anexo-anotaciones-spring-boot.md`](../../01-documentacion/anexo-anotaciones-spring-boot.md) — `@PreAuthorize`
-- [`06-seguridad/README.md`](../../06-seguridad/README.md) — arquitectura de seguridad
+- [`07-funcionamiento-spring-boot.md`](../../../01-documentacion/07-funcionamiento-spring-boot.md) — flujo de petición, filtros
+- [`anexo-anotaciones-spring-boot.md`](../../../01-documentacion/anexo-anotaciones-spring-boot.md) — `@PreAuthorize`
+- [`06-seguridad/README.md`](../../../06-seguridad/README.md) — arquitectura de seguridad
 
 ## Visión general
 
@@ -61,21 +61,21 @@ openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
 openssl pkey -in private.pem -pubout -out public.pem
 ```
 
-Colocar en `src/main/resources/keys/` y configurar:
+En desarrollo y tests, el proyecto genera un par RSA efímero al arrancar, por lo que no necesita archivos locales. En `prod` y `docker`, las claves se montan fuera del JAR y se configuran mediante el entorno:
 
 ```yaml
 app:
   security:
     jwt:
-      private-key: classpath:keys/private.pem
-      public-key: classpath:keys/public.pem
+      private-key: ${JWT_PRIVATE_KEY}
+      public-key: ${JWT_PUBLIC_KEY}
       access-token-expiration: 900000     # 15 minutos
       refresh-token-expiration: 604800000 # 7 días
       issuer: battleship-api
       audience: battleship-client
 ```
 
-> **Nunca** subas las claves al repositorio. Añadí `keys/*.pem` al `.gitignore`. En producción se inyectan como variables de entorno o secrets.
+> **Nunca** subas ni empaquetes las claves. En producción, monta los PEM como secretos y asigna variables como `JWT_PRIVATE_KEY=file:/run/secrets/jwt-private.pem`.
 
 ### 3. Entidad User con roles
 
@@ -663,6 +663,24 @@ Señalar:
 - Spring Security convierte `ROLE_PLAYER` → `hasRole('PLAYER')` automáticamente
 - Los GET son públicos (se pueden consultar sin autenticarse)
 
+La configuración final aplica esta matriz:
+
+| Operación | Acceso esperado | Evidencia automatizada |
+|---|---|---|
+| `/auth/**` | público | configuración del filtro |
+| `GET /api/games` y `GET /api/games/{id}` | público | lectura anónima `200` |
+| crear partida, colocar barco y atacar | `PLAYER` | sin autenticación `401`, rol sintético insuficiente `403`, bearer `PLAYER` alcanza la operación |
+| cancelar partida | `ADMIN` | rol sintético `PLAYER` obtiene `403`; bearer `ADMIN` alcanza el endpoint |
+| resto de rutas | autenticado | regla final de `SecurityFilterChain` |
+
+`SecurityAuthorizationIntegrationTest` usa `@SpringBootTest` y `@AutoConfigureMockMvc` **sin desactivar filtros**. Los casos positivos generan bearer tokens firmados mediante el `JwtService` real; los casos negativos de rol usan identidades sintéticas focalizadas. También se prueban credenciales incorrectas, refresh inválido o expirado, refresh usado como access token y claims de roles inválidos. Así se evita el falso positivo de un test MVC que invoque el controlador sin pasar por la cadena de seguridad.
+
+La API mantiene `SessionCreationPolicy.STATELESS` y se autentica mediante un bearer token enviado en cada petición, no mediante una cookie de sesión. Por eso se deshabilita CSRF en este caso concreto. Esa decisión NO debe copiarse a una aplicación MVC con formularios o autenticación basada en cookies.
+
+Swagger UI, `/api-docs` y los endpoints de Actuator no son públicos en la configuración base: requieren autenticación. El perfil `dev` puede exponer más información de Actuator, por lo que no debe activarse en producción.
+
+CORS se aplica tanto a `/api/**` como a `/auth/**`. El origen se configura con `BATTLESHIP_CORS_ALLOWED_ORIGINS` y usa `http://localhost:5173` únicamente como valor local por defecto; no hay un origen de producción fijado en el código.
+
 ### 11. Rate limiting (sencillo)
 
 Añadimos un filtro simple de rate limiting por IP. Para algo más robusto, usaríamos Bucket4j o Resilience4j.
@@ -800,7 +818,7 @@ curl -X POST http://localhost:8080/auth/refresh \
 curl -i -X POST http://localhost:8080/api/games \
   -H "Content-Type: application/json" \
   -d '{"boardSize": 10}'
-# → 403 Forbidden
+# → 401 Unauthorized
 ```
 
 ## Lo que vimos hoy

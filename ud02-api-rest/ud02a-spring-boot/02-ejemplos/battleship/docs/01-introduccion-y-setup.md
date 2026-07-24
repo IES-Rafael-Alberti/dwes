@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento de teoría [`01-introduccion-spring-boot.md`](../../01-documentacion/01-introduccion-spring-boot.md). Cubre:
+Lee el documento de teoría [`01-introduccion-spring-boot.md`](../../../01-documentacion/01-introduccion-spring-boot.md). Cubre:
 
 - Qué es Spring Boot y cómo se diferencia de Spring Framework
 - Starters y autoconfiguración

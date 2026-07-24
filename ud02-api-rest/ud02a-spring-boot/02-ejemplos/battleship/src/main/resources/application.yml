@@ -34,5 +34,3 @@ app:
       audience: battleship-client
       access-token-expiration: 900000
       refresh-token-expiration: 604800000
-      private-key: classpath:keys/private.pem
-      public-key: classpath:keys/public.pem

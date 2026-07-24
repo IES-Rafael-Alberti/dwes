@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento [`05-tdd-manejo-errores.md`](../../01-documentacion/05-tdd-manejo-errores.md). Cubre:
+Lee el documento [`05-tdd-manejo-errores.md`](../../../01-documentacion/05-tdd-manejo-errores.md). Cubre:
 
 - `@ControllerAdvice` y `@ExceptionHandler`
 - Payload de error uniforme

@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento [`06-tdd-slicing.md`](../../01-documentacion/06-tdd-slicing.md). Cubre:
+Lee el documento [`06-tdd-slicing.md`](../../../01-documentacion/06-tdd-slicing.md). Cubre:
 
 - `@WebMvcTest` — solo capa web
 - `@DataJpaTest` — solo repositorios

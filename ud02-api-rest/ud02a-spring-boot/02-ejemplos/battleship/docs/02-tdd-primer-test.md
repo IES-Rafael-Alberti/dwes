@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento [`02-tdd-primeros-pasos.md`](../../01-documentacion/02-tdd-primeros-pasos.md). Cubre:
+Lee el documento [`02-tdd-primeros-pasos.md`](../../../01-documentacion/02-tdd-primeros-pasos.md). Cubre:
 
 - Ciclo TDD rojo-verde-azul
 - Escribir tests con JUnit 5 y AssertJ

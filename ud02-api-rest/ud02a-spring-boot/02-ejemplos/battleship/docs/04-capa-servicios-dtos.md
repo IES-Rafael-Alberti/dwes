@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento [`04-capa-servicios.md`](../../01-documentacion/04-capa-servicios.md). Cubre:
+Lee el documento [`04-capa-servicios.md`](../../../01-documentacion/04-capa-servicios.md). Cubre:
 
 - `@Service` y el rol de la capa de negocio
 - DTOs como registros inmutables

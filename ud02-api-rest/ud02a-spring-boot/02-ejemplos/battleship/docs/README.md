@@ -1,6 +1,8 @@
-# Battleship API — Documentación paso a paso
+# Battleship API — ampliaciones por sesión
 
-Serie de sesiones para construir la API Battleship desde cero con TDD. Cada sesión incluye los conceptos teóricos, el código que se hace en clase (code-along) y la tarea asociada.
+Estas sesiones amplían el [recorrido incremental canónico](../../../01-documentacion/08-battleship-caso-practico.md). Empieza allí: fija los checkpoints y separa el núcleo comprobado de las extensiones de seguridad y producción.
+
+El proyecto de referencia actual usa Spring Boot 4.0.5 y Java 25. Algunas sesiones muestran el camino hacia el resultado final y no describen necesariamente un commit intermedio conservado en el repositorio.
 
 ## Organización de las sesiones
 
@@ -33,4 +35,4 @@ Total: ~24h de clase distribuidas en 3-4 semanas.
 
 ## Material complementario
 
-- [Persistencia avanzada](persistencia-avanzada/) — MongoDB, JSON Postgres, Spring Data variantes (si el tiempo lo permite; si no, como material de estudio autónomo)
+- [Persistencia avanzada](persistencia-avanzada/README.md) — MongoDB, JSON Postgres, Spring Data variantes (si el tiempo lo permite; si no, como material de estudio autónomo)

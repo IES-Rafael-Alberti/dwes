@@ -22,8 +22,6 @@ app:
     jwt:
       access-token-expiration: 3600000
       refresh-token-expiration: 86400000
-      private-key: classpath:keys/private.pem
-      public-key: classpath:keys/public.pem
 
 management:
   endpoints:

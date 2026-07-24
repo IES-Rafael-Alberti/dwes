@@ -2,7 +2,7 @@
 
 ## Antes de empezar
 
-Lee el documento [`03-controladores-rest.md`](../../01-documentacion/03-controladores-rest.md). Cubre:
+Lee el documento [`03-controladores-rest.md`](../../../01-documentacion/03-controladores-rest.md). Cubre:
 
 - `@RestController` y `@RequestMapping`
 - Verbos HTTP: `@GetMapping`, `@PostMapping`

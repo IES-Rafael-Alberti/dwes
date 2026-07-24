@@ -108,11 +108,11 @@ Señalar:
 ### 1.4 .env (no subir a git)
 
 ```env
-DB_PASSWORD=secreto123
+DB_PASSWORD=replace-with-a-strong-password
 JWT_PRIVATE_KEY=file:/app/keys/private.pem
 JWT_PUBLIC_KEY=file:/app/keys/public.pem
 SSL_KEYSTORE_PATH=file:/app/keys/battleship.p12
-SSL_KEYSTORE_PASSWORD=cambiar
+SSL_KEYSTORE_PASSWORD=replace-with-a-strong-password
 ```
 
 ### 1.5 .dockerignore
@@ -215,12 +215,13 @@ El último campo (`%D`) es el tiempo de respuesta en milisegundos. Fundamental p
 ### 2.4 Verificar configuración con Actuator
 
 ```bash
-curl http://localhost:8080/actuator/health
-curl http://localhost:8080/actuator/metrics/tomcat.threads.busy
-curl http://localhost:8080/actuator/metrics/hikaricp.connections.active
+curl -H "Authorization: Bearer $ACCESS_TOKEN" \
+  http://localhost:8080/actuator/health
+curl -H "Authorization: Bearer $ACCESS_TOKEN" \
+  http://localhost:8080/actuator/info
 ```
 
-Señalar: si `tomcat.threads.busy` se acerca a `threads.max`, necesitás escalar (más hilos, o más instancias).
+La configuración base solo expone `health` e `info`, ambos autenticados. No uses aquí rutas de métricas: el perfil Docker de producción no las expone. Si un perfil operativo habilita métricas, debe mantenerlas protegidas y limitar su acceso a la red de observabilidad.
 
 ## 3. Alternativas a Tomcat
 

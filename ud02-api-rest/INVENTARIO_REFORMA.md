@@ -20,6 +20,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - `V4__seed_admin.sql` crea `admin/admin123` como migración normal. Es una credencial privilegiada conocida y bloquea cualquier presentación del perfil como desplegable.
 - Las claves RSA y el keystore de Battleship existen localmente bajo `src/main/resources/keys/`, pero Git los ignora y **no están versionados**. Aun así, MkDocs podía copiarlos desde el árbol local porque Git ignore no controla la publicación.
 - `.dockerignore` usa `keys/*.pem` y `keys/*.p12`, pero los archivos reales viven en `src/main/resources/keys/`; esas reglas no protegen el contexto real.
+- Battleship genera un par RSA efímero fuera de `prod`/`docker` y exige PEM externos en esos perfiles; Maven y Docker excluyen `src/main/resources/keys/` de los artefactos.
 - `06-seguridad/Seguridad/` contiene soluciones completas, APIs antiguas, secretos de demostración, `.Rhistory`, ZIP, PDF, HTML, Org y residuos conversacionales.
 - Se excluyen temporalmente de MkDocs las claves, el árbol heredado de seguridad y las rutas opcionales .NET/GraphQL hasta clasificarlos.
 
@@ -43,8 +44,10 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 - El 23 de julio de 2026, `./mvnw clean test` ejecutó 49 pruebas verdes con OpenJDK 25.0.3 tras retirar la migración del administrador conocido.
 - Tras migrar el build y añadir `PageResponse`, `./mvnw clean test` ejecuta 50 pruebas verdes con `release 25` y ya no aparece la advertencia por serialización directa de `PageImpl`.
-- Flyway advierte que H2 2.4.240 supera la última versión verificada por la versión de Flyway utilizada; debe revisarse la compatibilidad o fijarse una versión probada.
-- Lombok advierte que `@Builder` ignora una inicialización en `Game`; debe declararse `@Builder.Default` o impedir que el builder modifique ese campo.
+- El 24 de julio de 2026, `./mvnw clean verify` y el build Docker con Java 25 ejecutaron 50 pruebas verdes. La inspección del JAR no encontró `keys/`, PEM ni almacenes de claves, y la exportación de la imagen no encontró material de claves bajo `/app`.
+- H2 queda fijado en 2.3.232, última versión que la versión de Flyway utilizada declara verificada; las migraciones pasan sin advertencia de compatibilidad.
+- `Game.active` usa `@Builder.Default` y una prueba directa confirma que el builder conserva `true` antes de persistir.
+- Tras ambos ajustes, `./mvnw clean verify` ejecuta 51 pruebas verdes con Java 25, sin las advertencias de H2/Flyway ni Lombok.
 
 ### Rutas opcionales
 
@@ -79,7 +82,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [x] Auditar documentación, proyectos, seguridad y rutas opcionales.
 - [x] Excluir temporalmente de MkDocs claves y material no verificado de seguridad, .NET y GraphQL.
 - [x] Eliminar la credencial administrativa conocida de las migraciones normales.
-- [ ] Verificar que claves/keystores no entren en JAR ni imagen; `.dockerignore` ya excluye su ruta real.
+- [x] Externalizar las claves JWT y verificar que claves/keystores no entren en JAR ni imagen.
 - [x] Corregir slicing y migración SB3/SB4 según los módulos, paquetes y requisitos oficiales de Spring Boot 4.
 - [ ] Resolver o retirar gitlinks sin `.gitmodules`.
 
@@ -87,8 +90,8 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 - [x] Fijar Java 25 en el proyecto canónico Battleship; queda revisar ejemplos y documentación secundaria.
 - [x] Estabilizar el contrato JSON paginado de Battleship mediante `PageResponse` y una prueba HTTP dedicada.
-- [ ] Alinear H2/Flyway con una combinación oficialmente compatible o explícitamente probada.
-- [ ] Resolver la inicialización ignorada por `@Builder` en `Game` y añadir una prueba del valor por defecto.
+- [x] Alinear H2/Flyway con H2 2.3.232, combinación declarada verificada y probada por la suite.
+- [x] Resolver la inicialización ignorada por `@Builder` en `Game` y probar el valor por defecto.
 - [ ] Reordenar y consolidar la documentación sin duplicados.
 - [ ] Completar README, página pública, RA/CE y evaluación.
 - [ ] Verificar Battleship desde wrapper, perfiles y base limpia.

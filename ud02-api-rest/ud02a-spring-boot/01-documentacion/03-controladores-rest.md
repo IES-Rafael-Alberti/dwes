@@ -10,23 +10,7 @@
 
 # Capítulos 2 bis y 3 – Spring Boot y Controladores REST
 
-## Tabla de contenidos
-1. [Capítulo 2 bis – Introducción a Spring Boot](#capítulo-2-bis--introducción-a-spring-boot)
-   1. [¿Qué es Spring Boot?](#qué-es-spring-boot)
-   2. [Estructura de un proyecto típico](#estructura-de-un-proyecto-típico)
-   3. [Autoconfiguración y starters](#autoconfiguración-y-starters)
-   4. [Ejemplo paso a paso – Mini API “Tasks”](#ejemplo-paso-a-paso--mini-api-tasks)
-   5. [Clases vs Records: entidades y DTOs](#clases-vs-records-entidades-y-dtos)
-2. [Capítulo 3 – Controladores y vistas (adaptado a REST)](#capítulo-3--controladores-y-vistas-adaptado-a-rest)
-   1. [Características de los controladores](#31-características-de-los-controladores)
-   2. [Tipos de controladores](#32-tipos-de-controladores)
-   3. [Paso de datos a la vista (respuesta JSON)](#33-el-paso-de-datos-a-la-vista)
-   4. [Parámetros en las URL](#34-parámetros-de-url)
-   5. [Retorno de métodos y convenciones REST](#35-retorno-de-métodos)
-   6. [Gestión de errores y ControllerAdvice](#36-gestión-de-errores)
-   7. [ResponseEntity y códigos de estado HTTP](#37-responseentity-y-códigos-de-estado-http)
-   8. [Guion práctico y entregable](#guion-práctico-y-entregable)
-3. [Próximos pasos: proyecto completo Battleship API](#próximos-pasos-proyecto-completo-battleship-api)
+La navegación lateral de la página refleja automáticamente las secciones siguientes y evita mantener a mano una segunda tabla de contenidos.
 
 ---
 
@@ -321,5 +305,4 @@ En las próximas unidades desarrollaremos un **proyecto completo (Battleship API
 Este proyecto servirá como eje central del módulo, integrando todo lo aprendido en Spring Boot hasta la persistencia y seguridad.
 
 ---
-
 

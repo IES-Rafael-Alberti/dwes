@@ -4,8 +4,8 @@
 
 Consulta los anexos:
 
-- [`anexo-git-maven-spring.md`](../../01-documentacion/anexo-git-maven-spring.md) — perfiles Maven/Spring
-- Doc 08: [`08-battleship-caso-practico.md`](../../01-documentacion/08-battleship-caso-practico.md) — guion completo
+- [`anexo-git-maven-spring.md`](../../../01-documentacion/anexo-git-maven-spring.md) — perfiles Maven/Spring
+- Doc 08: [`08-battleship-caso-practico.md`](../../../01-documentacion/08-battleship-caso-practico.md) — guion completo
 
 ## Visión general
 
@@ -71,8 +71,6 @@ app:
     jwt:
       access-token-expiration: 3600000     # 1 hora en dev
       refresh-token-expiration: 86400000   # 24 horas en dev
-      private-key: classpath:keys/private.pem
-      public-key: classpath:keys/public.pem
 
 logging:
   level:
@@ -325,15 +323,19 @@ public class SwaggerSecurityConfig {
 }
 ```
 
-Acceder:
+Acceso operativo en la configuración base:
 
-- OpenAPI spec: `http://localhost:8080/api-docs`
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
+```bash
+curl -H "Authorization: Bearer $ACCESS_TOKEN" \
+  http://localhost:8080/api-docs
+```
+
+`/api-docs` y `/swagger-ui.html` requieren autenticación. La especificación puede descargarse con bearer como en el ejemplo. La UI no se presenta como accesible mediante navegación directa: el navegador no añade la cabecera `Authorization` al cargarla. Si se necesita Swagger UI interactiva en clase, debe habilitarse explícitamente solo en un perfil `dev` y permitirse allí en `SecurityFilterChain`; no se abre en la configuración base o de producción.
 
 Señalar:
 
-- `try-it-out-enabled: true` — permite probar endpoints desde el navegador
-- Bearer token en Swagger: introduces el token una vez y se aplica a todos los requests
+- `try-it-out-enabled: true` solo resulta operativo si la UI se habilita en el perfil `dev`
+- El esquema bearer describe cómo autenticar llamadas de la API; no hace pública la propia UI
 - Alternativa: `@SecurityRequirement` por endpoint si los roles difieren
 
 ### 5. Actuator (health y métricas)
@@ -407,7 +409,8 @@ public class BattleshipHealthIndicator implements HealthIndicator {
 Probar:
 
 ```bash
-curl http://localhost:8080/actuator/health
+curl -H "Authorization: Bearer $ACCESS_TOKEN" \
+  http://localhost:8080/actuator/health
 # {"status": "UP", "components": {"battleship": {"status": "UP", "details": {"totalGames": 5}}}}
 ```
 
@@ -587,7 +590,7 @@ Para el proyecto que elijas (book-catalog, mini-tasks o gestion-eventos):
 1. Crea perfiles `dev` y `prod`
 2. Añade paginación a los endpoints `GET /api/...`
 3. Añade un filtro por campo (usando `@RequestParam` o `Specification`)
-4. Configura springdoc y verifica Swagger UI
+4. Configura springdoc y verifica `/api-docs` con autenticación; habilita Swagger UI solo en desarrollo si la necesitas
 5. Añade actuator con al menos `health` e `info`
 6. Configura logging diferente por perfil
 
