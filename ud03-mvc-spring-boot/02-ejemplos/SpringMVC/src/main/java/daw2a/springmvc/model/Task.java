@@ -1,34 +1,24 @@
 package daw2a.springmvc.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Usuario asociado a la tarea
-
+    @Column(nullable = false)
     private boolean completed;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
-    public boolean isNotCompleted()
-    {
-        return !completed;
-    }
-    public boolean isCompleted()
-    {
-        return completed;
-    }
-
-
+    protected Task() {}
+    public Task(String description, User owner) { this.description = description; this.owner = owner; }
+    public Long getId() { return id; }
+    public String getDescription() { return description; }
+    public boolean isCompleted() { return completed; }
+    public void rename(String description) { this.description = description; }
+    public void toggle() { completed = !completed; }
 }

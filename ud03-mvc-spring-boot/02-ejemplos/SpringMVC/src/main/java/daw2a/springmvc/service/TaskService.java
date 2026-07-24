@@ -1,82 +1,31 @@
 package daw2a.springmvc.service;
 
+import daw2a.springmvc.error.TaskNotFoundException;
+import daw2a.springmvc.form.TaskForm;
 import daw2a.springmvc.model.Task;
 import daw2a.springmvc.model.User;
 import daw2a.springmvc.repository.TaskRepository;
 import daw2a.springmvc.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class TaskService {
-    private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+    private final TaskRepository tasks;
+    private final UserRepository users;
+    public TaskService(TaskRepository tasks, UserRepository users) { this.tasks = tasks; this.users = users; }
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
-        this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
+    @Transactional(readOnly = true)
+    public List<Task> listOwnedBy(String username) { return tasks.findAllByOwnerUsernameOrderByIdAsc(username); }
+    @Transactional(readOnly = true)
+    public Task getOwned(Long id, String username) { return tasks.findByIdAndOwnerUsername(id, username).orElseThrow(TaskNotFoundException::new); }
+    public Task create(TaskForm form, String username) {
+        User owner = users.findByUsername(username).orElseThrow();
+        return tasks.save(new Task(form.getDescription().trim(), owner));
     }
-
-
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
-    }
-
-    public void saveTask(Task task) {
-        taskRepository.save(task);
-    }
-
-    public void changeTaskState(Long id) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        if (optionalTask.isPresent()) {
-            Task task = optionalTask.get();
-            task.setCompleted(task.isNotCompleted());
-            taskRepository.save(task);
-        }
-    }
-
-    public void deleteTask(Long id) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        if (optionalTask.isPresent()) {
-            Task task = optionalTask.get();
-            task.setCompleted(task.isNotCompleted());
-            taskRepository.deleteById(id);
-        }
-    }
-
-    public void deleteTasksByIds(List<Long> taskIds) {
-        taskRepository.deleteAllById(taskIds);
-    }
-
-    public void deleteTask(Long id, User user) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        if (optionalTask.isPresent()) {
-            Task task = optionalTask.get();
-            if (task.getUser().equals(user)) { // Validamos que la tarea pertenece al usuario
-                taskRepository.delete(task);
-            }
-        }
-    }
-
-    public void changeStatusForTasks(List<Long> taskIds) {
-        List<Task> tasks = taskRepository.findAllById(taskIds);
-        for (Task task : tasks) {
-            task.setCompleted(task.isNotCompleted()); // Alterna el estado
-        }
-        taskRepository.saveAll(tasks); // Guarda los cambios en lote
-    }
-
-    public List<Task> searchTasks(String keyword) {
-        return taskRepository.findByDescriptionContainingIgnoreCase(keyword);
-    }
-
-    public List<Task> getTasksByCompleted(boolean completed) {
-        return taskRepository.findByCompleted(completed);
-    }
-
-    public List<Task> getTasksByUser(User user) {
-        return taskRepository.findByUser(user);
-    }
+    public void update(Long id, TaskForm form, String username) { getOwned(id, username).rename(form.getDescription().trim()); }
+    public void toggle(Long id, String username) { getOwned(id, username).toggle(); }
+    public void delete(Long id, String username) { tasks.delete(getOwned(id, username)); }
 }

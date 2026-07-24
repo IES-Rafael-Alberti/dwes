@@ -1,111 +1,46 @@
 package daw2a.springmvc.controller;
 
+import daw2a.springmvc.form.TaskForm;
 import daw2a.springmvc.model.Task;
-import daw2a.springmvc.model.User;
-import daw2a.springmvc.repository.UserRepository;
 import daw2a.springmvc.service.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.List;
 
 @Controller
 public class TaskController {
-    private final TaskService taskService;
-    private final UserRepository userRepository;
-    public TaskController(TaskService taskService, UserRepository userRepository) {
-        this.taskService = taskService;
-        this.userRepository = userRepository;
-    }
+    private final TaskService service;
+    public TaskController(TaskService service) { this.service = service; }
 
-    // Listar tareas
-    @GetMapping("/tasks")
-    public String listTasks(Model model)
-    {
-        User currentUser = getCurrentUser();
-        model.addAttribute("tasks",taskService.getTasksByUser(currentUser));
-        model.addAttribute("keyword", ""); // Agregar el atributo keyword vacío
-        return "tasks";
+    @GetMapping("/") String home() { return "redirect:/tasks"; }
+    @GetMapping("/login") String login() { return "login"; }
+    @GetMapping("/tasks") String list(Model model, Authentication auth) {
+        model.addAttribute("tasks", service.listOwnedBy(auth.getName())); return "tasks/list";
     }
-
-    // Mostrar formulario para añadir tarea
-    @GetMapping("/tasks/new")
-    public String showAddTaskForm(Model model)
-    {
-        model.addAttribute("task",new Task());
-        return "add-task";
+    @GetMapping("/tasks/new") String newForm(Model model) {
+        model.addAttribute("taskForm", new TaskForm()); return "tasks/new";
     }
-
-    // Añadir tarea
-    @PostMapping("/tasks")
-    public String addTask(@ModelAttribute Task task) {
-        User currentUser = getCurrentUser();
-        task.setUser(currentUser);
-        taskService.saveTask(task);
-        return "redirect:/tasks";
+    @PostMapping("/tasks") String create(@Valid @ModelAttribute TaskForm taskForm, BindingResult errors, Authentication auth) {
+        if (errors.hasErrors()) return "tasks/new";
+        service.create(taskForm, auth.getName()); return "redirect:/tasks";
     }
-
-    // Marcar como completada o pendiente
-    @PostMapping("/tasks/{id}/statechange")
-    public String changeTaskState(@PathVariable Long id)
-    {
-        taskService.changeTaskState(id);
-        return "redirect:/tasks";
+    @GetMapping("/tasks/{id}/edit") String editForm(@PathVariable Long id, Model model, Authentication auth) {
+        Task task = service.getOwned(id, auth.getName());
+        TaskForm form = new TaskForm(); form.setDescription(task.getDescription());
+        model.addAttribute("taskForm", form); model.addAttribute("taskId", id); return "tasks/edit";
     }
-
-    // Borrar una tarea
-    @PostMapping("/tasks/{id}/delete")
-    public String deleteTask(@PathVariable Long id)
-    {
-        taskService.deleteTask(id);
-        return "redirect:/tasks";
+    @PostMapping("/tasks/{id}") String update(@PathVariable Long id, @Valid @ModelAttribute TaskForm taskForm,
+                                               BindingResult errors, Model model, Authentication auth) {
+        if (errors.hasErrors()) { model.addAttribute("taskId", id); return "tasks/edit"; }
+        service.update(id, taskForm, auth.getName()); return "redirect:/tasks";
     }
-
-    @PostMapping("/tasks/action")
-    public String handleTaskActions(@RequestParam List<Long> taskIds, @RequestParam String actionType) {
-        if ("delete".equals(actionType)) {
-            taskService.deleteTasksByIds(taskIds);
-        } else if ("toggle".equals(actionType)) {
-            taskService.changeStatusForTasks(taskIds);
-        }
-        return "redirect:/tasks";
+    @PostMapping("/tasks/{id}/toggle") String toggle(@PathVariable Long id, Authentication auth) {
+        service.toggle(id, auth.getName()); return "redirect:/tasks";
     }
-
-    @GetMapping("/tasks/search")
-    public String searchTasks(@RequestParam(required = false) String keyword, Model model) {
-        List<Task> tasks;
-        if (keyword != null && !keyword.isEmpty()) {
-            tasks = taskService.searchTasks(keyword);
-        } else {
-            tasks = taskService.getAllTasks();
-        }
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("keyword", keyword != null ? keyword : ""); // Mantener keyword en el modelo
-        return "tasks";
-    }
-
-    @GetMapping("/tasks/filter")
-    public String filterTasks(@RequestParam String status, Model model) {
-        List<Task> tasks;
-        if ("completed".equalsIgnoreCase(status)) {
-            tasks = taskService.getTasksByCompleted(true);
-        } else if ("pending".equalsIgnoreCase(status)) {
-            tasks = taskService.getTasksByCompleted(false);
-        } else {
-            tasks = taskService.getAllTasks();
-        }
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("keyword", ""); // Mantener keyword vacío para esta vista
-        return "tasks";
-    }
-
-    // Método para obtener el usuario autenticado
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Obtener el nombre de usuario del contexto de seguridad
-        return userRepository.findByUsername(username); // Buscar el usuario en la base de datos
+    @PostMapping("/tasks/{id}/delete") String delete(@PathVariable Long id, Authentication auth) {
+        service.delete(id, auth.getName()); return "redirect:/tasks";
     }
 }
