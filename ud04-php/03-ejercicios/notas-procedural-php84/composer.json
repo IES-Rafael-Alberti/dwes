@@ -1,0 +1,10 @@
+{
+  "name": "dwes/notas-procedural-starter",
+  "description": "Secure procedural CRUD exercise for PHP 8.4",
+  "license": "proprietary",
+  "type": "project",
+  "require": {"php": "^8.4", "ext-mbstring": "*", "ext-pdo": "*", "ext-pdo_sqlite": "*"},
+  "require-dev": {"phpunit/phpunit": "^11.5"},
+  "autoload": {"files": ["src/app.php"]},
+  "scripts": {"test": "phpunit --exclude-group checkpoint", "checkpoint": "phpunit"}
+}
