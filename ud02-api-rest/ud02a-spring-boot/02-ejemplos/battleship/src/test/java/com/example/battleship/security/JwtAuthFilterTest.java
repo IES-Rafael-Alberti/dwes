@@ -7,6 +7,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.List;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,7 +36,8 @@ class JwtAuthFilterTest {
         request.addHeader("Authorization", "Bearer token");
         var response = new MockHttpServletResponse();
 
-        new JwtAuthFilter(jwtService).doFilter(request, response, new MockFilterChain());
+        new JwtAuthFilter(jwtService, new SecurityErrorWriter(JsonMapper.builder().build()))
+                .doFilter(request, response, new MockFilterChain());
 
         assertEquals(401, response.getStatus());
     }

@@ -42,6 +42,8 @@ public class GameController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) @Min(1) Integer minBoardSize,
             @RequestParam(required = false) LocalDateTime createdAfter,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) int size,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         var spec = Specification
@@ -53,27 +55,29 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GameResponseDTO> get(@PathVariable Long id) {
+    public ResponseEntity<GameResponseDTO> get(@PathVariable @Min(1) Long id) {
         return ResponseEntity.ok(gameService.getGame(id));
     }
 
     @PostMapping("/{id}/ships")
     @PreAuthorize("hasRole('PLAYER')")
-    public ResponseEntity<GameResponseDTO> placeShip(@PathVariable Long id, @Valid @RequestBody PlaceShipDTO dto) {
+    public ResponseEntity<GameResponseDTO> placeShip(
+            @PathVariable @Min(1) Long id, @Valid @RequestBody PlaceShipDTO dto) {
         GameResponseDTO game = gameService.placeShip(id, dto);
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 
     @PostMapping("/{id}/attacks")
     @PreAuthorize("hasRole('PLAYER')")
-    public ResponseEntity<GameResponseDTO> attack(@PathVariable Long id, @Valid @RequestBody AttackDTO dto) {
+    public ResponseEntity<GameResponseDTO> attack(
+            @PathVariable @Min(1) Long id, @Valid @RequestBody AttackDTO dto) {
         GameResponseDTO game = gameService.attack(id, dto);
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+    public ResponseEntity<Void> cancel(@PathVariable @Min(1) Long id) {
         gameService.cancelGame(id);
         return ResponseEntity.noContent().build();
     }

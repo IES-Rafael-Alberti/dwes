@@ -4,8 +4,8 @@ import jakarta.validation.constraints.*;
 
 public record PlaceShipDTO(
         @NotBlank String shipName,
-        @Min(1) int length,
-        @Min(0) int startX,
-        @Min(0) int startY,
-        boolean isHorizontal
+        @NotNull @Min(1) Integer length,
+        @NotNull @Min(0) Integer startX,
+        @NotNull @Min(0) Integer startY,
+        @NotNull Boolean isHorizontal
 ) {}

@@ -6,16 +6,18 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-
 server:
   servlet:
     application-display-name: ""
 
 springdoc:
   api-docs:
+    enabled: false
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+    url: /api-docs/battleship-v1.yaml
+    disable-swagger-default-url: true
     try-it-out-enabled: true
     display-request-duration: true
 

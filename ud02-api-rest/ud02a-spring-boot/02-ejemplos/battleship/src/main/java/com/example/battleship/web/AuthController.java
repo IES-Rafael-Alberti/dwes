@@ -1,6 +1,7 @@
 package com.example.battleship.web;
 
 import com.example.battleship.dto.AuthRequest;
+import com.example.battleship.dto.ErrorPayload;
 import com.example.battleship.dto.TokenRefreshRequest;
 import com.example.battleship.dto.TokenResponse;
 import com.example.battleship.security.JwtService;
@@ -35,10 +36,11 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<?> refresh(@Valid @RequestBody TokenRefreshRequest request) {
         Claims claims = jwtService.parseClaims(request.refreshToken());
         if (!jwtService.isRefreshToken(claims)) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401)
+                    .body(new ErrorPayload("UNAUTHORIZED", "A refresh token is required"));
         }
         var tokens = authService.refresh(claims.getSubject());
         return ResponseEntity.ok(tokens);

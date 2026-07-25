@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +19,11 @@ import java.util.Collection;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final SecurityErrorWriter errorWriter;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService, SecurityErrorWriter errorWriter) {
         this.jwtService = jwtService;
+        this.errorWriter = errorWriter;
     }
 
     @Override
@@ -36,8 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims claims = jwtService.parseClaims(token);
 
                 if (jwtService.isRefreshToken(claims)) {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.getWriter().write("{\"error\": \"Use access token, not refresh token\"}");
+                    errorWriter.write(response, 401, "UNAUTHORIZED", "Use access token, not refresh token");
                     return;
                 }
 
@@ -46,8 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         || roles.isEmpty()
                         || roles.stream().anyMatch(role -> !(role instanceof String value)
                                 || !value.startsWith("ROLE_"))) {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.getWriter().write("{\"error\": \"Invalid access token claims\"}");
+                    errorWriter.write(response, 401, "UNAUTHORIZED", "Invalid access token claims");
                     return;
                 }
                 var authorities = roles.stream()
@@ -62,8 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             } catch (JwtException | ClassCastException ex) {
                 SecurityContextHolder.clearContext();
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
+                errorWriter.write(response, 401, "UNAUTHORIZED", "Invalid or expired token");
                 return;
             }
         }

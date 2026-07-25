@@ -1,0 +1,556 @@
+openapi: 3.1.0
+info:
+  title: Battleship API
+  version: 1.0.0
+  description: Authoritative version 1 contract for the Battleship HTTP API.
+servers:
+  - url: /
+paths:
+  /auth/register:
+    post:
+      operationId: registerUser
+      summary: Register a player account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '201':
+          description: User registered
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User registered
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/login:
+    post:
+      operationId: loginUser
+      summary: Authenticate and issue a token pair
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token pair issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      summary: Exchange a refresh token for a new token pair
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+      responses:
+        '200':
+          description: Token pair refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/games:
+    post:
+      operationId: createGame
+      summary: Create a game
+      description: Requires a bearer token whose authorities include the PLAYER role.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGame'
+      responses:
+        '201':
+          description: Game created
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      operationId: listGames
+      summary: List and filter games
+      security: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: sort
+          in: query
+          description: Spring Data sort in property,direction form.
+          schema:
+            type: string
+            default: createdAt,DESC
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: minBoardSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: createdAfter
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Offset-less ISO-8601 local date-time.
+      responses:
+        '200':
+          description: Page of games
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/games/{id}:
+    get:
+      operationId: getGame
+      summary: Get a game
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/GameId'
+      responses:
+        '200':
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      operationId: cancelGame
+      summary: Cancel a game
+      description: Requires a bearer token whose authorities include the ADMIN role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GameId'
+      responses:
+        '204':
+          description: Game cancelled
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/games/{id}/ships:
+    post:
+      operationId: placeShip
+      summary: Place a ship in a game
+      description: Requires a bearer token whose authorities include the PLAYER role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceShip'
+      responses:
+        '201':
+          description: Ship placed
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/games/{id}/attacks:
+    post:
+      operationId: attackGame
+      summary: Attack a coordinate in a game
+      description: Requires a bearer token whose authorities include the PLAYER role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GameId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attack'
+      responses:
+        '201':
+          description: Attack recorded
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: RS256 access token. Operation descriptions identify the required application role.
+  parameters:
+    GameId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+  headers:
+    Location:
+      description: URI of the affected game.
+      schema:
+        type: string
+        format: uri-reference
+  responses:
+    BadRequest:
+      description: Invalid request or validation failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated principal lacks the required role
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Game not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Request conflicts with the current game state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: Request rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    AuthRequest:
+      type: object
+      additionalProperties: true
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 1
+          pattern: '.*\S.*'
+        password:
+          type: string
+          minLength: 1
+          pattern: '.*\S.*'
+          format: password
+    TokenRefreshRequest:
+      type: object
+      additionalProperties: true
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          minLength: 1
+          pattern: '.*\S.*'
+    TokenResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+    CreateGame:
+      type: object
+      additionalProperties: true
+      required: [boardSize]
+      properties:
+        boardSize:
+          type: integer
+          format: int32
+          minimum: 5
+          maximum: 20
+    PlaceShip:
+      type: object
+      additionalProperties: true
+      required: [shipName, length, startX, startY, isHorizontal]
+      properties:
+        shipName:
+          type: string
+          minLength: 1
+          pattern: '.*\S.*'
+        length:
+          type: integer
+          format: int32
+          minimum: 1
+        startX:
+          type: integer
+          format: int32
+          minimum: 0
+        startY:
+          type: integer
+          format: int32
+          minimum: 0
+        isHorizontal:
+          type: boolean
+    Attack:
+      type: object
+      additionalProperties: true
+      required: [x, y]
+      properties:
+        x:
+          type: integer
+          format: int32
+          minimum: 0
+        y:
+          type: integer
+          format: int32
+          minimum: 0
+    Game:
+      type: object
+      additionalProperties: false
+      required: [id, boardSize, status, createdAt, ships, attacks]
+      properties:
+        id:
+          type: integer
+          format: int64
+        boardSize:
+          type: integer
+          format: int32
+        status:
+          type: string
+        createdAt:
+          type: string
+          description: Offset-less ISO-8601 local date-time.
+        ships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ship'
+        attacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameAttack'
+    Ship:
+      type: object
+      additionalProperties: false
+      required: [id, shipName, length, startX, startY, isHorizontal, sunk]
+      properties:
+        id:
+          type: integer
+          format: int64
+        shipName:
+          type: string
+        length:
+          type: integer
+          format: int32
+        startX:
+          type: integer
+          format: int32
+        startY:
+          type: integer
+          format: int32
+        isHorizontal:
+          type: boolean
+        sunk:
+          type: boolean
+    GameAttack:
+      type: object
+      additionalProperties: false
+      required: [id, x, y, hit, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+        hit:
+          type: boolean
+        createdAt:
+          type: string
+          description: Offset-less ISO-8601 local date-time.
+    PageResponse:
+      type: object
+      additionalProperties: false
+      required: [content, page, size, totalElements, totalPages, first, last]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+        first:
+          type: boolean
+        last:
+          type: boolean
+    Error:
+      type: object
+      additionalProperties: false
+      required: [error, message, timestamp]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

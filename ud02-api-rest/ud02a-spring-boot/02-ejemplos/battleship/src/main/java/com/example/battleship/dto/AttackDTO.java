@@ -1,8 +1,9 @@
 package com.example.battleship.dto;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 public record AttackDTO(
-        @Min(0) int x,
-        @Min(0) int y
+        @NotNull @Min(0) Integer x,
+        @NotNull @Min(0) Integer y
 ) {}

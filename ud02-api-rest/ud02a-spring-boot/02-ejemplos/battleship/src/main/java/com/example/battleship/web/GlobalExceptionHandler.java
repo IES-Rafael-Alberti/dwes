@@ -7,8 +7,11 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,6 +38,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorPayload> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         var payload = new ErrorPayload("VALIDATION_ERROR", msg);
+        return ResponseEntity.badRequest().body(payload);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorPayload> handleMethodValidation(HandlerMethodValidationException ex) {
+        var payload = new ErrorPayload("VALIDATION_ERROR", "Invalid request parameter");
+        return ResponseEntity.badRequest().body(payload);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErrorPayload> handleMalformedInput(Exception ex) {
+        var payload = new ErrorPayload("BAD_REQUEST", "Malformed request input");
         return ResponseEntity.badRequest().body(payload);
     }
 

@@ -3,6 +3,7 @@ package com.example.battleship.config;
 import com.example.battleship.security.JwtAuthFilter;
 import com.example.battleship.security.JwtService;
 import com.example.battleship.security.RateLimitFilter;
+import com.example.battleship.security.SecurityErrorWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,38 +25,51 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public JwtAuthFilter jwtAuthFilter(JwtService jwtService) {
-        return new JwtAuthFilter(jwtService);
+    public SecurityErrorWriter securityErrorWriter(ObjectMapper objectMapper) {
+        return new SecurityErrorWriter(objectMapper);
     }
 
     @Bean
-    public RateLimitFilter rateLimitFilter() {
-        return new RateLimitFilter();
+    public JwtAuthFilter jwtAuthFilter(JwtService jwtService, SecurityErrorWriter errorWriter) {
+        return new JwtAuthFilter(jwtService, errorWriter);
+    }
+
+    @Bean
+    public RateLimitFilter rateLimitFilter(SecurityErrorWriter errorWriter) {
+        return new RateLimitFilter(errorWriter);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                    JwtAuthFilter jwtAuthFilter,
-                                                    RateLimitFilter rateLimitFilter,
-                                                    CorsConfigurationSource corsConfigurationSource) throws Exception {
+                                                     JwtAuthFilter jwtAuthFilter,
+                                                     RateLimitFilter rateLimitFilter,
+                                                     SecurityErrorWriter errorWriter,
+                                                     CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) ->
-                                response.sendError(401, "Unauthorized"))
+                                errorWriter.write(response, 401, "UNAUTHORIZED", "Authentication required"))
                         .accessDeniedHandler((request, response, exception) ->
-                                response.sendError(403, "Forbidden")))
+                                errorWriter.write(response, 403, "FORBIDDEN", "Insufficient permissions")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(
+                                "/api-docs/battleship-v1.yaml",
+                                "/api-docs/swagger-config",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/games", "/api/games/*").permitAll()
                         .anyRequest().authenticated()
                 )
