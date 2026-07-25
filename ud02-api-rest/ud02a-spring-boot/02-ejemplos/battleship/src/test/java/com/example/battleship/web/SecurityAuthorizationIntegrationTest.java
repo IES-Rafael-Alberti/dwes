@@ -1,5 +1,10 @@
 package com.example.battleship.web;
 
+import com.example.battleship.domain.User;
+import com.example.battleship.dto.TokenResponse;
+import com.example.battleship.repository.UserRepository;
+import com.example.battleship.security.JwtService;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -7,21 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import com.example.battleship.security.JwtService;
-import io.jsonwebtoken.Jwts;
+import tools.jackson.databind.ObjectMapper;
 
 import java.security.PrivateKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,6 +43,15 @@ class SecurityAuthorizationIntegrationTest {
 
     @Autowired
     private PrivateKey privateKey;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void listGames_isPublic() throws Exception {
@@ -103,6 +120,32 @@ class SecurityAuthorizationIntegrationTest {
         mockMvc.perform(post("/api/games")
                         .header("Authorization", "Bearer " +
                                 jwtService.generateAccessToken("player", java.util.List.of("ROLE_PLAYER")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"boardSize\":10}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void loginIssuedToken_withLegacyPlayerRole_authenticatesCreateGame() throws Exception {
+        String username = "legacy-player-login";
+        String password = "secure-password";
+        userRepository.findByUsername(username).ifPresent(userRepository::delete);
+        userRepository.save(new User(username, passwordEncoder.encode(password), Set.of("PLAYER")));
+
+        String responseBody = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        TokenResponse tokens = objectMapper.readValue(responseBody, TokenResponse.class);
+        assertThat(jwtService.parseClaims(tokens.accessToken()).get("roles", List.class))
+                .containsExactly("ROLE_PLAYER");
+
+        mockMvc.perform(post("/api/games")
+                        .header("Authorization", "Bearer " + tokens.accessToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"boardSize\":10}"))
                 .andExpect(status().isCreated());

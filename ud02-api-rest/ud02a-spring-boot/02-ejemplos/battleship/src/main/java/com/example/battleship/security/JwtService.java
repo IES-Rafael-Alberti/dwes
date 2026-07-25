@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
+
+    private static final String ROLE_PREFIX = "ROLE_";
+    private static final Set<String> LEGACY_ROLES = Set.of("PLAYER", "ADMIN");
 
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
@@ -43,11 +47,18 @@ public class JwtService {
                 .subject(username)
                 .issuer(issuer)
                 .audience().add(audience).and()
-                .claim("roles", List.copyOf(roles))
+                .claim("roles", normalizeRoles(roles))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(accessExpiration)))
                 .signWith(privateKey, Jwts.SIG.RS256)
                 .compact();
+    }
+
+    private List<String> normalizeRoles(Collection<String> roles) {
+        return roles.stream()
+                .filter(role -> role.startsWith(ROLE_PREFIX) || LEGACY_ROLES.contains(role))
+                .map(role -> role.startsWith(ROLE_PREFIX) ? role : ROLE_PREFIX + role)
+                .toList();
     }
 
     public String generateRefreshToken(String username) {
