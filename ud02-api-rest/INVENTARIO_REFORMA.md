@@ -104,7 +104,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 - [x] Diseñar y versionar OpenAPI 3.1 como fuente de verdad en `static/api-docs/battleship-v1.yaml`.
 - [x] Añadir autenticación, roles esperados, errores y cabeceras al contrato.
-- [ ] Completar ejemplos representativos de requests/responses; por ahora solo está probado el ejemplo textual de registro.
+- [x] Completar y validar ejemplos representativos de requests/responses en todos los esquemas, parámetros, cabeceras y respuestas del contrato canónico.
 - [x] Verificar conformidad entre contrato e implementación con parser y Atlassian MockMvc para las nueve operaciones.
 - [x] Documentar requisitos, decisiones, tareas, trazabilidad TDD y comandos de evidencia SDD en la [traza versionada para el alumnado](ud02a-spring-boot/02-ejemplos/battleship/docs/10-sdd-openapi.md).
 
