@@ -17,6 +17,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthRequest'
+            examples:
+              newPlayer:
+                $ref: '#/components/examples/AuthRequest'
       responses:
         '201':
           description: User registered
@@ -24,7 +27,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: User registered
+              example: User registered
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -44,6 +47,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthRequest'
+            examples:
+              playerCredentials:
+                $ref: '#/components/examples/AuthRequest'
       responses:
         '200':
           description: Token pair issued
@@ -51,6 +57,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
+              examples:
+                illustrativeTokenPair:
+                  $ref: '#/components/examples/TokenResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -70,6 +79,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TokenRefreshRequest'
+            examples:
+              illustrativeRefreshToken:
+                $ref: '#/components/examples/TokenRefreshRequest'
       responses:
         '200':
           description: Token pair refreshed
@@ -77,6 +89,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
+              examples:
+                illustrativeTokenPair:
+                  $ref: '#/components/examples/TokenResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -98,6 +113,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateGame'
+            examples:
+              tenByTenBoard:
+                $ref: '#/components/examples/CreateGame'
       responses:
         '201':
           description: Game created
@@ -108,6 +126,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
+              examples:
+                createdGame:
+                  $ref: '#/components/examples/CreatedGame'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -129,29 +150,34 @@ paths:
             type: integer
             minimum: 0
             default: 0
+            example: 0
         - name: size
           in: query
           schema:
             type: integer
             minimum: 1
             default: 20
+            example: 20
         - name: sort
           in: query
           description: Spring Data sort in property,direction form.
           schema:
             type: string
             default: createdAt,DESC
+            example: createdAt,DESC
         - name: status
           in: query
           required: false
           schema:
             type: string
+            example: PENDING
         - name: minBoardSize
           in: query
           required: false
           schema:
             type: integer
             minimum: 1
+            example: 10
         - name: createdAfter
           in: query
           required: false
@@ -159,6 +185,7 @@ paths:
             type: string
             pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?$'
             description: Offset-less ISO-8601 local date-time.
+            example: '2026-07-25T20:00:00'
       responses:
         '200':
           description: Page of games
@@ -166,6 +193,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageResponse'
+              examples:
+                firstPage:
+                  $ref: '#/components/examples/PageResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -188,6 +218,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
+              examples:
+                pendingGame:
+                  $ref: '#/components/examples/Game'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -238,6 +271,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PlaceShip'
+            examples:
+              destroyerAtOrigin:
+                $ref: '#/components/examples/PlaceShip'
       responses:
         '201':
           description: Ship placed
@@ -248,6 +284,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
+              examples:
+                gameWithShip:
+                  $ref: '#/components/examples/Game'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -277,6 +316,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Attack'
+            examples:
+              attackOrigin:
+                $ref: '#/components/examples/Attack'
       responses:
         '201':
           description: Attack recorded
@@ -287,6 +329,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
+              examples:
+                gameWithAttack:
+                  $ref: '#/components/examples/Game'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -317,12 +362,14 @@ components:
         type: integer
         format: int64
         minimum: 1
+        example: 42
   headers:
     Location:
       description: URI of the affected game.
       schema:
         type: string
         format: uri-reference
+      example: /api/games/42
   responses:
     BadRequest:
       description: Invalid request or validation failure
@@ -330,45 +377,174 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            validationFailure:
+              $ref: '#/components/examples/BadRequestError'
     Unauthorized:
       description: Missing or invalid credentials
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            invalidCredentials:
+              $ref: '#/components/examples/UnauthorizedError'
     Forbidden:
       description: Authenticated principal lacks the required role
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            missingRole:
+              $ref: '#/components/examples/ForbiddenError'
     NotFound:
       description: Game not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            gameNotFound:
+              $ref: '#/components/examples/NotFoundError'
     Conflict:
       description: Request conflicts with the current game state
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            invalidGameState:
+              $ref: '#/components/examples/ConflictError'
     TooManyRequests:
       description: Request rate limit exceeded
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            rateLimitExceeded:
+              $ref: '#/components/examples/TooManyRequestsError'
     InternalError:
       description: Unexpected server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          examples:
+            unexpectedFailure:
+              $ref: '#/components/examples/InternalError'
+  examples:
+    AuthRequest:
+      value:
+        username: ada-player
+        password: illustrative-password-not-a-secret
+    TokenRefreshRequest:
+      value:
+        refreshToken: illustrative-refresh-token-not-functional
+    TokenResponse:
+      value:
+        accessToken: illustrative-access-token-not-functional
+        refreshToken: illustrative-refresh-token-not-functional
+        expiresIn: 900000
+    CreateGame:
+      value:
+        boardSize: 10
+    PlaceShip:
+      value:
+        shipName: Destroyer
+        length: 2
+        startX: 0
+        startY: 0
+        isHorizontal: true
+    Attack:
+      value:
+        x: 0
+        y: 0
+    Game:
+      value:
+        id: 42
+        boardSize: 10
+        status: IN_PROGRESS
+        createdAt: 2026-07-25T20:00:00
+        ships:
+          - id: 7
+            shipName: Destroyer
+            length: 2
+            startX: 0
+            startY: 0
+            isHorizontal: true
+            sunk: false
+        attacks:
+          - id: 9
+            x: 0
+            y: 0
+            hit: true
+            createdAt: 2026-07-25T20:05:00
+    CreatedGame:
+      value:
+        id: 42
+        boardSize: 10
+        status: PENDING
+        createdAt: 2026-07-25T20:00:00
+        ships: []
+        attacks: []
+    PageResponse:
+      value:
+        content:
+          - id: 42
+            boardSize: 10
+            status: IN_PROGRESS
+            createdAt: 2026-07-25T20:00:00
+            ships: []
+            attacks: []
+        page: 0
+        size: 20
+        totalElements: 1
+        totalPages: 1
+        first: true
+        last: true
+    BadRequestError:
+      value:
+        error: VALIDATION_ERROR
+        message: boardSize must be between 5 and 20
+        timestamp: '2026-07-25T20:00:00Z'
+    UnauthorizedError:
+      value:
+        error: UNAUTHORIZED
+        message: Authentication is required
+        timestamp: '2026-07-25T20:00:00Z'
+    ForbiddenError:
+      value:
+        error: FORBIDDEN
+        message: The PLAYER role is required
+        timestamp: '2026-07-25T20:00:00Z'
+    NotFoundError:
+      value:
+        error: NOT_FOUND
+        message: Game with id 42 was not found
+        timestamp: '2026-07-25T20:00:00Z'
+    ConflictError:
+      value:
+        error: CONFLICT
+        message: Ships must be placed before attacking
+        timestamp: '2026-07-25T20:00:00Z'
+    TooManyRequestsError:
+      value:
+        error: TOO_MANY_REQUESTS
+        message: Too many requests; retry later
+        timestamp: '2026-07-25T20:00:00Z'
+    InternalError:
+      value:
+        error: INTERNAL_ERROR
+        message: An unexpected error occurred
+        timestamp: '2026-07-25T20:00:00Z'
   schemas:
     AuthRequest:
       type: object
+      example:
+        username: ada-player
+        password: illustrative-password-not-a-secret
       additionalProperties: true
       required: [username, password]
       properties:
@@ -383,6 +559,8 @@ components:
           format: password
     TokenRefreshRequest:
       type: object
+      example:
+        refreshToken: illustrative-refresh-token-not-functional
       additionalProperties: true
       required: [refreshToken]
       properties:
@@ -392,6 +570,10 @@ components:
           pattern: '.*\S.*'
     TokenResponse:
       type: object
+      example:
+        accessToken: illustrative-access-token-not-functional
+        refreshToken: illustrative-refresh-token-not-functional
+        expiresIn: 900000
       additionalProperties: false
       required: [accessToken, refreshToken, expiresIn]
       properties:
@@ -404,6 +586,8 @@ components:
           format: int64
     CreateGame:
       type: object
+      example:
+        boardSize: 10
       additionalProperties: true
       required: [boardSize]
       properties:
@@ -414,6 +598,12 @@ components:
           maximum: 20
     PlaceShip:
       type: object
+      example:
+        shipName: Destroyer
+        length: 2
+        startX: 0
+        startY: 0
+        isHorizontal: true
       additionalProperties: true
       required: [shipName, length, startX, startY, isHorizontal]
       properties:
@@ -437,6 +627,9 @@ components:
           type: boolean
     Attack:
       type: object
+      example:
+        x: 0
+        y: 0
       additionalProperties: true
       required: [x, y]
       properties:
@@ -450,6 +643,13 @@ components:
           minimum: 0
     Game:
       type: object
+      example:
+        id: 42
+        boardSize: 10
+        status: IN_PROGRESS
+        createdAt: 2026-07-25T20:00:00
+        ships: []
+        attacks: []
       additionalProperties: false
       required: [id, boardSize, status, createdAt, ships, attacks]
       properties:
@@ -474,6 +674,14 @@ components:
             $ref: '#/components/schemas/GameAttack'
     Ship:
       type: object
+      example:
+        id: 7
+        shipName: Destroyer
+        length: 2
+        startX: 0
+        startY: 0
+        isHorizontal: true
+        sunk: false
       additionalProperties: false
       required: [id, shipName, length, startX, startY, isHorizontal, sunk]
       properties:
@@ -497,6 +705,12 @@ components:
           type: boolean
     GameAttack:
       type: object
+      example:
+        id: 9
+        x: 0
+        y: 0
+        hit: true
+        createdAt: 2026-07-25T20:05:00
       additionalProperties: false
       required: [id, x, y, hit, createdAt]
       properties:
@@ -516,6 +730,14 @@ components:
           description: Offset-less ISO-8601 local date-time.
     PageResponse:
       type: object
+      example:
+        content: []
+        page: 0
+        size: 20
+        totalElements: 0
+        totalPages: 0
+        first: true
+        last: true
       additionalProperties: false
       required: [content, page, size, totalElements, totalPages, first, last]
       properties:
@@ -545,6 +767,10 @@ components:
           type: boolean
     Error:
       type: object
+      example:
+        error: VALIDATION_ERROR
+        message: boardSize must be between 5 and 20
+        timestamp: '2026-07-25T20:00:00Z'
       additionalProperties: false
       required: [error, message, timestamp]
       properties:

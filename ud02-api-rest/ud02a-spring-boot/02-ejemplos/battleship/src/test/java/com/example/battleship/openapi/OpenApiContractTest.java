@@ -7,11 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.atlassian.oai.validator.report.MessageResolver;
+import com.atlassian.oai.validator.schema.SchemaValidator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,7 +32,9 @@ class OpenApiContractTest {
     private static final String OFFSETLESS_LOCAL_DATE_TIME_PATTERN =
             "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?$";
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static OpenAPI contract;
+    private static SchemaValidator schemaValidator;
 
     @BeforeAll
     static void parseCanonicalContract() {
@@ -35,6 +45,7 @@ class OpenApiContractTest {
         assertThat(result.getMessages()).as("OpenAPI parser messages").isEmpty();
         contract = result.getOpenAPI();
         assertThat(contract).isNotNull();
+        schemaValidator = new SchemaValidator(contract, new MessageResolver());
     }
 
     @Test
@@ -106,6 +117,107 @@ class OpenApiContractTest {
         var cancel = operation("/api/games/{id}", PathItem.HttpMethod.DELETE);
         assertThat(cancel.getResponses()).containsKey("204");
         assertThat(cancel.getResponses().get("204").getContent()).isNull();
+    }
+
+    @Test
+    void providesRepresentativeExamplesForRequestsAndResponses() {
+        List.of("AuthRequest", "TokenRefreshRequest", "CreateGame", "PlaceShip", "Attack")
+                .forEach(name -> assertThat(schema(name).getExample()).as(name + " schema example").isNotNull());
+        List.of("TokenResponse", "Game", "Ship", "GameAttack", "PageResponse", "Error")
+                .forEach(name -> assertThat(schema(name).getExample()).as(name + " schema example").isNotNull());
+
+        assertRequestExample("/auth/register", PathItem.HttpMethod.POST);
+        assertRequestExample("/auth/login", PathItem.HttpMethod.POST);
+        assertRequestExample("/auth/refresh", PathItem.HttpMethod.POST);
+        assertRequestExample("/api/games", PathItem.HttpMethod.POST);
+        assertRequestExample("/api/games/{id}/ships", PathItem.HttpMethod.POST);
+        assertRequestExample("/api/games/{id}/attacks", PathItem.HttpMethod.POST);
+
+        assertResponseExample("/auth/login", PathItem.HttpMethod.POST, "200");
+        assertResponseExample("/auth/refresh", PathItem.HttpMethod.POST, "200");
+        assertResponseExample("/api/games", PathItem.HttpMethod.POST, "201");
+        assertResponseExample("/api/games", PathItem.HttpMethod.GET, "200");
+        assertResponseExample("/api/games/{id}", PathItem.HttpMethod.GET, "200");
+        assertResponseExample("/api/games/{id}/ships", PathItem.HttpMethod.POST, "201");
+        assertResponseExample("/api/games/{id}/attacks", PathItem.HttpMethod.POST, "201");
+
+        contract.getComponents().getResponses().forEach((name, response) ->
+                assertThat(response.getContent().get("application/json").getExamples())
+                        .as(name + " error example").isNotEmpty());
+        Header location = contract.getComponents().getHeaders().get("Location");
+        assertThat(location.getExample())
+                .isEqualTo("/api/games/42");
+        validateHeaderExamples("component header Location", location);
+    }
+
+    @Test
+    void createGameResponseExampleReflectsTheCreatedGameState() {
+        Example example = contract.getComponents().getExamples().get("CreatedGame");
+        JsonNode value = OBJECT_MAPPER.valueToTree(example.getValue());
+
+        assertThat(value.path("boardSize").asInt()).isEqualTo(10);
+        assertThat(value.path("status").asText()).isEqualTo("PENDING");
+        assertThat(value.path("createdAt").asText()).matches(OFFSETLESS_LOCAL_DATE_TIME_PATTERN);
+        assertThat(value.path("ships").isEmpty()).isTrue();
+        assertThat(value.path("attacks").isEmpty()).isTrue();
+    }
+
+    @Test
+    void validatesEveryDocumentedExampleAgainstItsResolvedSchema() {
+        contract.getComponents().getSchemas().forEach((name, schema) ->
+                validateExample("component schema " + name, schema.getExample(), schema));
+        contract.getComponents().getParameters().forEach((name, parameter) -> {
+            Parameter resolved = resolveParameter(parameter);
+            validateParameterExamples("component parameter " + name, resolved);
+        });
+        contract.getComponents().getHeaders().forEach((name, header) ->
+                validateHeaderExamples("component header " + name, header));
+        contract.getComponents().getResponses().forEach((name, response) ->
+                validateResponseExamples("component response " + name, resolveResponse(response)));
+
+        contract.getPaths().forEach((path, pathItem) -> {
+            if (pathItem.getParameters() != null) {
+                pathItem.getParameters().forEach(parameter -> {
+                    Parameter resolved = resolveParameter(parameter);
+                    validateParameterExamples(path + " path parameter " + resolved.getName(), resolved);
+                });
+            }
+            pathItem.readOperationsMap().forEach((method, operation) -> {
+                String operationName = method + " " + path;
+                if (operation.getParameters() != null) {
+                    operation.getParameters().forEach(parameter -> {
+                        Parameter resolved = resolveParameter(parameter);
+                        validateParameterExamples(operationName + " parameter " + resolved.getName(), resolved);
+                    });
+                }
+                if (operation.getRequestBody() != null) {
+                    validateContentExamples(operationName + " request", resolveRequestBody(operation.getRequestBody()).getContent());
+                }
+                operation.getResponses().forEach((status, response) ->
+                        validateResponseExamples(operationName + " " + status, resolveResponse(response)));
+            });
+        });
+    }
+
+    @Test
+    void validatesSchemaLevelPaginationParameterExamples() {
+        Operation list = operation("/api/games", PathItem.HttpMethod.GET);
+
+        List.of("page", "size", "sort", "status", "minBoardSize", "createdAfter").forEach(name -> {
+            Parameter parameter = parameter(list, name);
+            assertThat(parameter.getSchema().getExample()).as(name + " schema example").isNotNull();
+            validateExample("GET /api/games parameter " + name + " schema example",
+                    parameter.getSchema().getExample(), parameter.getSchema());
+        });
+    }
+
+    @Test
+    void validatesRegisterTextPlainResponseExampleAgainstItsSchema() {
+        ApiResponse response = resolveResponse(operation("/auth/register", PathItem.HttpMethod.POST)
+                .getResponses().get("201"));
+        var mediaType = response.getContent().get("text/plain");
+
+        validateExample("POST /auth/register 201 text/plain response", mediaType.getExample(), mediaType.getSchema());
     }
 
     @Test
@@ -249,6 +361,85 @@ class OpenApiContractTest {
                 : contract.getComponents().getHeaders().get(location.get$ref().substring(location.get$ref().lastIndexOf('/') + 1))
                         .getSchema();
         assertThat(locationSchema.getFormat()).isEqualTo("uri-reference");
+    }
+
+    private static void assertRequestExample(String path, PathItem.HttpMethod method) {
+        assertThat(operation(path, method).getRequestBody().getContent().get("application/json").getExamples())
+                .as(method + " " + path + " request example").isNotEmpty();
+    }
+
+    private static void assertResponseExample(String path, PathItem.HttpMethod method, String status) {
+        assertThat(operation(path, method).getResponses().get(status).getContent().get("application/json").getExamples())
+                .as(method + " " + path + " " + status + " response example").isNotEmpty();
+    }
+
+    private static void validateResponseExamples(String location, ApiResponse response) {
+        validateContentExamples(location + " response", response.getContent());
+    }
+
+    private static void validateParameterExamples(String location, Parameter parameter) {
+        Schema<?> schema = parameter.getSchema();
+        validateExample(location, parameter.getExample(), schema);
+        if (schema != null) {
+            validateExample(location + " schema example", schema.getExample(), schema);
+        }
+    }
+
+    private static void validateHeaderExamples(String location, Header header) {
+        validateExample(location, header.getExample(), header.getSchema());
+    }
+
+    private static void validateContentExamples(String location, io.swagger.v3.oas.models.media.Content content) {
+        if (content == null) {
+            return;
+        }
+        content.forEach((mediaTypeName, mediaType) -> {
+            validateExample(location + " " + mediaTypeName, mediaType.getExample(), mediaType.getSchema());
+            if (mediaType.getExamples() != null) {
+                mediaType.getExamples().forEach((name, example) ->
+                        validateExample(location + " " + mediaTypeName + " example " + name,
+                                resolveExample(example).getValue(), mediaType.getSchema()));
+            }
+        });
+    }
+
+    private static void validateExample(String location, Object example, Schema<?> schema) {
+        if (example == null || schema == null) {
+            return;
+        }
+        try {
+            String json = example instanceof String string ? string : OBJECT_MAPPER.writeValueAsString(example);
+            var report = schemaValidator.validate(json, schema, location);
+            assertThat(report.hasErrors())
+                    .as(location + " validates against its schema: " + report.getMessages())
+                    .isFalse();
+        } catch (Exception exception) {
+            throw new AssertionError("Could not validate " + location, exception);
+        }
+    }
+
+    private static Example resolveExample(Example example) {
+        return example.get$ref() == null ? example
+                : contract.getComponents().getExamples().get(componentName(example.get$ref()));
+    }
+
+    private static Parameter resolveParameter(Parameter parameter) {
+        return parameter.get$ref() == null ? parameter
+                : contract.getComponents().getParameters().get(componentName(parameter.get$ref()));
+    }
+
+    private static RequestBody resolveRequestBody(RequestBody requestBody) {
+        return requestBody.get$ref() == null ? requestBody
+                : contract.getComponents().getRequestBodies().get(componentName(requestBody.get$ref()));
+    }
+
+    private static ApiResponse resolveResponse(ApiResponse response) {
+        return response.get$ref() == null ? response
+                : contract.getComponents().getResponses().get(componentName(response.get$ref()));
+    }
+
+    private static String componentName(String reference) {
+        return reference.substring(reference.lastIndexOf('/') + 1);
     }
 
     private static void assertResponseStatuses(String path, PathItem.HttpMethod method, String... statuses) {
