@@ -227,7 +227,13 @@ También puedes importar `insomnia-battleship.json`. El script y la colección s
 
 TDD guía el diseño desde ejemplos ejecutables. Cuando varios equipos o clientes dependen de la API, conviene añadir una fuente contractual compartida: una especificación OpenAPI revisada, pruebas de contrato y un flujo SDD que conecte requisito, diseño, tareas y verificación.
 
-El proyecto ya genera documentación OpenAPI desde el código mediante SpringDoc, pero **no tiene todavía un contrato OpenAPI versionado como fuente de verdad ni un proceso SDD implantado**. Esa evolución es posterior; no debe confundirse la interfaz Swagger generada con haber diseñado el contrato primero.
+El proyecto usa el contrato estático y versionado
+[`battleship-v1.yaml`](../02-ejemplos/battleship/src/main/resources/static/api-docs/battleship-v1.yaml)
+como fuente de verdad de sus nueve operaciones. Swagger UI es solo su visor y
+Springdoc generado está deshabilitado para evitar una segunda especificación.
+La traza SDD versionada enlaza requisitos, diseño, tareas y pruebas de
+conformidad; los ejemplos OpenAPI representativos completos siguen siendo una
+tarea pendiente separada.
 
 ## Lista de salida
 

@@ -25,8 +25,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
         this(errorWriter, DEFAULT_MAX_REQUESTS);
     }
 
-    RateLimitFilter(SecurityErrorWriter errorWriter, int maxRequests) {
+    public RateLimitFilter(SecurityErrorWriter errorWriter, int maxRequests) {
         this.errorWriter = errorWriter;
+        if (maxRequests <= 0) {
+            throw new IllegalArgumentException("maxRequests must be positive");
+        }
         this.maxRequests = maxRequests;
     }
 

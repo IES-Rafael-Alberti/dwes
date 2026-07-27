@@ -1,6 +1,6 @@
 # Estado del proyecto — DWES 2026/2027
 
-*Última actualización: 24 julio 2026*
+*Última actualización: 25 julio 2026*
 
 ---
 
@@ -114,9 +114,10 @@
 
 Migración UD3 cerrada: Productos y Gestor de tareas usan Spring Boot 4.0.5 y Java 25. No se mantiene todavía un proyecto comparativo SB3/SB4.
 
-### 2. Documentación ✅ COMPLETADA
+### 2. Limpieza documental histórica ✅ COMPLETADA
 
-Marcas IA, typos, monolitos, V1/V2 y PorVer/ resueltos.
+Marcas IA, typos, monolitos, V1/V2 y PorVer/ resueltos en aquel corte. Esta
+marca no cierra el alcance documental obligatorio vigente de UD2.
 
 ### 3. Ejercicios — completar plantillas ✅ COMPLETADA
 - [x] `02-book-catalog/`: README, rúbrica, RA/CE creados
@@ -125,10 +126,10 @@ Marcas IA, typos, monolitos, V1/V2 y PorVer/ resueltos.
 ### Notas de diseño
 - [x] Battleship: creado recorrido canónico paso a paso alineado con la progresión de UD2a (contrato → TDD → dominio/DTO → servicio → controlador → Flyway/JPA → errores → seguridad → integración).
 - [x] Battleship: corregidos los enlaces relativos de sus ampliaciones y diferenciada la documentación generada por SpringDoc de un futuro contrato OpenAPI/SDD.
-- [x] Battleship: Mockito configurado explícitamente como agente Java mediante `maven-dependency-plugin` y Surefire; la suite vigente ejecuta **51/51 tests verdes en Java 25**.
+- [x] Battleship: Mockito configurado explícitamente como agente Java mediante `maven-dependency-plugin` y Surefire; la suite vigente ejecuta **136/136 tests verdes en Java 25**.
 - [x] Battleship: añadido contrato de solapamiento cruzado con evidencia RED contra una mutación sin validación y GREEN con la implementación existente.
 - [x] Battleship: matriz mínima de acceso demostrada con filtros reales: consultas públicas, `401` sin autenticación, `403` con rol insuficiente, mutaciones de juego para `PLAYER` y cancelación para `ADMIN`.
-- [x] Battleship: endurecidos login, refresh y filtro JWT; hay pruebas bearer reales para `PLAYER`/`ADMIN`, claims inválidos, token malformed/expirado y refresh usado como access. Swagger/API docs y Actuator requieren autenticación; CORS comparte configuración externalizada para `/api/**` y `/auth/**`.
+- [x] Battleship: endurecidos login, refresh y filtro JWT; hay pruebas bearer reales para `PLAYER`/`ADMIN`, claims inválidos, token malformed/expirado y refresh usado como access. El YAML canónico, Swagger UI y su configuración son públicos; `/api-docs` generado exige autenticación y, con bearer válido, devuelve `404` porque está deshabilitado. Actuator requiere autenticación. CORS comparte configuración externalizada para `/api/**` y `/auth/**`.
 
 ### 4. Seguridad — documentación de arquitectura ✅ COMPLETADA
 - [x] Creado `06-seguridad/README.md` con: arquitectura general, componentes clave, CORS, perfiles/propiedades y referencias a docs existentes
@@ -212,10 +213,24 @@ Marcas IA, typos, monolitos, V1/V2 y PorVer/ resueltos.
 ### Fase 17 — Consolidación y publicación incremental (24 julio 2026)
 
 - [x] UD1 cerrada para impartición y confirmada mediante cortes funcionales.
-- [x] UD2 auditada, migrada a Java 25 y endurecida: paginación estable, claves JWT externas, perfiles seguros, H2/Flyway alineados y 51 pruebas verdes.
+- [x] UD2 auditada, migrada a Java 25 y endurecida: paginación estable, claves JWT externas, perfiles seguros, H2/Flyway alineados y 51 pruebas verdes en ese corte.
 - [x] UD3 consolidada en tres cortes: Gestor seguro con Thymeleaf, starter Productos y recorrido documental canónico.
 - [x] UD4 consolidada en dos cortes: starters PHP 8.4 verificables y recorrido documental canónico.
 - [x] UD0 migrada a Java 25: GeoNotes con 15 pruebas, Calc25 con 4 pruebas y wrappers reproducibles.
 - [x] Todos los cortes anteriores se publicaron en `origin/main`; `mkdocs build --strict` continúa terminando correctamente.
 - [x] Incorporada la regla operativa de verificar, confirmar y subir cada unidad funcional relevante antes de cambiar de contexto.
-- [ ] Prioridad siguiente: completar el contrato OpenAPI/SDD de UD2 y cerrar después los pendientes restantes de UD3.
+- [x] Núcleo canónico OpenAPI/SDD de UD2 implementado; la verificación SDD está pendiente de repetirse tras corregir los hallazgos críticos. El alcance documental obligatorio general sigue abierto hasta completar los ejemplos representativos y los demás pendientes de su inventario.
+
+### Fase 18 — Núcleo OpenAPI/SDD de Battleship implementado; verificación pendiente de repetición (25 julio 2026)
+
+Este corte conserva hechos técnicos ya comprobados, pero **no** declara cerrada la
+verificación SDD: debe repetirse después de corregir los hallazgos críticos. Los
+ejemplos representativos de requests/responses también permanecen pendientes en
+`ud02-api-rest/INVENTARIO_REFORMA.md`.
+
+- [x] OpenAPI 3.1 v1 versionado como fuente canónica de las nueve operaciones; las rutas HTTP no se versionan.
+- [x] Swagger UI carga únicamente `/api-docs/battleship-v1.yaml`; la generación de Springdoc está deshabilitada.
+- [x] Autenticación, roles esperados, errores, paginación con campo `page` y cabeceras `Location` están documentados; la conformidad SDD se debe volver a ejecutar antes de declararla verificada. Los ejemplos completos siguen pendientes en el inventario.
+- [x] Matriz Atlassian MockMvc implementada y complementaria a los 27 casos de seguridad/autorización, incluida la lista CORS exacta; pendiente de reejecución de verificación SDD.
+- [x] Traza SDD docente, pública y auditable versionada en `docs/10-sdd-openapi.md`; los artefactos detallados permanecen en el backend SDD privado configurado.
+- [x] Evidencia técnica de la suite vigente: `./mvnw clean verify` con 136/136 pruebas, YAML canónico presente en el JAR sin material de claves y `mkdocs build --strict` correcto. Esta evidencia no sustituye la repetición pendiente de la verificación SDD.

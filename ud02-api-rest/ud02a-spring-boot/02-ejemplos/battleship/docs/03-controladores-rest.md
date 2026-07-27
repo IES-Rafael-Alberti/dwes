@@ -222,175 +222,22 @@ curl "http://localhost:8080/api/games?status=PENDING"
 curl "http://localhost:8080/api/games?status=IN_PROGRESS"
 ```
 
-### 7. Bonus: el método HTTP QUERY
+### 7. Del ejemplo incremental al contrato actual
 
-Cuando los filtros se vuelven complejos, `@RequestParam` se queda corto. Con GET no podés enviar body. Con POST podrías, pero POST no es seguro ni idempotente.
+El código anterior explica cómo nace el controlador, pero la API final ya no se
+deduce de los métodos Java. Su inventario verificable está en
+`src/main/resources/static/api-docs/battleship-v1.yaml` y se publica en
+`/api-docs/battleship-v1.yaml`.
 
-Ahí entra **QUERY** ([RFC 10008](https://www.rfc-editor.org/rfc/rfc10008), junio 2026): un método HTTP **safe** e **idempotent** como GET, pero que admite body como POST. Es el candidato perfecto para consultar el historial de ataques de una partida con filtros combinados.
+El contrato contiene exactamente nueve operaciones: registro, login, refresh,
+crear/listar/obtener/cancelar partida, colocar barco y atacar. **No existe un
+endpoint HTTP `QUERY` ni un `AttackQueryController` en Battleship.** Los filtros
+reales de `GET /api/games` son `status`, `minBoardSize` y `createdAfter`, además
+de `page`, `size` y `sort`.
 
-#### Caso real en Battleship: historial de ataques
-
-Hoy, `GET /api/games/{id}` devuelve la partida con todos sus ataques. Si querés filtrar (solo hits, por rango de fechas, paginado), necesitarías algo como:
-
-```
-GET /api/games/1/attacks?hit=true&dateFrom=2025-01-01&dateTo=2025-06-01&page=0&size=20&sort=desc
-```
-
-Esto es feo, frágil, y no escala a filtros anidados. Con QUERY:
-
-```
-QUERY /api/games/1/attacks HTTP/1.1
-Content-Type: application/json
-
-{
-  "hit": true,
-  "dateFrom": "2025-01-01",
-  "dateTo": "2025-06-01",
-  "page": 0,
-  "size": 20,
-  "sort": "desc"
-}
-```
-
-#### Implementación
-
-El problema: Spring MVC no soporta QUERY de serie — `RequestMethod` es un enum sin ese valor. La solución es `@RequestMapping` sin restricción de verbo y validación manual:
-
-```java
-@RestController
-@RequestMapping("/api/games/{gameId}/attacks")
-public class AttackQueryController {
-
-    private final AttackRepository attackRepository;
-
-    public AttackQueryController(AttackRepository attackRepository) {
-        this.attackRepository = attackRepository;
-    }
-
-    @RequestMapping
-    public ResponseEntity<?> queryAttacks(HttpServletRequest request,
-                                           @PathVariable Long gameId,
-                                           @RequestBody(required = false) AttackQueryDTO query) {
-        if (!"QUERY".equals(request.getMethod())) {
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
-        }
-
-        if (query == null) {
-            return ResponseEntity.ok(attackRepository.findByGameId(gameId));
-        }
-
-        var all = attackRepository.findByGameId(gameId);
-        var result = all.stream()
-                .filter(a -> query.hit() == null || a.isHit() == query.hit())
-                .filter(a -> query.dateFrom() == null
-                        || !a.getCreatedAt().isBefore(query.dateFrom()))
-                .filter(a -> query.dateTo() == null
-                        || !a.getCreatedAt().isAfter(query.dateTo()))
-                .toList();
-
-        return ResponseEntity.ok(result);
-    }
-}
-```
-
-DTO:
-
-```java
-package com.example.battleship.dto;
-
-import java.time.LocalDateTime;
-
-public record AttackQueryDTO(
-    Boolean hit,
-    LocalDateTime dateFrom,
-    LocalDateTime dateTo,
-    Integer page,
-    Integer size,
-    String sort
-) {}
-```
-
-Repositorio necesario (si no existe):
-
-```java
-package com.example.battleship.repository;
-
-import com.example.battleship.domain.Attack;
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-
-public interface AttackRepository extends JpaRepository<Attack, Long> {
-    List<Attack> findByGameId(Long gameId);
-}
-```
-
-> **¿Por qué funciona `@RequestMapping` sin `method`?** Al no especificar método, el mapping acepta cualquier verbo HTTP (GET, POST, QUERY...). Dentro validamos que sea QUERY y devolvemos 405 en caso contrario.
-
-Probar:
-
-```bash
-curl -X QUERY http://localhost:8080/api/games/1/attacks \
-  -H "Content-Type: application/json" \
-  -d '{"hit": true, "dateFrom": "2025-01-01T00:00:00"}'
-```
-
-```bash
-# GET a la misma URL — 405 Method Not Allowed
-curl -i -X GET http://localhost:8080/api/games/1/attacks
-```
-
-Para depurar:
-
-```yaml
-logging:
-  level:
-    org.springframework.web: TRACE
-```
-
-#### Consumir QUERY desde JavaScript (Fetch API)
-
-El verbo QUERY se envía como cualquier otro método con `fetch`. Importante: no es un método "simple" (CORS), por lo que el navegador hará una **preflight request** con `OPTIONS`. El servidor debe responder con `Access-Control-Allow-Methods: QUERY`.
-
-```javascript
-async function queryAttacks(gameId, filters) {
-    const response = await fetch(`/api/games/${gameId}/attacks`, {
-        method: 'QUERY',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(filters)
-    });
-
-    if (!response.ok) {
-        throw new Error(`QUERY failed: ${response.status}`);
-    }
-
-    return response.json();
-}
-
-// Uso
-const attacks = await queryAttacks(1, {
-    hit: true,
-    dateFrom: '2025-01-01T00:00:00',
-    dateTo: '2025-06-01T00:00:00',
-    sort: 'desc'
-});
-```
-
-Si el backend añade CORS (lo veremos en la sesión 7):
-
-```java
-@Configuration
-public class WebConfig implements WebMvcConfigurer {
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "QUERY"); // ← incluir QUERY
-    }
-}
-```
-
-> **Nota**: QUERY está registrado en el IANA HTTP Method Registry desde RFC 10008 (2026). Es un estándar reciente; el soporte depende del servidor (Tomcat lo acepta sin configuración adicional, y `fetch()` admite cualquier string como `method`). En clase lo vemos como concepto avanzado; para el proyecto usamos GET + `@RequestParam` por compatibilidad.
+Esta separación es deliberada: el documento versionado fija rutas, payloads,
+respuestas y seguridad; `OpenApiContractTest` impide añadir o retirar una
+operación por accidente.
 
 ### 8. Probar con la aplicación real
 
@@ -399,8 +246,12 @@ mvn spring-boot:run
 ```
 
 ```bash
-# Crear partida
-curl -i -X POST http://localhost:8080/api/games
+# Crear partida: requiere un access token PLAYER y un body válido
+curl -i -X POST http://localhost:8080/api/games \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"boardSize": 10}'
+# Respuesta esperada: 201 Created, cabecera Location y la partida en JSON
 
 # Obtenerla por id (usar el id que devuelva el POST)
 curl http://localhost:8080/api/games/1
@@ -417,7 +268,7 @@ curl -i http://localhost:8080/api/games/999
 | `@GetMapping`, `@PostMapping` | Métodos `getGame`, `createGame` |
 | `@PathVariable` | `{id}` en la URL |
 | `@RequestParam` | `?status=PENDING` en query string |
-| Método HTTP QUERY | Historial de ataques con filtros (`QUERY /api/games/{id}/attacks`) |
+| Contrato OpenAPI versionado | Inventario exacto de las nueve operaciones |
 | `ResponseEntity` | `ok()`, `created()`, `notFound()` |
 | `@WebMvcTest` + `@MockitoBean` | Test del controlador |
 | `jsonPath()` | Verificar campos del JSON de respuesta |
@@ -435,6 +286,6 @@ Sobre tu proyecto **mini-tasks** de la sesión anterior:
    - `POST /api/tasks` — crear tarea (body: `{"title": "..."}`)
 3. Escribe los tests con `@WebMvcTest` mockeando el repositorio
 
-Detalles en `../../03-ejercicios/01-mini-tasks/`.
+Detalles en el [README de Mini Tasks](../../../03-ejercicios/01-mini-tasks/README.md).
 
 > **Pista**: Para `GET /api/tasks` usá `gameRepository.findAll()` y devolvé la lista directamente. Spring Boot la serializa a JSON automáticamente.

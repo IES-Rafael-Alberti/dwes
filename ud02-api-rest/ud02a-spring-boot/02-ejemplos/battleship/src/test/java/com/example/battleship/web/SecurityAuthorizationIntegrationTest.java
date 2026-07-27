@@ -231,13 +231,25 @@ class SecurityAuthorizationIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    void authCorsPreflight_acceptsConfiguredFrontend() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"GET", "POST", "DELETE", "OPTIONS"})
+    void corsPreflight_acceptsEveryCanonicalMethod(String method) throws Exception {
         mockMvc.perform(request(org.springframework.http.HttpMethod.OPTIONS, "/auth/login")
                         .header("Origin", "http://localhost:5173")
-                        .header("Access-Control-Request-Method", "POST"))
+                        .header("Access-Control-Request-Method", method))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"PUT", "QUERY"})
+    void corsPreflight_rejectsLegacyNonContractMethods(String method) throws Exception {
+        mockMvc.perform(request(org.springframework.http.HttpMethod.OPTIONS, "/api/games")
+                        .header("Origin", "http://localhost:5173")
+                        .header("Access-Control-Request-Method", method))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist("Access-Control-Allow-Methods"));
     }
 
     private String expiredRefreshToken() throws Exception {

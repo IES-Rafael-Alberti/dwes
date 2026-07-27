@@ -29,6 +29,20 @@ Esto tiene dos problemas:
 
 La solución: `@ControllerAdvice` — un único punto que captura todas las excepciones y devuelve JSON consistente.
 
+## Contrato de errores vigente
+
+La forma canónica es `Error(error,message,timestamp)` y está definida en
+`src/main/resources/static/api-docs/battleship-v1.yaml`, no generada desde las
+anotaciones Java. El contrato declara, según la operación, `400` para entrada o
+validación inválida, `401` para credenciales ausentes o inválidas, `403` para
+rol insuficiente, `404` para partida inexistente, `409` para conflicto de
+estado, `429` para rate limiting y `500` para un fallo inesperado.
+
+`OpenApiConformanceIntegrationTest` valida respuestas MockMvc reales contra
+esas variantes, incluidas muestras de `400`, `404` y `409`. Los tests de
+conformidad comprueban la forma HTTP; los tests específicos del handler y de
+seguridad siguen comprobando mensajes y ramas concretas.
+
 ## Code-along: manejo centralizado de errores
 
 ### 1. TDD: test del error handler

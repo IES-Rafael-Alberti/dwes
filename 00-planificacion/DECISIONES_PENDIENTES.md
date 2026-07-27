@@ -104,7 +104,7 @@ Del inventario:
 | Material heredado | Reorganizado en la nueva estructura; cualquier limpieza restante se gestiona por unidad |
 | Formatos fuente | Markdown es el formato publicable; los fuentes únicos se conservan solo cuando aportan valor |
 
-## 9. Battleship: reconstrucción con TDD y SDD (✅ TDD Y GUÍA; SDD PENDIENTE)
+## 9. Battleship: reconstrucción con TDD y SDD (✅ IMPLEMENTADO; VERIFICACIÓN SDD PENDIENTE)
 
 - El proyecto Battleship original era un experimento con IA que no funcionó.
 - **Reconstruido** con TDD + Flyway + SB4 desde cero en `ud02a-spring-boot/02-ejemplos/battleship/`.
@@ -115,7 +115,7 @@ Del inventario:
 - **Demo**: script `demo.sh`, colección Insomnia `insomnia-battleship.json`.
 - **Documentación**: recorrido incremental canónico creado en `01-documentacion/08-battleship-caso-practico.md`; las guías extensas del proyecto quedan como ampliaciones por sesión y sus enlaces MkDocs están corregidos.
 - **Seguridad demostrada**: tests de integración con filtros activos cubren consultas públicas, `401` sin autenticación, `403` con rol sintético insuficiente y bearer tokens reales firmados por `JwtService` para acceso `PLAYER` y `ADMIN`. También cubren credenciales incorrectas, refresh inválido/expirado, refresh usado como access y claims de roles inválidos. CSRF se deshabilita porque la API es stateless y usa bearer tokens, no cookies de sesión. Swagger/API docs y Actuator requieren token; CORS cubre API y autenticación con orígenes externalizados.
-- **Pendiente**: fase SDD (especificación OpenAPI versionada como fuente de verdad y pruebas de contrato). SpringDoc genera actualmente una interfaz OpenAPI desde el código, pero eso no equivale a contrato-first.
+- **SDD/OpenAPI**: contrato estático OpenAPI 3.1 versionado como fuente de verdad, pruebas de conformidad y traza versionada implementados. Springdoc generado está deshabilitado y Swagger UI carga únicamente el YAML canónico. Quedan pendientes la repetición formal de la verificación SDD y los ejemplos representativos completos.
 
 ## 10. Proyectos grupales
 

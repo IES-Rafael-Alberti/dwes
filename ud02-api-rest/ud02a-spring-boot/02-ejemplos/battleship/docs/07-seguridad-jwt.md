@@ -120,7 +120,8 @@ public class User {
 }
 ```
 
-Migración Flyway:
+Migración Flyway final (la creación de usuarios y roles vive en V3; no se
+precarga una cuenta administrativa conocida):
 
 ```sql
 -- V3__create_users.sql
@@ -136,11 +137,6 @@ CREATE TABLE user_roles (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- V4__seed_admin.sql
--- Contraseña: admin123 (BCrypt)
-INSERT INTO users (username, password) VALUES ('admin', '$2a$10$...');
-INSERT INTO user_roles (user_id, role) VALUES (1, 'ROLE_ADMIN');
-INSERT INTO user_roles (user_id, role) VALUES (1, 'ROLE_PLAYER');
 ```
 
 ### 4. JwtService con RS256 y Refresh Tokens
@@ -381,6 +377,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 ### 7. SecurityConfig
 
+El siguiente extracto es la configuración didáctica **del contrato canónico**:
+muestra las rutas finales y limita CORS a los métodos que esas operaciones
+utilizan. No pretende reproducir extensiones operativas ajenas al contrato; se
+omiten además los beans auxiliares de autenticación para mantener el foco:
+
 ```java
 package com.example.battleship.config;
 
@@ -410,61 +411,53 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtAuthFilter jwtAuthFilter,
+            RateLimitFilter rateLimitFilter,
+            SecurityErrorWriter errorWriter,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                errorWriter.write(response, 401, "UNAUTHORIZED", "Authentication required"))
+                        .accessDeniedHandler((request, response, exception) ->
+                                errorWriter.write(response, 403, "FORBIDDEN", "Insufficient permissions")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/games").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/games/*").permitAll()
+                        .requestMatchers(
+                                "/api-docs/battleship-v1.yaml",
+                                "/api-docs/swagger-config",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/games", "/api/games/*").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider(null, null))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, JwtAuthFilter.class)
                 .build();
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://tufrontend.com"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "QUERY"));
+        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Location"));
         config.setMaxAge(3600L);
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/auth/**", config);
         return source;
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider(
-            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
 ```
@@ -472,9 +465,9 @@ public class SecurityConfig {
 Señalar:
 
 - `@EnableMethodSecurity` — permite usar `@PreAuthorize` en los controladores
-- **CORS restrictivo**: solo el frontend especificado, métodos explícitos (QUERY incluido)
+- **CORS restrictivo**: orígenes externalizados y lista final exacta `GET`, `POST`, `DELETE`, `OPTIONS`, compartida por `/api/**` y `/auth/**`; no se anuncian métodos heredados ajenos al contrato
 - **Stateless sessions**: no hay sesión HTTP, cada request lleva su token
-- **Rutas públicas**: `/auth/**` (login, register), `GET /api/games` (lectura pública)
+- **Rutas públicas**: autenticación, lecturas de partidas y contrato/UI canónicos; `/api-docs` generado no forma parte de ellas
 
 ### 8. AuthController con refresh
 
@@ -677,20 +670,51 @@ La configuración final aplica esta matriz:
 
 La API mantiene `SessionCreationPolicy.STATELESS` y se autentica mediante un bearer token enviado en cada petición, no mediante una cookie de sesión. Por eso se deshabilita CSRF en este caso concreto. Esa decisión NO debe copiarse a una aplicación MVC con formularios o autenticación basada en cookies.
 
-Swagger UI, `/api-docs` y los endpoints de Actuator no son públicos en la configuración base: requieren autenticación. El perfil `dev` puede exponer más información de Actuator, por lo que no debe activarse en producción.
+El contrato canónico `/api-docs/battleship-v1.yaml`, la configuración del visor
+y Swagger UI son públicos para poder consultar la API. Swagger UI carga solo
+ese YAML. El endpoint generado `/api-docs` no es público: una petición anónima
+recibe `401` y una autenticada recibe `404` porque la generación está
+deshabilitada. No es documentación alternativa. Los endpoints de
+Actuator continúan requiriendo autenticación; el perfil `dev` puede exponer más
+información y no debe activarse en producción.
+
+La seguridad del contrato y la autorización tienen responsabilidades
+distintas. OpenAPI declara `security: []` para register, login, refresh, list y
+get; create/place/attack declaran bearer `PLAYER` y cancel bearer `ADMIN` en su
+descripción. `OpenApiConformanceIntegrationTest` prueba interacciones y errores
+`401`/`403` contra el YAML, mientras que
+`SecurityAuthorizationIntegrationTest` conserva la matriz detallada de roles
+y el uso de un access token emitido por login. OpenAPI por sí solo no puede
+demostrar el contenido de los claims.
 
 CORS se aplica tanto a `/api/**` como a `/auth/**`. El origen se configura con `BATTLESHIP_CORS_ALLOWED_ORIGINS` y usa `http://localhost:5173` únicamente como valor local por defecto; no hay un origen de producción fijado en el código.
 
 ### 11. Rate limiting (sencillo)
 
-Añadimos un filtro simple de rate limiting por IP. Para algo más robusto, usaríamos Bucket4j o Resilience4j.
+El filtro didáctico limita por IP con la propiedad
+`app.rate-limit.max-requests`; su valor por defecto es **100** peticiones por
+ventana de 60 segundos y debe ser positivo. Por ejemplo, se puede ajustar por
+entorno sin cambiar el código:
+
+```yaml
+app:
+  rate-limit:
+    max-requests: ${BATTLESHIP_RATE_LIMIT_MAX_REQUESTS:100}
+```
+
+La suite de conformidad usa el override aislado `1000` para no agotar el límite
+durante su matriz amplia; no cambia el valor de ejecución normal. Este filtro es
+un recurso instructivo, no un limitador de producción con precisión de
+concurrencia: la lista por IP no ofrece una cuenta atómica ni coordinación entre
+instancias. Para producción se debe usar un componente diseñado para ello, como
+Bucket4j respaldado por un almacén compartido o un límite en el gateway.
 
 ```java
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final Map<String, List<Instant>> requests = new ConcurrentHashMap<>();
-    private static final int MAX_REQUESTS = 100;
+    private final int maxRequests;
     private static final long WINDOW_MS = 60_000; // 1 minuto
 
     @Override
@@ -704,7 +728,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         timestamps.removeIf(t -> t.isBefore(now.minusMillis(WINDOW_MS)));
         timestamps.add(now);
 
-        if (timestamps.size() > MAX_REQUESTS) {
+        if (timestamps.size() > maxRequests) {
             response.setStatus(429);
             response.getWriter().write("{\"error\": \"Too Many Requests\"}");
             return;
@@ -715,9 +739,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
 }
 ```
 
-Registrar en `SecurityConfig`:
+Registrar y configurar en `SecurityConfig`:
 
 ```java
+@Bean
+RateLimitFilter rateLimitFilter(
+        SecurityErrorWriter errorWriter,
+        @Value("${app.rate-limit.max-requests:100}") int maxRequests) {
+    return new RateLimitFilter(errorWriter, maxRequests);
+}
+
 .addFilterBefore(rateLimitFilter, JwtAuthFilter.class)
 ```
 

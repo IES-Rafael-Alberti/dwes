@@ -38,7 +38,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - La introducción mezcla starters, Java 21 y dependencias anteriores con el baseline Spring Boot 4/Java 25.
 - La secuencia duplica introducción y controladores, y sitúa funcionamiento interno demasiado tarde.
 - La página pública de UD2a no enlaza recorrido, RA/CE, seguridad, proyecto canónico ni criterio de cierre.
-- No existe un contrato OpenAPI versionado ni pruebas de conformidad; SpringDoc generado desde código no equivale a SDD contract-first.
+- Battleship dispone de un contrato OpenAPI 3.1 versionado y canónico; Springdoc generado está deshabilitado y Swagger UI carga únicamente ese recurso.
 
 ### Evidencia de ejecución
 
@@ -47,7 +47,9 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - El 24 de julio de 2026, `./mvnw clean verify` y el build Docker con Java 25 ejecutaron 50 pruebas verdes. La inspección del JAR no encontró `keys/`, PEM ni almacenes de claves, y la exportación de la imagen no encontró material de claves bajo `/app`.
 - H2 queda fijado en 2.3.232, última versión que la versión de Flyway utilizada declara verificada; las migraciones pasan sin advertencia de compatibilidad.
 - `Game.active` usa `@Builder.Default` y una prueba directa confirma que el builder conserva `true` antes de persistir.
-- Tras ambos ajustes, `./mvnw clean verify` ejecuta 51 pruebas verdes con Java 25, sin las advertencias de H2/Flyway ni Lombok.
+- En ese corte del 24 de julio, `./mvnw clean verify` ejecutó 51 pruebas verdes con Java 25, sin las advertencias de H2/Flyway ni Lombok.
+- El 25 de julio de 2026, la suite vigente `./mvnw clean verify` ejecutó **136 pruebas verdes**: estructura/publicación del contrato, conformidad MockMvc de las nueve operaciones y errores representativos, y **27 casos** de seguridad/autorización, incluida la lista CORS exacta. El JAR contiene `BOOT-INF/classes/static/api-docs/battleship-v1.yaml` y no contiene entradas de claves ni marcadores PEM. `mkdocs build --strict` terminó correctamente.
+- La regresión de token emitido por login se integra deliberadamente en `SecurityAuthorizationIntegrationTest`: prueba el recorrido real login → token → solicitud protegida dentro de la matriz de roles, evitando un fixture duplicado en un `LoginTokenIntegrationTest` aislado.
 
 ### Rutas opcionales
 
@@ -62,7 +64,8 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - Ruta canónica Spring Boot 4/Java 25 coherente y enlazada.
 - Battleship reproducible, sin credenciales conocidas ni claves empaquetadas.
 - Tests de dominio, HTTP, persistencia y seguridad verificados.
-- OpenAPI versionado con autenticación, errores y ejemplos.
+- OpenAPI versionado con autenticación y errores; los ejemplos representativos
+  de requests/responses permanecen como una tarea separada hasta completarlos.
 - Flujo SDD trazable desde requisitos hasta pruebas de conformidad.
 - Seguridad moderna con 401/403, ownership/BOLA, CORS, CSRF, JWT y gestión de claves justificadas.
 - Matriz RA/CE a-g/evidencias para la unidad y sus ejercicios.
@@ -95,14 +98,15 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [ ] Reordenar y consolidar la documentación sin duplicados.
 - [ ] Completar README, página pública, RA/CE y evaluación.
 - [ ] Verificar Battleship desde wrapper, perfiles y base limpia.
-- [ ] Convertir seguridad en un contrato canónico y probado.
+- [x] Convertir la seguridad HTTP en un contrato canónico y probado; la autorización por claims conserva su suite específica de roles.
 
 ### P2 - SDD y contrato
 
-- [ ] Diseñar y versionar OpenAPI como fuente de verdad.
-- [ ] Añadir autenticación, autorización, errores y ejemplos al contrato.
-- [ ] Verificar conformidad entre contrato e implementación.
-- [ ] Documentar requisitos, decisiones, tareas y evidencias SDD.
+- [x] Diseñar y versionar OpenAPI 3.1 como fuente de verdad en `static/api-docs/battleship-v1.yaml`.
+- [x] Añadir autenticación, roles esperados, errores y cabeceras al contrato.
+- [ ] Completar ejemplos representativos de requests/responses; por ahora solo está probado el ejemplo textual de registro.
+- [x] Verificar conformidad entre contrato e implementación con parser y Atlassian MockMvc para las nueve operaciones.
+- [x] Documentar requisitos, decisiones, tareas, trazabilidad TDD y comandos de evidencia SDD en la [traza versionada para el alumnado](ud02a-spring-boot/02-ejemplos/battleship/docs/10-sdd-openapi.md).
 
 ### P3 - opcionales y limpieza
 

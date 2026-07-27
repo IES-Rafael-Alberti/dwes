@@ -1,4 +1,5 @@
 target/
 .env
 src/main/resources/keys/
+keys/
 .git

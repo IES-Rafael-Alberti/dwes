@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OpenApiContractTest {
 
     private static final String CONTRACT_RESOURCE = "static/api-docs/battleship-v1.yaml";
+    private static final String OFFSETLESS_LOCAL_DATE_TIME_PATTERN =
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d{1,9})?)?$";
 
     private static OpenAPI contract;
 
@@ -155,6 +157,7 @@ class OpenApiContractTest {
         Parameter createdAfter = parameter(list, "createdAfter");
         assertSchemaType(createdAfter.getSchema(), "string");
         assertThat(createdAfter.getSchema().getFormat()).isNull();
+        assertThat(createdAfter.getSchema().getPattern()).isEqualTo(OFFSETLESS_LOCAL_DATE_TIME_PATTERN);
 
         Schema<?> page = schema("PageResponse");
         assertThat(page.getRequired()).containsExactlyInAnyOrder(

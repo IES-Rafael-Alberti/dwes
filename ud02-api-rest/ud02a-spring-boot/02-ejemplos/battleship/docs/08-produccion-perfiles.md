@@ -141,9 +141,10 @@ El endpoint `GET /api/games` devuelve todas las partidas. Con cientos o miles, e
 
 ```java
 @GetMapping
-public Page<GameResponseDTO> listGames(
-        @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
-    return gameService.listGames(pageable);
+public PageResponse<GameResponseDTO> listGames(
+        @PageableDefault(size = 20, sort = "createdAt",
+                direction = Sort.Direction.DESC) Pageable pageable) {
+    return PageResponse.from(gameService.listGames(pageable));
 }
 ```
 
@@ -168,7 +169,7 @@ curl "http://localhost:8080/api/games?page=0&size=10&sort=createdAt,desc"
 #   "totalElements": 42,
 #   "totalPages": 5,
 #   "size": 10,
-#   "number": 0,
+#   "page": 0,
 #   "first": true,
 #   "last": false
 # }
@@ -178,7 +179,9 @@ Señalar:
 
 - `Pageable` lo resuelve Spring automáticamente desde los query params
 - `@PageableDefault` valores por defecto si no se pasan
-- `Page<T>` incluye metadatos: total, páginas, siguiente/anterior
+- `Page<T>` se mantiene dentro del servicio; el controlador lo transforma en
+  `PageResponse<T>`, que fija el campo JSON canónico `page` y evita exponer
+  directamente la serialización interna de Spring Data
 - El cliente sabe cuántas páginas hay sin hacer múltiples requests
 
 ### 3. Filtros dinámicos con Specifications
@@ -222,16 +225,19 @@ Controlador:
 
 ```java
 @GetMapping
-public Page<GameResponseDTO> listGames(
+public PageResponse<GameResponseDTO> listGames(
         @RequestParam(required = false) String status,
         @RequestParam(required = false) @Min(1) Integer minBoardSize,
-        @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        @RequestParam(required = false) LocalDateTime createdAfter,
+        @PageableDefault(size = 20, sort = "createdAt",
+                direction = Sort.Direction.DESC) Pageable pageable) {
 
     var spec = Specification
             .where(GameSpecifications.hasStatus(status))
-            .and(GameSpecifications.boardSizeAtLeast(minBoardSize != null ? minBoardSize : 0));
+            .and(GameSpecifications.boardSizeAtLeast(minBoardSize != null ? minBoardSize : 0))
+            .and(GameSpecifications.createdAfter(createdAfter));
 
-    return gameService.listGames(spec, pageable);
+    return PageResponse.from(gameService.listGames(spec, pageable));
 }
 ```
 
@@ -257,86 +263,46 @@ Señalar:
 - Se pueden combinar con `AND`/`OR` encadenando `.and()`, `.or()`
 - Spring Data genera la query automáticamente
 
-### 4. OpenAPI / Swagger
+### 4. OpenAPI / Swagger contract-first
 
-Springdoc ya está en el `pom.xml`. Solo falta configurarlo:
+La API no usa el documento generado por Springdoc como fuente de verdad. El
+contrato OpenAPI 3.1 versionado se edita primero en:
+
+```
+src/main/resources/static/api-docs/battleship-v1.yaml
+```
+
+La configuración publica ese mismo recurso y convierte Swagger UI en un visor
+de una única definición:
 
 ```yaml
 springdoc:
   api-docs:
+    enabled: false
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-    try-it-out-enabled: true
-    display-request-duration: true
+    url: /api-docs/battleship-v1.yaml
+    disable-swagger-default-url: true
 ```
 
-Personalizar con `@OpenAPIDefinition`:
-
-```java
-package com.example.battleship.config;
-
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Contact;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.info.License;
-
-@OpenAPIDefinition(
-    info = @Info(
-        title = "Battleship API",
-        version = "1.0.0",
-        description = "API REST para jugar al Hundir la Flota con TDD",
-        contact = @Contact(name = "DWES", email = "dwes@ies.com"),
-        license = @License(name = "MIT")
-    )
-)
-public class OpenApiConfig {}
-```
-
-Añadir seguridad JWT en Swagger:
-
-```java
-package com.example.battleship.config;
-
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class SwaggerSecurityConfig {
-
-    @Bean
-    public OpenAPI customizeOpenAPI() {
-        var schemeName = "bearerAuth";
-        return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList(schemeName))
-                .components(new Components()
-                        .addSecuritySchemes(schemeName, new SecurityScheme()
-                                .name(schemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
-    }
-}
-```
-
-Acceso operativo en la configuración base:
+Comprobarlo con la aplicación arrancada:
 
 ```bash
-curl -H "Authorization: Bearer $ACCESS_TOKEN" \
-  http://localhost:8080/api-docs
+curl http://localhost:8080/api-docs/battleship-v1.yaml
+curl http://localhost:8080/api-docs/swagger-config
+curl -i http://localhost:8080/api-docs # 401: la ruta no es pública
+curl -i -H "Authorization: Bearer $ACCESS_TOKEN" \
+  http://localhost:8080/api-docs # 404: generación deshabilitada
 ```
 
-`/api-docs` y `/swagger-ui.html` requieren autenticación. La especificación puede descargarse con bearer como en el ejemplo. La UI no se presenta como accesible mediante navegación directa: el navegador no añade la cabecera `Authorization` al cargarla. Si se necesita Swagger UI interactiva en clase, debe habilitarse explícitamente solo en un perfil `dev` y permitirse allí en `SecurityFilterChain`; no se abre en la configuración base o de producción.
-
-Señalar:
-
-- `try-it-out-enabled: true` solo resulta operativo si la UI se habilita en el perfil `dev`
-- El esquema bearer describe cómo autenticar llamadas de la API; no hace pública la propia UI
-- Alternativa: `@SecurityRequirement` por endpoint si los roles difieren
+`OpenApiContractTest` valida versión, operaciones, payloads, paginación,
+respuestas y seguridad. `OpenApiPublicationIntegrationTest` prueba la URL y que
+la UI no cargue otra definición. Finalmente,
+`OpenApiConformanceIntegrationTest` aplica el validador Atlassian a peticiones
+y respuestas MockMvc reales de las nueve operaciones. Esta última prueba
+complementa la matriz de roles de `SecurityAuthorizationIntegrationTest`; no
+la sustituye porque OpenAPI no puede imponer claims `PLAYER` o `ADMIN`.
 
 ### 5. Actuator (health y métricas)
 
@@ -469,27 +435,38 @@ Señalar:
 
 En producción se activa con `application-prod.yml` (ya configurado arriba). Para desarrollo:
 
-Generar certificado autofirmado para pruebas:
+Generar un certificado autofirmado para una prueba controlada. Incluso en este
+caso, el PKCS12 se guarda fuera del repositorio y del classpath:
 
 ```bash
+sudo install -d -m 0750 -o "$USER" -g "$USER" /etc/battleship/tls
 keytool -genkeypair -alias battleship \
   -keyalg RSA -keysize 2048 \
-  -storetype PKCS12 -keystore battleship.p12 \
+  -storetype PKCS12 -keystore /etc/battleship/tls/battleship.p12 \
   -validity 365 \
   -dname "CN=Battleship Dev, OU=DWES, O=IES, L=Sevilla, C=ES"
+
+export SSL_KEYSTORE_PATH=file:/etc/battleship/tls/battleship.p12
+export SSL_KEYSTORE_PASSWORD='replace-with-a-strong-password'
 ```
 
-Colocar en `src/main/resources/keys/battleship.p12` y actualizar `application-prod.yml`:
+`application-prod.yml` referencia esa ubicación externa mediante el entorno:
 
 ```yaml
 server:
   port: 8443
   ssl:
     enabled: true
-    key-store: classpath:keys/battleship.p12
-    key-store-password: ${SSL_PASSWORD}
+    key-store: ${SSL_KEYSTORE_PATH}
+    key-store-password: ${SSL_KEYSTORE_PASSWORD}
     key-store-type: PKCS12
 ```
+
+`SSL_KEYSTORE_PATH` puede contener una URL `file:/...` o una ruta accesible del
+sistema de archivos. El PKCS12 de producción **nunca** se coloca en
+`src/main/resources/keys/`, que está excluido del build, ni se referencia con
+`classpath:`. En Docker se monta como secreto o volumen de solo lectura y se
+apunta a la ruta montada.
 
 Toggle HTTPS mediante perfil:
 
@@ -519,21 +496,17 @@ battleship/
 │   ├── application-dev.yml          # Desarrollo (H2, TTL largo, DEBUG)
 │   ├── application-prod.yml         # Producción (PostgreSQL, HTTPS, INFO)
 │   ├── logback-spring.xml           # Logging por perfil
-│   ├── keys/
-│   │   ├── private.pem              # Clave privada JWT (dev)
-│   │   ├── public.pem               # Clave pública JWT (dev)
-│   │   └── battleship.p12           # Certificado SSL (solo prod)
+│   ├── static/api-docs/
+│   │   └── battleship-v1.yaml       # Contrato OpenAPI 3.1 canónico
 │   ├── db/migration/
-│   │   ├── V1__create_games_table.sql
-│   │   ├── V2__seed_games.sql
+│   │   ├── V1__create_game_tables.sql
+│   │   ├── V2__add_soft_delete.sql
 │   │   ├── V3__create_users.sql
-│   │   └── V4__seed_admin.sql
 │   └── static/                      # (opcional)
 ├── src/main/java/.../
 │   ├── config/
 │   │   ├── SecurityConfig.java
 │   │   ├── OpenApiConfig.java
-│   │   ├── SwaggerSecurityConfig.java
 │   │   └── ServerHeaderCustomizer.java
 │   ├── security/
 │   │   ├── JwtService.java
@@ -551,7 +524,6 @@ battleship/
 │   │   ├── GameResponseDTO.java
 │   │   ├── AttackDTO.java
 │   │   ├── PlaceShipDTO.java
-│   │   ├── AttackQueryDTO.java
 │   │   ├── ErrorPayload.java
 │   │   ├── AuthRequest.java
 │   │   ├── TokenResponse.java
@@ -568,7 +540,6 @@ battleship/
 │       ├── GameController.java
 │       ├── AuthController.java
 │       ├── GlobalExceptionHandler.java
-│       └── AttackQueryController.java
 ```
 
 ## Lo que vimos hoy
@@ -578,7 +549,7 @@ battleship/
 | Perfiles Spring | `application-dev.yml`, `application-prod.yml` |
 | Paginación con `Pageable` | `GET /api/games?page=0&size=10&sort=createdAt,desc` |
 | Filtros con `Specification` | `GameSpecifications` + `JpaSpecificationExecutor` |
-| OpenAPI / Swagger | `springdoc`, `swagger-ui.html` |
+| OpenAPI / Swagger | `static/api-docs/battleship-v1.yaml`, `swagger-ui.html` |
 | Actuator | `/actuator/health`, `BattleshipHealthIndicator` |
 | Logging por perfil | `logback-spring.xml` |
 | HTTPS configurable | Certificado + toggle por perfil |
@@ -590,7 +561,7 @@ Para el proyecto que elijas (book-catalog, mini-tasks o gestion-eventos):
 1. Crea perfiles `dev` y `prod`
 2. Añade paginación a los endpoints `GET /api/...`
 3. Añade un filtro por campo (usando `@RequestParam` o `Specification`)
-4. Configura springdoc y verifica `/api-docs` con autenticación; habilita Swagger UI solo en desarrollo si la necesitas
+4. Versiona un contrato OpenAPI propio, configura Swagger UI para cargarlo y deshabilita la generación de Springdoc
 5. Añade actuator con al menos `health` e `info`
 6. Configura logging diferente por perfil
 

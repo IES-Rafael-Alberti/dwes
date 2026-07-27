@@ -14,28 +14,29 @@ Conceptos previos (sesión 8): perfiles Spring, `application-prod.yml`.
 ### 1.1 Dockerfile
 
 ```dockerfile
-# == Etapa 1: compilar ==
-FROM eclipse-temurin:21-jdk-alpine AS builder
+# == Etapa 1: compilar y verificar ==
+FROM maven:3.9.11-eclipse-temurin-25 AS builder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn --batch-mode clean verify
 
 # == Etapa 2: ejecutar ==
-FROM eclipse-temurin:21-jre-alpine
-RUN addgroup -S battleship && adduser -S battleship -G battleship
+FROM eclipse-temurin:25-jre
+RUN groupadd --system battleship && useradd --system --gid battleship battleship
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 USER battleship
-EXPOSE 8080
+EXPOSE 8443
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
 Señalar:
 
-- **Multi-stage**: la imagen final solo tiene el JRE (120 MB vs 350+ MB con JDK)
-- **Usuario no root**: `adduser -S battleship` — seguridad básica
-- El JAR se copia sin capas intermedias de Maven
+- **Build verificado**: Maven 3.9.11 compila con Java 25 y ejecuta `clean verify`
+- **Multi-stage**: Maven y el JDK no pasan a la imagen final; solo queda el JRE 25
+- **Usuario no root**: `useradd --system` crea la identidad de ejecución
+- El patrón coincide con el `Dockerfile` versionado y copia únicamente el JAR verificado
 
 ### 1.2 Perfil Docker en application.yml
 
@@ -120,8 +121,8 @@ SSL_KEYSTORE_PASSWORD=replace-with-a-strong-password
 ```dockerignore
 target/
 .env
-keys/*.pem
-keys/*.p12
+src/main/resources/keys/
+keys/
 .git
 ```
 
@@ -207,7 +208,7 @@ server:
 Esto genera logs como:
 
 ```
-192.168.1.1 - - [07/Jul/2026:10:15:30 +0000] "QUERY /api/games/1/attacks HTTP/1.1" 200 1245 23
+192.168.1.1 - - [07/Jul/2026:10:15:30 +0000] "POST /api/games/1/attacks HTTP/1.1" 201 1245 23
 ```
 
 El último campo (`%D`) es el tiempo de respuesta en milisegundos. Fundamental para detectar endpoints lentos.
@@ -292,9 +293,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 25
           distribution: temurin
-      - run: mvn verify
+      - run: ./mvnw verify
 
   docker:
     needs: test
@@ -325,7 +326,7 @@ Conceptos clave que verán en despliegue:
 | Concepto | Dónde se ve |
 |----------|-------------|
 | Docker multi-stage | `Dockerfile` con dos etapas |
-| Usuario no root | `adduser -S battleship` |
+| Usuario no root | `groupadd --system` + `useradd --system --gid` |
 | docker-compose | App + PostgreSQL con healthcheck |
 | Perfil docker | `application-docker.yml` |
 | HikariCP pool | Conexiones, timeouts, lifetime |

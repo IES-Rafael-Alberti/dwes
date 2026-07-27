@@ -8,12 +8,17 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class RateLimitFilterTest {
 
     @Test
-    void exceededLimitReturnsCanonicalJsonWithoutOneHundredRequests() throws Exception {
+    void rejectsNonPositiveConfiguredMaximumAndReturnsCanonicalJsonAtTheLimit() throws Exception {
         var mapper = JsonMapper.builder().build();
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new RateLimitFilter(new SecurityErrorWriter(mapper), 0))
+                .withMessage("maxRequests must be positive");
         var filter = new RateLimitFilter(new SecurityErrorWriter(mapper), 1);
         var request = new MockHttpServletRequest();
         request.setRemoteAddr("192.0.2.1");

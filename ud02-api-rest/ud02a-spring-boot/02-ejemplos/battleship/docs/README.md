@@ -4,6 +4,70 @@ Estas sesiones amplían el [recorrido incremental canónico](../../../01-documen
 
 El proyecto de referencia actual usa Spring Boot 4.0.5 y Java 25. Algunas sesiones muestran el camino hacia el resultado final y no describen necesariamente un commit intermedio conservado en el repositorio.
 
+## Contrato HTTP canónico y flujo SDD
+
+La fuente de verdad de la API final es
+`src/main/resources/static/api-docs/battleship-v1.yaml`. Al ejecutar la
+aplicación se publica en `/api-docs/battleship-v1.yaml`, y Swagger UI
+(`/swagger-ui.html`) carga **solo** esa URL. La generación de `/api-docs` de
+Springdoc está deshabilitada: Springdoc aporta el visor, pero no genera el
+contrato ni es una segunda fuente de documentación.
+
+El contrato OpenAPI 3.1 conserva las rutas sin prefijo de versión y fija estas
+nueve operaciones:
+
+| Operación | `operationId` | Acceso |
+|---|---|---|
+| `POST /auth/register` | `registerUser` | público |
+| `POST /auth/login` | `loginUser` | público |
+| `POST /auth/refresh` | `refreshToken` | público |
+| `POST /api/games` | `createGame` | bearer `PLAYER` |
+| `GET /api/games` | `listGames` | público |
+| `GET /api/games/{id}` | `getGame` | público |
+| `POST /api/games/{id}/ships` | `placeShip` | bearer `PLAYER` |
+| `POST /api/games/{id}/attacks` | `attackGame` | bearer `PLAYER` |
+| `DELETE /api/games/{id}` | `cancelGame` | bearer `ADMIN` |
+
+Los cinco accesos públicos se expresan como overrides `security: []`. Las
+otras cuatro operaciones declaran `bearerAuth`; la descripción fija el rol
+esperado porque OpenAPI no puede validar claims JWT.
+
+### De requisitos a evidencia
+
+El cambio sigue una estrategia contract-first con SDD y TDD estricto. La
+evidencia reproducible actual demuestra que el token de login autentica una
+operación `PLAYER`, el parser valida OpenAPI 3.1/v1 y las nueve interacciones
+con errores representativos `400`, `401`, `403`, `404` y `409` conforman con
+el mismo YAML.
+
+`OpenApiContractTest` comprueba la estructura,
+`OpenApiPublicationIntegrationTest` la publicación y
+`OpenApiConformanceIntegrationTest` usa el validador Atlassian con MockMvc.
+La respuesta `429` está declarada estructuralmente en las nueve operaciones
+   y `RateLimitFilterTest` ejecuta el rechazo real del filtro; no se afirma que
+   el validador Atlassian fuerce el rate limit durante la matriz de conformidad.
+   Esto complementa, no sustituye,
+   `SecurityAuthorizationIntegrationTest`: sus casos de roles siguen siendo
+   la evidencia autoritativa de autorización.
+
+### Verificación reproducible
+
+Desde la raíz de Battleship:
+
+```bash
+./mvnw clean verify
+jar tf target/battleship-0.0.1-SNAPSHOT.jar \
+  | grep 'BOOT-INF/classes/static/api-docs/battleship-v1.yaml'
+jar tf target/battleship-0.0.1-SNAPSHOT.jar \
+  | grep -Ei '(^|/)(keys?|secrets?)/|\.(pem|p12|jks|key)$' && exit 1 || true
+```
+
+Desde la raíz del repositorio:
+
+```bash
+mkdocs build --strict
+```
+
 ## Organización de las sesiones
 
 Horario semanal: **2h + 2h + 3h** (tres días a la semana).
@@ -28,6 +92,7 @@ Los alumnos avanzan en paralelo con su proyecto (book-catalog, mini-tasks, gesti
 | 07 | Seguridad JWT, RBAC, CORS, rate limiting (`07-seguridad-jwt.md`) | Gestion-eventos seguridad | 3h |
 | 08 | Perfiles, paginación, OpenAPI, actuator, logging (`08-produccion-perfiles.md`) | Despliegue completo | 3h |
 | 09 | Docker, Tomcat tuning, alternativas (`09-docker-tomcat.md`) | Dockerizar proyecto | 2h |
+| 10 | [Trazabilidad SDD del contrato](10-sdd-openapi.md) | Auditoría y recorrido docente | Lectura |
 
 Total: ~24h de clase distribuidas en 3-4 semanas.
 

@@ -42,8 +42,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public RateLimitFilter rateLimitFilter(SecurityErrorWriter errorWriter) {
-        return new RateLimitFilter(errorWriter);
+    public RateLimitFilter rateLimitFilter(
+            SecurityErrorWriter errorWriter,
+            @Value("${app.rate-limit.max-requests:100}") int maxRequests) {
+        return new RateLimitFilter(errorWriter, maxRequests);
     }
 
     @Bean
@@ -83,7 +85,7 @@ public class SecurityConfig {
             @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(allowedOrigins);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "QUERY"));
+        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Location"));
         config.setMaxAge(3600L);
