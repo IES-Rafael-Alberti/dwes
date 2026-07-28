@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TO-DO (API + Frontend puro)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>TO-DO</h1>
+  </header>
+
+  <main class="grid">
+    <section class="panel">
+      <h2>Auth</h2>
+      <form id="authForm">
+        <label>
+          Usuario
+          <input id="authUsername" placeholder="ana" />
+        </label>
+
+        <label>
+          Email
+          <input id="authEmail" type="email" placeholder="ana@example.com" required />
+        </label>
+
+        <label>
+          Password
+          <input id="authPassword" type="password" placeholder="******" required />
+        </label>
+
+        <div class="row">
+          <button type="button" id="registerBtn">Registro</button>
+          <button type="button" id="loginBtn">Login</button>
+        </div>
+
+        <div class="row">
+          <button type="button" id="logoutBtn">Logout</button>
+          <button type="button" id="clearTokenBtn">Limpiar token</button>
+        </div>
+
+        <label class="checkbox">
+          <input type="checkbox" id="useTokenChk" checked />
+          Usar token en requests
+        </label>
+      </form>
+
+      <div class="tokenBox">
+        <strong>JWT actual</strong>
+        <pre id="tokenBox">(sin token)</pre>
+        <div class="tokenMeta" id="tokenMeta">(sin exp)</div>
+      </div>
+
+      <h2>Tareas</h2>
+
+      <form id="taskForm">
+        <input type="hidden" id="taskId" />
+        <label>
+          Título
+          <input id="title" required minlength="3" />
+        </label>
+
+        <label>
+          Descripción
+          <textarea id="description"></textarea>
+        </label>
+
+        <label>
+          Fecha límite
+          <input id="dueDate" type="datetime-local" required />
+        </label>
+
+        <label>
+          Estado
+          <select id="status">
+            <option value="Pending">Pending</option>
+            <option value="InProgress">InProgress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </label>
+
+        <div class="row">
+          <button type="submit">Guardar</button>
+          <button type="button" id="resetBtn">Nuevo</button>
+        </div>
+      </form>
+
+      <ul id="taskList"></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Debug API</h2>
+
+      <div class="debug">
+        <div>
+          <h3>Request</h3>
+          <pre id="reqBox"></pre>
+        </div>
+        <div>
+          <h3>Response</h3>
+          <pre id="resBox"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

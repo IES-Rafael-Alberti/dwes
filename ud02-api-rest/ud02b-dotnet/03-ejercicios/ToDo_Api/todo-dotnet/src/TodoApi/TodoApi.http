@@ -1,0 +1,23 @@
+@TodoApi_HostAddress = http://localhost:5241
+
+### Listar tareas
+GET {{TodoApi_HostAddress}}/api/tasks
+Accept: application/json
+
+### Crear tarea
+POST {{TodoApi_HostAddress}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Primera tarea",
+  "description": "Ejemplo",
+  "dueDate": "2026-12-31T23:59:00Z",
+  "status": "Pending"
+}
+
+### Detalle
+GET {{TodoApi_HostAddress}}/api/tasks/1
+Accept: application/json
+
+### Borrar
+DELETE {{TodoApi_HostAddress}}/api/tasks/1

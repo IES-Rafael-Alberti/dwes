@@ -1,0 +1,101 @@
+body {
+    font-family: system-ui, Arial, sans-serif;
+    margin: 0;
+}
+
+header {
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+main.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+}
+
+.panel {
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.tokenBox {
+    margin: 12px 0 24px;
+}
+
+.tokenBox pre {
+    max-height: 140px;
+}
+
+.tokenMeta {
+    margin-top: 6px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox input {
+    width: auto;
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+}
+
+input,
+textarea,
+select,
+button {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+}
+
+.row button {
+    width: 50%;
+}
+
+#taskList {
+    list-style: none;
+    padding: 0;
+}
+
+#taskList li {
+    padding: 8px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.debug {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+pre {
+    background: #f6f6f6;
+    padding: 12px;
+    border-radius: 8px;
+    overflow: auto;
+}
+
+@media (max-width: 900px) {
+    main.grid {
+        grid-template-columns: 1fr;
+    }
+}
