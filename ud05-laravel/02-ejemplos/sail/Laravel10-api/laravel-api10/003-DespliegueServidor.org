@@ -1,0 +1,319 @@
+#+TITLE: Despliegue api rest laravel 10
+#+AUTHOR:
+#+EMAIL:
+#+DATE:
+#+OPTIONS: texht:t toc:2 num:2 -:nil ^:{} ":nil ':nil
+#+OPTIONS: tex:t
+#+LATEX_CLASS: article
+#+LATEX_HEADER:
+#+LANGUAGE: es
+
+#+BEGIN_COMMENT
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+END_COMMENT
+
+#+LATEX_HEADER: \renewcommand{\contentsname}{Tabla de contenidos}
+
+#+LATEX_HEADER_EXTRA: \usepackage{mdframed}
+#+LATEX_HEADER_EXTRA: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+LATEX_HEADER_EXTRA: \AfterEndEnvironment{minted}{\end{mdframed}}
+
+#+LATEX: \setlength\parindent{10pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+#+latex_header: \usepackage[utf8]{inputenc} %% For unicode chars
+#+LATEX_HEADER: \usepackage{placeins}
+
+#+LATEX_HEADER: \usepackage[margin=2.50cm]{geometry}
+
+#+LaTeX_HEADER: \usepackage[T1]{fontenc}
+#+LaTeX_HEADER: \usepackage{mathpazo}
+#+LaTeX_HEADER: \linespread{1.05}
+#+LaTeX_HEADER: \usepackage[scaled]{helvet}
+#+LaTeX_HEADER: \usepackage{courier}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true,linkcolor=blue}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+
+* Despliegue de API REST en Laravel 10 con Sail en Producción
+
+Vamos a desplegar tu API REST en Laravel 10 con Docker y Sail en un
+servidor de producción. Te explicaré cada paso detalladamente.
+
+** Configuración del Servidor
+
+Necesitas un VPS o servidor dedicado con un sistema operativo Linux
+(ej. Ubuntu 22.04). Lo primero es actualizarlo y preparar el entorno.
+
+***  En el Servidor (host)
+Conéctate vía SSH:
+
+#+BEGIN_SRC sh
+ssh usuario@tu-servidor
+#+END_SRC
+
+Actualiza el sistema:
+
+#+BEGIN_SRC sh
+sudo apt update && sudo apt upgrade -y
+#+END_SRC
+
+Instala los paquetes básicos:
+
+#+BEGIN_SRC sh
+sudo apt install -y curl git unzip ufw
+#+END_SRC
+
+** Instalar Docker y Docker Compose
+
+Sail funciona sobre Docker, así que necesitas instalarlo en el
+servidor.
+
+*** En el Servidor (host)
+Ejecuta:
+
+#+BEGIN_SRC sh
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable --now docker
+#+END_SRC
+
+Verifica que Docker funciona:
+
+#+BEGIN_SRC sh
+docker --version
+docker-compose --version
+#+END_SRC
+
+Añade tu usuario al grupo Docker (opcional, para no usar `sudo` en
+cada comando):
+
+#+BEGIN_SRC sh
+sudo usermod -aG docker $(whoami)
+#+END_SRC
+
+**(Sal de la sesión y vuelve a entrar para que surta efecto)**
+
+** Subir el Código de la API
+
+Tienes dos opciones: subir el código desde tu máquina o clonar el
+repositorio en el servidor.
+
+***  Opción 1: Subir desde tu máquina
+En tu máquina local:
+
+#+BEGIN_SRC sh
+scp -r tu-api usuario@tu-servidor:/var/www/
+#+END_SRC
+
+***  Opción 2: Clonar directamente en el servidor
+En el servidor:
+
+#+BEGIN_SRC sh
+cd /var/www/
+git clone https://github.com/tu-usuario/tu-api.git
+#+END_SRC
+
+Asegúrate de que los permisos sean correctos:
+
+#+BEGIN_SRC sh
+sudo chown -R $USER:www-data /var/www/tu-api
+sudo chmod -R 775 /var/www/tu-api
+#+END_SRC
+
+** Configurar Laravel y Entorno
+
+***  Dentro del Proyecto en el Servidor
+Accede a la carpeta del proyecto:
+
+#+BEGIN_SRC sh
+cd /var/www/tu-api
+#+END_SRC
+
+Copia el archivo de entorno y edítalo:
+
+#+BEGIN_SRC sh
+cp .env.example .env
+nano .env
+#+END_SRC
+
+Cambia las siguientes variables:
+
+#+BEGIN_SRC bash
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tu-dominio.com
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=nombre_bd
+DB_USERNAME=usuario_bd
+DB_PASSWORD=clave_secreta
+#+END_SRC
+
+** Configurar Sail para Producción
+
+**(En `/var/www/tu-api` en el servidor)**
+
+Levanta los contenedores:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail up -d
+#+END_SRC
+
+Ejecuta las migraciones:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail artisan migrate --force
+#+END_SRC
+
+Genera la clave de la aplicación:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail artisan key:generate
+#+END_SRC
+
+** Optimización de Laravel
+
+Dentro del contenedor de Laravel:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail artisan config:cache
+./vendor/bin/sail artisan route:cache
+./vendor/bin/sail artisan view:cache
+#+END_SRC
+
+** Configurar Nginx como Proxy Reverso
+
+Sail ya tiene Nginx dentro del contenedor, pero necesitas un **proxy
+inverso** para que la API sea accesible desde el exterior.
+
+***  En el Servidor (host)
+Instala Nginx:
+
+#+BEGIN_SRC sh
+sudo apt install -y nginx
+#+END_SRC
+
+Crea una configuración para Laravel:
+
+#+BEGIN_SRC sh
+sudo nano /etc/nginx/sites-available/tu-api
+#+END_SRC
+
+Pega este contenido:
+
+#+BEGIN_SRC nginx
+server {
+    listen 80;
+    server_name tu-dominio.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+#+END_SRC
+
+Activa el sitio y reinicia Nginx:
+
+#+BEGIN_SRC sh
+sudo ln -s /etc/nginx/sites-available/tu-api /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+#+END_SRC
+
+** Configurar HTTPS con Let's Encrypt
+
+Ejecuta:
+
+#+BEGIN_SRC sh
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d tu-dominio.com
+#+END_SRC
+
+Esto generará y configurará automáticamente el certificado SSL.
+
+** Configurar Supervisor para las Colas (Opcional)
+
+Si tu aplicación usa colas, instala `supervisor` y configúralo.
+
+***  En el Servidor (host)
+#+BEGIN_SRC sh
+sudo apt install -y supervisor
+#+END_SRC
+
+Crea el archivo:
+
+#+BEGIN_SRC sh
+sudo nano /etc/supervisor/conf.d/laravel-worker.conf
+#+END_SRC
+
+Agrega esto:
+
+#+BEGIN_SRC ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=docker exec -i tu-api-app sail artisan queue:work --tries=3
+autostart=true
+autorestart=true
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/log/laravel-worker.log
+#+END_SRC
+
+Carga la configuración:
+
+#+BEGIN_SRC sh
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-worker
+#+END_SRC
+
+** Seguridad y Firewall
+
+Habilita el firewall y solo permite SSH, HTTP y HTTPS:
+
+#+BEGIN_SRC sh
+sudo ufw allow OpenSSH
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+#+END_SRC
+
+** Últimos Pasos y Pruebas
+
+*** 🔹 En el Servidor (host)
+Verifica que todo está corriendo:
+
+#+BEGIN_SRC sh
+docker ps
+#+END_SRC
+
+Si ves los contenedores en ejecución, ¡vas bien!
+
+Prueba que la API responde:
+
+#+BEGIN_SRC sh
+curl -I https://tu-dominio.com/api/endpoint
+#+END_SRC
+
+Si necesitas ver logs:
+
+#+BEGIN_SRC sh
+./vendor/bin/sail artisan logs
+#+END_SRC
+
+** Resumen Final
+- **Servidor**: Instalamos Docker, Docker Compose y Nginx.
+- **Proyecto**: Subimos Laravel y configuramos `.env`.
+- **Sail**: Levantamos los contenedores (`sail up -d`).
+- **Nginx**: Configuramos un proxy inverso.
+- **SSL**: Instalamos Let's Encrypt.
+- **Supervisor**: Configuramos workers si usamos colas.
+- **Seguridad**: Configuramos firewall y permisos.
+
+**¡Tu API REST en Laravel 10 con Sail ya está en producción!**
