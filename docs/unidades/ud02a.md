@@ -21,9 +21,10 @@ los ejercicios convierten cada bloque en evidencia individual.
 | Seguridad | JWT, roles, CORS y errores consistentes |
 | Contrato | OpenAPI 3.1 canónico de Battleship |
 
-La [matriz RA/CE](../ud02a-spring-boot/ra-ce.md) identifica qué
-actividad demuestra cada criterio. La rúbrica común del módulo define los
-niveles de logro; cada ejercicio conserva su propia contribución publicada.
+La [guía de evaluación](../ud02a-spring-boot/EVALUACION.md) reúne las
+evidencias con ponderación publicada. La [matriz RA/CE](../ud02a-spring-boot/ra-ce.md)
+identifica qué actividad demuestra cada criterio; cada ejercicio conserva su
+propia rúbrica.
 
 ## Límites
 

@@ -23,10 +23,10 @@ no sustituyen ese recorrido.
 
 ## Evaluación
 
-Las evidencias y criterios de la unidad están reunidos en la
-[matriz RA/CE de UD2a](ud02a-spring-boot/ra-ce.md). Cada ejercicio conserva su
-propia contribución publicada; Battleship es el proyecto conductor de aula y
-la evidencia técnica compartida.
+La [guía de evaluación de UD2a](ud02a-spring-boot/EVALUACION.md) reúne las
+evidencias con ponderación publicada y su cobertura. La
+[matriz RA/CE de UD2a](ud02a-spring-boot/ra-ce.md) detalla cada criterio;
+Battleship es el proyecto conductor de aula y la evidencia técnica compartida.
 
 La rúbrica común del módulo fija los niveles de logro. No hay que memorizarla:
 para una entrega, comprueba siempre su archivo `ra-ce.md`, sus tests y el
