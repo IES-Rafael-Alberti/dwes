@@ -9,8 +9,8 @@ Material didáctico del módulo **Desarrollo Web en Entorno Servidor (DWES)** �
 | [UD0 — Previos](unidades/ud00.md) | Java moderno hasta Java 25 LTS, MongoDB, PostgreSQL JSON |
 | [UD1 — Introducción](unidades/ud01.md) | HTTP, servidores, instalación, primer contacto |
 | [UD2a — API REST Spring Boot](unidades/ud02a.md) | REST, Spring Boot 4, JPA, seguridad JWT |
-| [UD2b — API REST .NET](unidades/ud02b.md) | REST con .NET/C# |
-| [UD2c — GraphQL](unidades/ud02c.md) | GraphQL con HotChocolate |
+| [UD2b — API REST .NET](unidades/ud02b.md) | Referencia opcional con .NET/C# |
+| [UD2c — GraphQL](unidades/ud02c.md) | Referencia opcional con HotChocolate |
 | [UD3 — MVC Spring Boot](unidades/ud03.md) | Spring MVC, Thymeleaf, Mustache |
 | [UD4 — PHP](unidades/ud04.md) | PHP básico a OOP, CRUD, Laravel bridge |
 | [UD5 — Laravel](unidades/ud05.md) | Laravel 12, Sail, API, proyectos |

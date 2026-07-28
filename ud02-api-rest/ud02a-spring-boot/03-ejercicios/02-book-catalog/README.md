@@ -29,7 +29,7 @@ Realiza commits siguiendo el formato `Entrega X: ...`:
 
 ## Requisitos técnicos
 
-- Spring Boot 4.0.5+, Java 21
+- Spring Boot 4.0.5+, Java 25
 - TDD: los tests se proporcionan como semilla — deben pasar antes de pasar a la siguiente entrega
 - Cada entrega debe compilar y pasar los tests correspondientes antes de avanzar
 

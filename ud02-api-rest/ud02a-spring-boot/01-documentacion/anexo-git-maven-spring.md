@@ -114,7 +114,7 @@ mvn spring-boot:run
   git rebase --continue
   ```
 * **H2 no arranca**: revisa `application.properties` (URL y `ddl-auto`).
-* **Tests @WebMvcTest fallan por beans faltantes**: añade `@MockBean` del service/repo en el test.
+* **Tests @WebMvcTest fallan por beans faltantes**: añade `@MockitoBean` del service/repo en el test.
 
 ---
 

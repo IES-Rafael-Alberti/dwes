@@ -9,7 +9,7 @@ Orden de estudio recomendado (TDD-first):
 | 03 | `03-controladores-rest.md` | @RestController, verbos HTTP, parámetros, ResponseEntity |
 | 04 | `04-capa-servicios.md` | @Service, DTOs, lógica de negocio, validación |
 | 05 | `05-tdd-manejo-errores.md` | @ControllerAdvice, @ExceptionHandler, payload consistente |
-| 06 | `06-tdd-slicing.md` | Test slicing: @WebMvcTest, @MockBean/@MockitoBean, @SpringBootTest |
+| 06 | `06-tdd-slicing.md` | Test slicing: @WebMvcTest, @MockitoBean, @SpringBootTest |
 | 07 | `07-funcionamiento-spring-boot.md` | Flujo interno de una petición HTTP |
 | 08 | `08-battleship-caso-practico.md` | Caso práctico: Battleship API (guion de clase) |
 | 09 | `09-migracion-sb3-sb4.md` | Migración SB3 → SB4: cambios, checklist, referencia |

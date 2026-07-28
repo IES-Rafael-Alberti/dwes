@@ -2,11 +2,11 @@
 
 Este caso práctico conecta la progresión de UD2a con una API real. La meta no es copiar el proyecto terminado, sino construir una decisión observable cada vez: escribimos una prueba pequeña, vemos por qué falla, implementamos lo mínimo y volvemos a comprobar.
 
-El proyecto de referencia está en [`02-ejemplos/battleship/`](../02-ejemplos/battleship/docs/README.md) y usa **Spring Boot 4.0.5, Java 21, Maven, JPA, Flyway, H2 y Spring Security**. El `pom.xml` es la fuente de verdad de las versiones.
+El proyecto de referencia está en [`02-ejemplos/battleship/`](../02-ejemplos/battleship/docs/README.md) y usa **Spring Boot 4.0.5, Java 25, Maven, JPA, Flyway, H2 y Spring Security**. El `pom.xml` es la fuente de verdad de las versiones.
 
 ## Antes de empezar
 
-Necesitas Java 21 o posterior. Comprueba el punto de partida:
+Necesitas Java 25. Comprueba el punto de partida:
 
 ```bash
 cd ud02-api-rest/ud02a-spring-boot/02-ejemplos/battleship

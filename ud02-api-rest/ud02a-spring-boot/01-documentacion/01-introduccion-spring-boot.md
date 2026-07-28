@@ -91,7 +91,7 @@ Activas con `SPRING_PROFILES_ACTIVE=dev|prod`.
 **Opción A — Spring Initializr**
 
 * Dependencias: **Web**, **Validation**, **JPA**, **H2**, **Lombok** (opcional), **Springdoc OpenAPI**.
-* Java 21.
+* Java 25.
 
 **Opción B — pom.xml mínimo**
 
@@ -117,7 +117,7 @@ Activas con `SPRING_PROFILES_ACTIVE=dev|prod`.
   <dependency>
     <groupId>org.springdoc</groupId>
     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.6.0</version>
+    <version>3.0.3</version>
   </dependency>
   <dependency>
     <groupId>org.projectlombok</groupId>
@@ -138,6 +138,10 @@ Activas con `SPRING_PROFILES_ACTIVE=dev|prod`.
 * `validation` → `@Valid`, `@NotBlank`, etc.
 * `data-jpa` + `h2` → persistencia en memoria para dev.
 * `springdoc` → **Swagger UI** automático en `/swagger-ui.html`.
+
+> **Decisión del proyecto conductor**: Battleship conserva un contrato OpenAPI
+> 3.1 estático como fuente de verdad. Springdoc aporta el visor Swagger UI,
+> pero su generación automática está deshabilitada para evitar dos contratos.
 
 ---
 
@@ -551,4 +555,3 @@ public ResponseEntity<TaskDTO> create(@Valid @RequestBody CreateTaskDTO dto) {
   “Compacto, inmutable y perfecto para devolver datos.”
 
 ---
-

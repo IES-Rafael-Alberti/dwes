@@ -24,7 +24,7 @@ Añadir autenticación y autorización JWT a una API REST de gestión de eventos
 
 ## Requisitos técnicos
 
-- Spring Boot 4.0.5+, Java 21, Gradle
+- Spring Boot 4.0.5+, Java 25, Gradle
 - JWT (jjwt 0.12.5), Spring Security, BCrypt
 - Tests existentes deben seguir pasando tras añadir seguridad
 - CORS configurado para el frontend Angular

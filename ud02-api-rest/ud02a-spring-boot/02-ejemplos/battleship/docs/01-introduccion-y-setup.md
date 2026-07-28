@@ -7,7 +7,7 @@ Lee el documento de teoría [`01-introduccion-spring-boot.md`](../../../01-docum
 - Qué es Spring Boot y cómo se diferencia de Spring Framework
 - Starters y autoconfiguración
 - Estructura típica de un proyecto por capas
-- Novedades de SB4 (Java 21, records, virtual threads)
+- Novedades de SB4 (Java 25, records, virtual threads)
 
 ## Qué vamos a construir
 
@@ -26,7 +26,7 @@ Usamos [start.spring.io](https://start.spring.io) en clase con estos parámetros
 | Spring Boot | 4.0.5 |
 | Group | `com.example` |
 | Artifact | `battleship` |
-| Java | 21 |
+| Java | 25 |
 | Dependencies | `Spring Web MVC`, `Spring Data JPA`, `H2 Database`, `Validation`, `Flyway Migration`, `Lombok`, `SpringDoc OpenAPI (webmvc-ui 3.0.3)` |
 
 ### 2. El `pom.xml`
@@ -52,7 +52,7 @@ Usamos [start.spring.io](https://start.spring.io) en clase con estos parámetros
     <description>Battleship API — Hundir la Flota con TDD</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
     </properties>
     ...
 </project>
@@ -61,7 +61,7 @@ Usamos [start.spring.io](https://start.spring.io) en clase con estos parámetros
 Señalar en clase:
 
 - **spring-boot-starter-parent**: versión de SB como POM padre → hereda gestión de dependencias
-- **java.version = 21**: usamos el LTS más reciente
+- **java.version = 25**: usamos el LTS más reciente
 - Cada starter agrupa dependencias consistentes entre sí
 
 ### 3. El punto de entrada

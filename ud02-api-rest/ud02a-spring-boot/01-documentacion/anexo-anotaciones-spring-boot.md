@@ -80,7 +80,7 @@
 | **@SpringBootTest** | Ejecuta una prueba integrando todo el contexto Spring Boot.                        |
 | **@DataJpaTest**    | Prueba solo la capa de persistencia (configura H2 automáticamente).                |
 | **@WebMvcTest**     | Prueba solo la capa web (controladores).                                           |
-| **@MockBean**       | Crea un mock gestionado por Spring para sustituir un bean real durante una prueba. |
+| **@MockitoBean**    | Crea un mock gestionado por Spring para sustituir un bean real durante una prueba en Spring Boot 4. |
 | **@Test**           | Indica un método de prueba (JUnit).                                                |
 
 ---
@@ -105,4 +105,3 @@
 | **@Schema**      | Define el modelo de datos de entrada/salida en la documentación.                          |
 
 *(Estas tres no se usan aún, pero aparecerán en la UD4 con Swagger).*
-
