@@ -112,7 +112,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 - [x] Reducir .NET a una demostración limpia, fijada y no evaluable: TodoApi sobre .NET 10 es la única referencia verificable; MiApi, RecetasApi y la guía de despliegue quedan clasificados como históricos.
 - [x] Reducir GraphQL a una referencia conceptual no evaluable: consulta mínima, comparación con REST y método HTTP `QUERY` de RFC 10008, sin añadir una segunda aplicación.
-- [ ] Eliminar material generado, duplicado, conversacional y obsoleto.
+- [x] Eliminar material generado, duplicado, conversacional y obsoleto: se retiraron exportaciones HTML/PDF/TEX con fuente editable, historiales y archivos vacíos, copias ZIP, uploads locales y prompts residuales; se conservan wrappers reproducibles y fuentes históricas clasificadas.
 - [ ] Clasificar ejercicios y previews sin competir con Battleship.
 
 ## Criterio de cierre
