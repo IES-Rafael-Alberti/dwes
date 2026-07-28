@@ -72,6 +72,18 @@ Los huecos del núcleo quedaron cubiertos: objetivos y RA/CE, ciclo MVC, progres
 - El Gestor es el ejemplo integrador guiado posterior a Productos, no un segundo proyecto.
 - El primer corte de seguridad incluye sesión, CSRF, validación y autorización por propietario. Registro, roles y recuperación de credenciales quedan fuera de alcance.
 
+## Backlog final no bloqueante
+
+Las ampliaciones MVC se retomarán únicamente después de cerrar todo el
+contenido obligatorio del módulo y si el calendario deja margen. El foco
+profesional prioritario permanece en APIs REST consumidas por clientes Vue,
+React o Angular; el desarrollo MVC renderizado en servidor se mantiene como
+fundamento y alternativa, no como segundo itinerario avanzado.
+
+El backlog final incluye registro de usuarios, búsqueda y filtros, paginación,
+roles, AJAX y Flyway. Ninguno de estos puntos bloquea la impartición, evaluación
+o cierre de UD3.
+
 La publicación de enunciados en GitHub Pages sigue siendo una decisión transversal del módulo, no una decisión exclusiva de UD3.
 
 ## Plan priorizado
@@ -118,5 +130,5 @@ La publicación de enunciados en GitHub Pages sigue siendo una decisión transve
 - Se retiraron Mustache, roles y credenciales precargadas, consola H2, búsquedas globales y acciones en lote inseguras.
 - El tutorial conversacional `SpringMVC-GestorTareas.md` fue sustituido por `06-gestor-tareas-seguro.md`; el documento de ideas pasó al backlog docente privado.
 - Se eliminaron el HTML derivado `03-UD2-Controladores-Vistas-Thymeleaf.html` y su Markdown heredado después de integrar el contenido útil en las guías `02`, `03` y `04`.
-- Fuera del primer corte: registro, búsqueda/filtros, paginación, roles, AJAX, API REST y Flyway.
+- Backlog final no bloqueante: registro, búsqueda/filtros, paginación, roles, AJAX y Flyway; se abordará solo tras completar el contenido obligatorio del módulo.
 - Evidencia TDD: el primer intento RED no pudo ejecutar por Gradle 8.11.1 incompatible con Java 25 (`Unsupported class file major version 69`); tras migrar la infraestructura y desarrollar el contrato, las 10 pruebas de seguridad, flujo y perfil demo quedan verdes.
