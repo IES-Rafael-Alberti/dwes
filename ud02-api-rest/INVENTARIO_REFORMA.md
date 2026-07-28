@@ -95,7 +95,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [x] Estabilizar el contrato JSON paginado de Battleship mediante `PageResponse` y una prueba HTTP dedicada.
 - [x] Alinear H2/Flyway con H2 2.3.232, combinación declarada verificada y probada por la suite.
 - [x] Resolver la inicialización ignorada por `@Builder` en `Game` y probar el valor por defecto.
-- [ ] Reordenar y consolidar la documentación sin duplicados; ya existe ruta canónica teoría -> Battleship -> ejercicios, queda clasificar o archivar los árboles paralelos y demos huérfanos.
+- [x] Reordenar y consolidar la documentación en una única ruta canónica teoría -> Battleship -> ejercicios; los apuntes paralelos, experimentos y demo mínima están clasificados como material histórico o sandbox no evaluable.
 - [ ] Completar README, página pública, RA/CE y evaluación; README, página pública y matriz RA/CE están publicados, queda vincular una rúbrica/evidencia de evaluación específica de UD2.
 - [x] Verificar Battleship desde wrapper, perfiles y base limpia: desde un clon nuevo, `./mvnw clean verify` pasó con 141 pruebas, `dev` respondió en HTTP y `prod,docker` arrancó por HTTPS con PostgreSQL 16, Flyway y claves externas efímeras con permisos restringidos.
 - [x] Convertir la seguridad HTTP en un contrato canónico y probado; la autorización por claims conserva su suite específica de roles.
