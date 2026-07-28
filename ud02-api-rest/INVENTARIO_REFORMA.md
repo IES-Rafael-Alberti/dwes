@@ -97,7 +97,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [x] Resolver la inicialización ignorada por `@Builder` en `Game` y probar el valor por defecto.
 - [ ] Reordenar y consolidar la documentación sin duplicados.
 - [ ] Completar README, página pública, RA/CE y evaluación.
-- [ ] Verificar Battleship desde wrapper, perfiles y base limpia; `./mvnw clean verify`, la configuración Compose y la imagen Docker ya están comprobadas, queda la validación desde un clon limpio y el arranque de perfiles con credenciales locales recién generadas.
+- [x] Verificar Battleship desde wrapper, perfiles y base limpia: desde un clon nuevo, `./mvnw clean verify` pasó con 141 pruebas, `dev` respondió en HTTP y `prod,docker` arrancó por HTTPS con PostgreSQL 16, Flyway y claves externas efímeras con permisos restringidos.
 - [x] Convertir la seguridad HTTP en un contrato canónico y probado; la autorización por claims conserva su suite específica de roles.
 
 ### P2 - SDD y contrato

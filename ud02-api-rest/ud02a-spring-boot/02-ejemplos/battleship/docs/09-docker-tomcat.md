@@ -23,8 +23,8 @@ RUN mvn --batch-mode clean verify
 
 # == Etapa 2: ejecutar ==
 FROM eclipse-temurin:25-jre
-RUN groupadd --system battleship \
-    && useradd --system --gid battleship battleship \
+RUN groupadd --system --gid 999 battleship \
+    && useradd --system --uid 999 --gid battleship battleship \
     && mkdir --parents /var/log/battleship \
     && chown battleship:battleship /var/log/battleship
 WORKDIR /app
@@ -129,7 +129,14 @@ keytool -genkeypair -alias battleship -keyalg RSA -keysize 2048 \
   -storetype PKCS12 -keystore keys/battleship.p12 \
   -storepass "$SSL_KEYSTORE_PASSWORD" -keypass "$SSL_KEYSTORE_PASSWORD" \
   -dname "CN=localhost"
+
+# En Linux, permitir solo al grupo del usuario de ejecución del contenedor
+# (GID 999) leer el material montado; no usar permisos globales de lectura.
+chgrp 999 keys/private.pem keys/public.pem keys/battleship.p12
+chmod 640 keys/private.pem keys/public.pem keys/battleship.p12
 ```
+
+Si tu usuario no puede cambiar el grupo, anteponé `sudo` al comando `chgrp`.
 
 El `.env` local resultante debe contener rutas accesibles **dentro** del
 contenedor y las contraseñas que elegiste:

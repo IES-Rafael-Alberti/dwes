@@ -7,8 +7,8 @@ RUN mvn --batch-mode clean verify
 
 # == Etapa 2: ejecutar ==
 FROM eclipse-temurin:25-jre
-RUN groupadd --system battleship \
-    && useradd --system --gid battleship battleship \
+RUN groupadd --system --gid 999 battleship \
+    && useradd --system --uid 999 --gid battleship battleship \
     && mkdir --parents /var/log/battleship \
     && chown battleship:battleship /var/log/battleship
 WORKDIR /app
