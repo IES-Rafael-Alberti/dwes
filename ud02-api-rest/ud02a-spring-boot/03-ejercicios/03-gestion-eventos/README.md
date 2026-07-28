@@ -41,3 +41,10 @@ Añadir autenticación y autorización JWT a una API REST de gestión de eventos
 ## Evaluación
 
 Ver `rubrica.md` y `ra-ce.md` en este directorio.
+
+## Relación con Battleship
+
+La seguridad JWT de este ejercicio aplica el diseño presentado en la
+[sesión de seguridad de Battleship](../../02-ejemplos/battleship/docs/07-seguridad-jwt.md).
+Battleship muestra la referencia completa; aquí incorporas autenticación,
+roles y CORS a una API existente.

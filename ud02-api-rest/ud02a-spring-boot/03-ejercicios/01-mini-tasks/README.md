@@ -57,3 +57,11 @@ Utiliza Maven para verificar las etapas:
 ## Evaluación
 
 Ver `rubrica.md` y `ra-ce.md` en este directorio.
+
+## Relación con Battleship
+
+Este ejercicio complementa las sesiones de Battleship sobre TDD,
+controladores, capas y test slicing. Consulta el
+[recorrido canónico de Battleship](../../02-ejemplos/battleship/docs/README.md)
+antes de analizar las etapas. Battleship es el proyecto conductor; aquí
+practicas la lectura de esa evolución en un contexto más pequeño.

@@ -9,6 +9,7 @@ EXCLUDE_DIRS = {
 }
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',
+    'mini-spring-boot-Guia.md',
 }
 
 SECTION_ORDER = {

@@ -8,8 +8,9 @@
   <name>book-catalog</name>
   <description>GitHub Classroom template - Book Catalog (Spring Boot)</description>
   <properties>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
     <spring-boot.version>4.0.5</spring-boot.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -47,13 +48,15 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.1</version>
         <configuration>
-          <source>21</source>
-          <target>21</target>
+          <source>25</source>
+          <target>25</target>
         </configuration>
       </plugin>
       <plugin>

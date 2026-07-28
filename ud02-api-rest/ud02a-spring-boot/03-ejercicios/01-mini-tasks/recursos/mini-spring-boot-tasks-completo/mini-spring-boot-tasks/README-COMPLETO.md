@@ -1,5 +1,9 @@
 # Mini Spring Boot Tasks — Paquete Completo
 
+> Referencia completa. No es una plantilla de partida ni un entregable. Úsala
+> únicamente cuando lo indique el profesorado o para revisar el ejercicio una
+> vez entregado.
+
 Incluye:
 - Proyecto con 4 etapas: V1 (controlador simple), V2 (ResponseEntity), V3 (Repositorio), V4 (Servicio + extras).
 - Tests organizados por perfiles Maven.

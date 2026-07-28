@@ -15,6 +15,7 @@ exclude_docs: |
   **/99-profesor/
   **/_profesor/
   **/README_Docente.md
+  **/mini-spring-boot-Guia.md
   **/Presentaciones/
   **/correccion/
   **/Correccion/

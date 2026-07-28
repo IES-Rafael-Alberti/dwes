@@ -72,3 +72,10 @@ server.ssl.enabled=true
 Los proyectos y documentos de `Seguridad/` permanecen fuera de la publicación mientras se revisan. Mezclan versiones antiguas de Spring Security, secretos de demostración, soluciones completas y formatos generados; no son referencias vigentes para el alumnado.
 
 El contrato canónico de seguridad se consolidará a partir de Battleship y deberá cubrir autenticación, autorización, ownership, `401`/`403`, CORS, CSRF, gestión de claves y pruebas con filtros activos antes de cerrar UD2.
+
+## Práctica del alumnado
+
+El ejercicio [Gestión de eventos](../03-ejercicios/03-gestion-eventos/README.md)
+aplica JWT, roles y CORS sobre una API existente. La
+[sesión de seguridad de Battleship](../02-ejemplos/battleship/docs/07-seguridad-jwt.md)
+es la referencia canónica para preparar esa práctica.

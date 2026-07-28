@@ -45,3 +45,10 @@ Realiza commits siguiendo el formato `Entrega X: ...`:
 ## Evaluación
 
 Ver `rubrica.md` y `ra-ce.md` en este directorio.
+
+## Relación con Battleship
+
+Este ejercicio aplica la progresión por capas que Battleship demuestra en
+clase: servicios, DTOs, manejo de errores y `@RestControllerAdvice`. Consulta
+las [sesiones de Battleship](../../02-ejemplos/battleship/docs/README.md) y
+traslada cada concepto al catálogo antes de avanzar a la entrega siguiente.

@@ -1,5 +1,8 @@
 # Guion para ti (docente)
 
+> Material docente. No forma parte del enunciado ni de la evaluación publicada
+> para el alumnado.
+
 ## Objetivo
 
 Guiar una sesión práctica donde el alumnado construye paso a paso una API REST en Spring Boot: **controlador simple → ResponseEntity → repositorio JPA → servicio → extras (ETag, paginación, búsqueda, PUT, HEAD)**, todo apoyado en **tests** y commits etiquetados.
@@ -289,4 +292,3 @@ mvn -q -Ptests-extras test
 mvn -q -Ptests-paging-cache test
 mvn -q -Ptests-final test
 ```
-

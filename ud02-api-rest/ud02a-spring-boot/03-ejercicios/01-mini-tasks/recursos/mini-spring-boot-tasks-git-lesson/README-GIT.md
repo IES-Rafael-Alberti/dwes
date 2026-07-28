@@ -1,5 +1,9 @@
 # Mini Spring Boot — Git Lesson Kit
 
+Este es el kit requerido por el ejercicio. `setup-history.sh` usa el contenido
+de `snapshots/` para reconstruir el repositorio pedagógico; los snapshots no son
+entregables ni deben modificarse.
+
 Este kit crea un repositorio Git con **commits pedagógicos** por etapas:
 - v1: Controlador sin ResponseEntity (memoria)
 - v2: Refactor a ResponseEntity (memoria)
@@ -9,8 +13,6 @@ Este kit crea un repositorio Git con **commits pedagógicos** por etapas:
 
 ## Uso
 ```bash
-unzip mini-spring-boot-tasks-git-lesson.zip
-cd mini-spring-boot-tasks-git-lesson
 bash setup-history.sh
 # ahora tienes commits y tags (v1, v2, v3, v4, v4-extras)
 cd project
