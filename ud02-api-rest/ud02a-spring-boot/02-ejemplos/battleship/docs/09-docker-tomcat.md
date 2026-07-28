@@ -23,7 +23,10 @@ RUN mvn --batch-mode clean verify
 
 # == Etapa 2: ejecutar ==
 FROM eclipse-temurin:25-jre
-RUN groupadd --system battleship && useradd --system --gid battleship battleship
+RUN groupadd --system battleship \
+    && useradd --system --gid battleship battleship \
+    && mkdir --parents /var/log/battleship \
+    && chown battleship:battleship /var/log/battleship
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 USER battleship
@@ -62,8 +65,6 @@ logging:
 ### 1.3 docker-compose.yml
 
 ```yaml
-version: "3.9"
-
 services:
   db:
     image: postgres:16-alpine
@@ -105,8 +106,33 @@ Señalar:
 - `condition: service_healthy` — la app espera a que PostgreSQL esté listo
 - Perfiles combinados: `prod,docker` — Spring mergea ambas configuraciones
 - Variables de entorno desde un `.env` (que no se sube al repo)
+- La imagen crea `/var/log/battleship` con el usuario no root de la aplicación
 
-### 1.4 .env (no subir a git)
+### 1.4 Entorno y material criptográfico local
+
+Partí del ejemplo versionado y ajustá los valores locales antes de arrancar.
+El archivo `.env` y el directorio `keys/` quedan fuera de Git y del contexto de
+construcción de la imagen.
+
+```bash
+# Una sola vez, desde la raíz de Battleship:
+cp .env.example .env
+
+# Editar .env con contraseñas locales no reutilizadas.
+
+# Generar las claves JWT y el almacén TLS local:
+mkdir -p keys
+openssl genpkey -algorithm RSA -out keys/private.pem -pkeyopt rsa_keygen_bits:2048
+openssl pkey -in keys/private.pem -pubout -out keys/public.pem
+set -a; . ./.env; set +a
+keytool -genkeypair -alias battleship -keyalg RSA -keysize 2048 \
+  -storetype PKCS12 -keystore keys/battleship.p12 \
+  -storepass "$SSL_KEYSTORE_PASSWORD" -keypass "$SSL_KEYSTORE_PASSWORD" \
+  -dname "CN=localhost"
+```
+
+El `.env` local resultante debe contener rutas accesibles **dentro** del
+contenedor y las contraseñas que elegiste:
 
 ```env
 DB_PASSWORD=replace-with-a-strong-password
@@ -129,6 +155,9 @@ keys/
 ### 1.6 Construir y ejecutar
 
 ```bash
+# Validar la configuración sin crear contenedores
+docker compose config --quiet
+
 # Construir
 docker compose build
 
