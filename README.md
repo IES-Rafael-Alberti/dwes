@@ -13,8 +13,8 @@ Curso 2026/2027 — IES Rafael Alberti.
 ud01-introduccion-entorno-servidor/
 ud02-api-rest/
   ud02a-spring-boot/       → API REST con Spring Boot 4
-  ud02b-dotnet/            → API REST con .NET
-  ud02c-graphql/           → GraphQL con HotChocolate
+  ud02b-dotnet/            → Referencia opcional de API REST con .NET
+  ud02c-graphql/           → Referencia conceptual de GraphQL y HTTP QUERY
 ud03-mvc-spring-boot/      → Spring Boot MVC
 ud04-php/                  → PHP básico a OOP CRUD
 ud05-laravel/              → Laravel 12

@@ -1,15 +1,18 @@
-# UD2c — GraphQL
+# UD2c - GraphQL y HTTP QUERY
 
 ## Propósito
 
-Introducir GraphQL como alternativa a REST, implementando un API con HotChocolate en .NET.
+Reconocer qué problema resuelve GraphQL y compararlo con el método HTTP
+`QUERY` de RFC 10008. Es una referencia conceptual, no una segunda ruta de
+implementación.
 
 ## Contenidos
 
-- Consultas, mutaciones y suscripciones
-- HotChocolate en .NET
-- Seguridad en GraphQL
+- Consulta GraphQL mínima y selección de campos.
+- Diferencias entre `GET`, `POST`, `QUERY` y GraphQL.
+- Adopción progresiva de `QUERY` en clientes, proxies y frameworks.
 
-## Evaluación
+## Alcance
 
-- Ejercicio práctico de API GraphQL
+Este bloque no es obligatorio ni evaluable. La implementación y evaluación de
+UD2 se realizan en [Spring Boot con Battleship](ud02a.md).

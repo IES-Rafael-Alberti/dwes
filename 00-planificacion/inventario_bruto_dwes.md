@@ -66,7 +66,7 @@
 | U2b_DotNetApiREST/Tareas/ | Tareas/ | Proyecto base/Ejemplo | U2b | Tareas .NET | .NET/C# | Vigente | false | |
 | U2b_DotNetApiREST/ToDo_Api/ | ToDo_Api/ | Proyecto base/Ejemplo | U2b | API ToDo en .NET (extraído) | .NET/C# | Vigente | false | |
 | U2b_DotNetApiREST/ToDo_Api.zip | ToDo_Api.zip | ZIP proyecto base | U2b | ZIP del proyecto ToDo API .NET | .NET/C# | Vigente | false | ZIP original |
-| U2c-GraphQL-HotChocolate-dotNet/00-GraphQL-DotNet-HotChocolate.md | 00-GraphQL-DotNet-HotChocolate.md | Apunte | U2c | Introducción a GraphQL con HotChocolate en .NET | GraphQL, HotChocolate, .NET | Vigente | false | Unidad pequeña, casi monográfica |
+| U2c-GraphQL-HotChocolate-dotNet/00-GraphQL-DotNet-HotChocolate.md | 00-GraphQL-DotNet-HotChocolate.md | Apunte | U2c | Introducción a GraphQL con HotChocolate en .NET | GraphQL, HotChocolate, .NET | Sustituido | false | Reemplazado por una comparación conceptual mínima entre GraphQL, REST y HTTP QUERY |
 | U3_SpBootMVC/SpringMV-Tareas_IdeasAtrabajar.md | SpringMV-Tareas_IdeasAtrabajar.md | Apunte/Ideas | U3 | Ideas de tareas para Spring MVC | Spring MVC | Vigente | false | |
 | U3_SpBootMVC/SpringMVC_Mustache.md | SpringMVC_Mustache.md | Apunte | U3 | Spring MVC con Mustache | Spring MVC, Mustache | Vigente | false | |
 | U3_SpBootMVC/SpringMVC_Thymeleaf.md | SpringMVC_Thymeleaf.md | Apunte | U3 | Spring MVC con Thymeleaf | Spring MVC, Thymeleaf | Vigente | false | |

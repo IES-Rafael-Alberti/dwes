@@ -99,7 +99,7 @@
 
 | Ruta | Elemento | Tipo | Bloque/Unidad | Descripción | Herramientas | Estado aparente | Observaciones |
 | ---- | -------- | ---- | ------------- | ----------- | ------------ | --------------- | ------------- |
-| U2c-GraphQL-HotChocolate-dotNet/00-GraphQL-DotNet-HotChocolate.md | 00-GraphQL-DotNet-HotChocolate.md | Apunte | U2c | GraphQL con HotChocolate en .NET | GraphQL, HotChocolate, .NET | Vigente | Unidad monográfica, 1 documento |
+| U2c-GraphQL-HotChocolate-dotNet/00-GraphQL-DotNet-HotChocolate.md | 00-GraphQL-DotNet-HotChocolate.md | Apunte | U2c | GraphQL con HotChocolate en .NET | GraphQL, HotChocolate, .NET | Sustituido | Reemplazado por una comparación conceptual mínima entre GraphQL, REST y HTTP QUERY |
 
 ### U3 — Spring Boot MVC
 
