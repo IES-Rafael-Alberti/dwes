@@ -87,7 +87,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - [x] Eliminar la credencial administrativa conocida de las migraciones normales.
 - [x] Externalizar las claves JWT y verificar que claves/keystores no entren en JAR ni imagen.
 - [x] Corregir slicing y migración SB3/SB4 según los módulos, paquetes y requisitos oficiales de Spring Boot 4.
-- [ ] Resolver los siete gitlinks restantes sin `.gitmodules`; los cinco proyectos Spring Boot de UD2 ya se absorbieron como directorios versionados, con exclusión de registros, artefactos y credenciales.
+- [ ] Resolver los dos gitlinks .NET restantes sin `.gitmodules`; los proyectos Spring Boot de UD2 y PHP/Laravel ya se absorbieron como directorios versionados, con exclusión de registros, artefactos, ejecutables locales y credenciales.
 
 ### P1 - ruta canónica
 
