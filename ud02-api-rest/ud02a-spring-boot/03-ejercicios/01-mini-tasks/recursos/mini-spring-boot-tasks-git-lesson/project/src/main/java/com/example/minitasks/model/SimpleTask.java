@@ -1,0 +1,2 @@
+package com.example.minitasks.model;
+public class SimpleTask { public Long id; public String title; public boolean done; public SimpleTask(){} public SimpleTask(Long id,String title,boolean done){this.id=id;this.title=title;this.done=done;} public Long getId(){return id;} public void setId(Long id){this.id=id;} public String getTitle(){return title;} public void setTitle(String t){this.title=t;} public boolean isDone(){return done;} public void setDone(boolean d){this.done=d;} }

@@ -1,0 +1,13 @@
+diff --git a/README.md b/README.md
+index 27b3357..a4cabbd 100644
+--- a/README.md
++++ b/README.md
+@@ -2,7 +2,7 @@
+ 
+ Plantilla para GitHub Classroom por entregas:
+ 1) Eco del endpoint (texto plano) → **Entrega 1**
+-2) JSON sin ResponseEntity → **Entrega 2**
++2) JSON sin ResponseEntity → **Entrega 2** (Aquí ya tenemos que tener la entidad books [o libros según sea],un repositorio y una Base de Datos, p.ej. H2)
+ 3) Con ResponseEntity → **Entrega 3**
+ 4) Servicio → **Entrega 4**
+ 5) Excepciones en servicio → **Entrega 5**
