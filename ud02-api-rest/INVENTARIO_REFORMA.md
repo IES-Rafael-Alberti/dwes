@@ -110,7 +110,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 
 ### P3 - opcionales y limpieza
 
-- [ ] Reducir .NET a una demostración limpia, fijada y no evaluable, o retirarla.
+- [x] Reducir .NET a una demostración limpia, fijada y no evaluable: TodoApi sobre .NET 10 es la única referencia verificable; MiApi, RecetasApi y la guía de despliegue quedan clasificados como históricos.
 - [ ] Sustituir GraphQL por una demostración mínima ejecutable o retirarla.
 - [ ] Eliminar material generado, duplicado, conversacional y obsoleto.
 - [ ] Clasificar ejercicios y previews sin competir con Battleship.

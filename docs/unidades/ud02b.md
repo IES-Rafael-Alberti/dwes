@@ -1,15 +1,17 @@
-# UD2b — API REST con .NET
+# UD2b - Referencia opcional de .NET
 
 ## Propósito
 
-Conocer una alternativa a Spring Boot implementando APIs REST con .NET/C#.
+Conocer ASP.NET Core como comparación puntual con Spring Boot. Esta referencia
+no forma parte de la ruta obligatoria ni de la evaluación de UD2.
 
 ## Contenidos
 
-- ASP.NET Core Web API
-- Controladores, modelos y EF Core
-- Seguridad con JWT en .NET
+- La demo TodoApi muestra controladores, servicios, repositorios, EF Core,
+  SQLite, JWT y pruebas automatizadas sobre .NET 10.
+- MiApi y RecetasApi se conservan como material histórico no mantenido.
 
-## Evaluación
+## Ruta canónica
 
-- Ejercicios prácticos con .NET
+La implementación, las actividades y la evaluación de UD2 se realizan en
+[Spring Boot con Battleship](ud02a.md). El material .NET no las sustituye.
