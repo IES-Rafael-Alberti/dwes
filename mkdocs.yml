@@ -12,6 +12,7 @@ site_dir: site
 # 99-profesor, 90-archivo quedan fuera.
 exclude_docs: |
   **/90-archivo/
+  **/90-historico/
   **/99-profesor/
   **/_profesor/
   **/README_Docente.md

@@ -138,8 +138,9 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] `ud02a_semanas_1_4.gift`: 12 preguntas (Spring Boot, TDD, REST, servicios, errores, slicing)
 - [x] `ud02a_semanas_5_8.gift`: 8 preguntas (seguridad JWT, Battleship, migración SB3→SB4)
 
-### 6. U6 — Aplicaciones híbridas (notas de diseño)
-- [ ] Incluir Spring Boot para conectar a modelos de lenguaje (Spring AI, LLM integration) — anotado 6 julio 2026
+### 6. UD6 — Aplicaciones híbridas — P0 completado; P1 pendiente
+- [x] Contrato Fase 0 creado con fuentes (Open Library + Wikidata), modelo normalizado, contratos de integración, semántica de fallos y seams de pruebas offline.
+- [x] Planificación actualizada: PRIORIDADES_CURSO, DECISIONES_PENDIENTES, INVENTARIO_REFORMA, docs/unidades/ud06.md reflejan P0 completado.
 
 ### 7. Decisiones marco (de DECISIONES_PENDIENTES.md)
 - [x] Segundo framework (Laravel/PHP seleccionado como secundario, .NET como anexo)

@@ -109,9 +109,9 @@ Para cada criterio evaluado, se aplican los siguientes niveles de rendimiento:
 
 ### RA 9: Aplicaciones web híbridas y heterogéneas
 *Desarrolla aplicaciones web híbridas seleccionando y utilizando tecnologías, frameworks servidor y repositorios heterogéneos.*
-* **Evidencias clave**: Consumo de APIs de terceros, procesamiento de repositorios heterogéneos (JSON/BSON/XML), integración básica con librerías de IA/datos (FastAPI/Spring AI).
+* **Evidencias clave**: Consumo de APIs de terceros, procesamiento de repositorios heterogéneos (JSON/CSV/XML), integración idempotente con trazabilidad de procedencia.
 
 * **CE a, b, c, d, e, f, g, h**:
   * **SU (5.0)**: Lectura cruda de archivos JSON estáticos en el servidor.
-  * **NT (8.0)**: Consumo programático de APIs externas en tiempo de ejecución (ej. usando WebClient, RestTemplate o Http Client de Laravel) procesando las respuestas y manejando fallos de red.
-  * **SB (10)**: Integración híbrida robusta. Conexión y mapeo con repositorios heterogéneos. Implementación de una integración sencilla con un servicio externo de IA (por ejemplo, llamando a un modelo local/FastAPI para clasificar datos o usando Spring AI/Laravel Prompt) de forma asíncrona y tolerante a fallos.
+  * **NT (8.0)**: Consumo programático de una API externa en tiempo de ejecución (WebClient o similar) procesando las respuestas y manejando fallos de red. Integración de al menos dos fuentes heterogéneas. Trazabilidad básica de procedencia.
+  * **SB (10)**: Integración híbrida robusta con múltiples fuentes, persistencia idempotente, trazabilidad completa de procedencia y licencias. Análisis agregado reproducible que demuestra el valor de la integración. La IA (vía Spring AI o similar) es una vía opcional para el CE g, no un requisito. La misma calificación se alcanza con rigor en el análisis, transformación y verificación sin IA.

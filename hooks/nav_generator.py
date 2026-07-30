@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 EXCLUDE_DIRS = {
-    '90-archivo', '99-profesor', '_profesor', 'Presentaciones', '__pycache__',
+    '90-archivo', '90-historico', '99-profesor', '_profesor', 'Presentaciones', '__pycache__',
     'vendor', 'node_modules', '.git', '.idea', '.settings', 'build', 'target', 'bin',
     'Seguridad',
 }

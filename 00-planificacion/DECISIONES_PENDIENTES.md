@@ -139,7 +139,7 @@ Del inventario:
 
 - **U2c (GraphQL)**: Se mantendrá únicamente como **ejemplo/demostración introductoria**, sin cargarlo como unidad completa con prácticas evaluables.
   - **Motivación**: Los inconvenientes de GraphQL (complejidad en la resolución del N+1, pérdida de caché HTTP estándar a nivel de proxies/CDNs, problemas de seguridad por profundidad de consultas y la falta de códigos de estado HTTP nativos) suelen superar sus ventajas en proyectos estándar. Además, con la especificación del nuevo verbo **HTTP QUERY** (RFC junio 2026), es posible pasar filtros avanzados en el body de peticiones de lectura sin comprometer la semántica REST, quitándole a GraphQL uno de sus principales argumentos de venta.
-- **U6 (Híbridas)**: Solo 1 documento conceptual. Pendiente decidir si se expande con Spring AI o se elimina.
+- **U6 (Híbridas)**: ✅ Decidido: se desarrolla (no se elimina). Spring AI es ampliación opcional P3 (chat model vía Spring AI; no RAG, vectores ni MCP). P0 completado; P1 pendiente.
 
 ## 14. Repositorio Git y publicación GitHub Pages (PARCIALMENTE RESUELTA)
 

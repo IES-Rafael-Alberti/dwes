@@ -4,7 +4,7 @@
 
 UD6 está infradotada: solo contiene `01-documentacion/UD6-AplicacionesHibridas.md`. No hay índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
-**Estado:** alcance auditado y reforma pausada hasta cerrar formalmente UD1, UD2 y UD3, que constituyen el bloque prioritario anterior a Navidad.
+**Estado:** P0 completado (contrato, fuentes, planificación). Pendiente P1 (ejemplo ejecutable).
 
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
@@ -14,7 +14,7 @@ UD6 se mantiene y se amplía porque RA9 tiene un objeto propio: **integrar infor
 
 La unidad tendrá un único proyecto conductor con Spring Boot. Debe consumir una API externa y un conjunto de datos versionado, normalizar ambas fuentes, registrar su procedencia, persistir un repositorio derivado y exponer una consulta o análisis agregado.
 
-Spring AI o un servicio FastAPI pueden aparecer como ampliación opcional para el criterio `g`; no son el eje obligatorio de UD6.
+Spring AI (llamada a un chat model) puede aparecer como ampliación opcional para el criterio `g`. Quedan excluidos RAG, vector stores, MCP y cualquier infraestructura de agentes. La aplicación debe funcionar sin IA. FastAPI se evalúa en P3 si el equipo docente lo considera útil.
 
 ## Alineación con RA9
 
@@ -62,12 +62,13 @@ Spring AI o un servicio FastAPI pueden aparecer como ampliación opcional para e
 
 ## Plan por prioridad
 
-### P0 - recorrido y contrato
+### P0 - recorrido y contrato — completado
 
-- [ ] Crear el README de unidad con propósito, prerrequisitos, RA/CE, secuencia y fuera de alcance.
-- [ ] Sustituir el chat heredado por documentación canónica breve y verificable.
-- [ ] Elegir fuentes externas estables, con licencia y condiciones de uso compatibles con el aula.
-- [ ] Definir el proyecto conductor y sus contratos antes de implementar.
+- [x] Crear el README de unidad con propósito, prerrequisitos, RA/CE, secuencia y fuera de alcance.
+- [x] Archivar el chat heredado como fuente histórica rastreable y crear documento canónico introductorio.
+- [x] Actualizar planificación, rúbrica RA9 y contrato de unidad.
+- [x] Elegir fuentes externas estables, con licencia y condiciones de uso compatibles con el aula.
+- [x] Definir el proyecto conductor y sus contratos antes de implementar.
 
 ### P1 - ejemplo ejecutable
 
@@ -85,7 +86,8 @@ Spring AI o un servicio FastAPI pueden aparecer como ampliación opcional para e
 
 ### P3 - ampliación opcional
 
-- [ ] Evaluar una integración mínima con Spring AI o un servicio FastAPI solo si añade análisis útil no cubierto por el núcleo.
+- [ ] Evaluar una integración mínima con Spring AI (chat model) o FastAPI solo si añade análisis útil no cubierto por el núcleo.
+- **Decisión IA**: solo llamada a un chat model vía Spring AI. Quedan excluidos RAG, vector stores, MCP y agentes. La aplicación debe funcionar sin IA.
 
 ## Criterio de cierre
 
