@@ -145,7 +145,7 @@
 | U5_Laravel/sail/Laravel10-api/ | Laravel10-api/ | Proyecto base | U5 | API Laravel 10 + Sail | Laravel 10, Sail | Vigente | |
 | U5_Laravel/sail/Laravel11-api/ | Laravel11-api/ | Proyecto base | U5 | API Laravel 11 + Sail | Laravel 11, Sail | Vigente | |
 | U5_Laravel/sail/Laravel12-api/ | Laravel12-api/ | Proyecto base | U5 | API Laravel 12 + Sail | Laravel 12, Sail | Vigente (novedad) | Última versión |
-| U5_Laravel/sail/recetas-api-laravel12/ | recetas-api-laravel12/ | Proyecto base | U5 | API recetas Laravel 12 + Sail | Laravel 12, Sail | Vigente (novedad) | |
+| ud05-laravel/02-ejemplos/sail/Laravel12-api/recetas2-api-laravel12/ | recetas2-api-laravel12/ | Proyecto base (canónico) | U5 | API recetas Laravel 12 + Sail (canónico, sustituye a recetas-api-laravel12 eliminado) | Laravel 12, Sail | Vigente | scaffold duplicado recetas-api-laravel12 eliminado; este es el proyecto activo |
 | U5_Laravel/laravel-24_25/ | laravel-24_25/ | Backup/Archivo | U5 | Copia completa del curso anterior (Documentacion, LaravelApi, Proyecto, sail) | Laravel | Archivo | Duplica material. Revisar si hay contenido no duplicado |
 
 ### U6 — Aplicaciones Híbridas

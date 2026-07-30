@@ -64,11 +64,15 @@ UD5 se reforma como **Laravel 12 API-first**. Laravel Sail es el entorno oficial
 
 Esta revisión no bloquea la impartición de UD5, pero debe resolverse antes de considerar terminada su limpieza de repositorios:
 
-- [ ] **Laravel 10 comparativo**: revisar `Laravel10-api/laravel-api10` y conservar un único proyecto funcional que muestre cómo se estructuraba Laravel antes de la simplificación iniciada en Laravel 11 y acentuada en Laravel 12. Evaluar los cambios locales de controladores, rutas, seeder y reglas de ignorado; no migrar este proyecto a Laravel 12 porque su valor es precisamente el contraste.
-- [ ] **Cliente Laravel 10/Vue**: revisar el cambio local de `Laravel10-api/laravel-client/002-ClienteVue_Laravel10-api.org`. Conservarlo solo si aporta valor al contraste histórico o al consumo de la API; no forma parte del recorrido evaluable.
-- [ ] **Ejemplos Laravel 11**: comparar `Laravel11-api/laravel11-api-old` y `Laravel11-api/laravel11-api` con los ejemplos canónicos de Laravel 12. Eliminar los duplicados. Si contienen una técnica necesaria que no esté cubierta, trasladarla a un ejemplo Laravel 12 y retirar la etiqueta y el proyecto Laravel 11.
-- [ ] **Plantillas de entorno**: revisar los `.env.example` no versionados del Blog Laravel 10, los dos ejemplos Laravel 11 y `recetas-api-laravel12`. Solo versionar plantillas reproducibles, sin secretos, rutas personales ni valores locales; descartar las de proyectos que se eliminen.
-- [ ] **Derivados del proyecto**: decidir si eliminar `001-Proyecto_DWES_Cliente-Servidor.html` y `001-Proyecto_DWES_Cliente-Servidor.pdf`. El Markdown publicado continúa siendo la única fuente canónica.
+- [x] **Laravel 10 comparativo**: conservado `Laravel10-api/laravel-api10` y sus `.org` como referencia histórica. Eliminados derivados `.pdf`, `.tex`, `index.html` (Vue build). No se migra a L12: su valor es el contraste.
+- [x] **Cliente Laravel 10/Vue**: conservado el `.org` como referencia histórica. Eliminados `.pdf`, `.tex`, `index.html` generados.
+- [x] **Ejemplos Laravel 11**: conservados los proyectos `laravel11-api` y `laravel11-api-old` como referencia histórica. Eliminados `.pdf`, `.tex` derivados. El `.org` de `002-Laravel11-API-REST-Modernizado` movido desde `Laravel12-api/` a `Laravel11-api/` (donde corresponde). Eliminado su `.pdf` generado y el `.html` generado de `000-Laravel11_12-Consideraciones`.
+- [x] **Plantillas de entorno**: revisados. Los `.env.example` existentes se conservan. Descartado el de `recetas-api-laravel12` (proyecto eliminado por ser scaffold duplicado sin contenido docente único).
+- [x] **Derivados del proyecto**: eliminados `001-Proyecto_DWES_Cliente-Servidor.html`, `001-Proyecto_DWES_Cliente-Servidor.pdf`, y `Documentacion/002-ConsideracionesProyecto.html`. La fuente canónica es el `.md`.
+- [x] **recetas-api-larvel12**: eliminado. Scaffold Laravel 12 vacío sin contenido docente único duplicado por el canónico `recetas2-api-laravel12`.
+- [x] **docker-compose.yml vacío**: eliminado de `sail/` raíz.
+- [x] **002-ConsideracionesProyecto.md**: actualizado de L10+Vue a L12 API-first.
+- [x] **sail/README.md**: actualizada referencia a `recetas-api-laravel12` eliminada.
 
 #### Criterio de aceptación
 

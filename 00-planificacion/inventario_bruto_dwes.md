@@ -103,7 +103,7 @@
 | U5_Laravel/sail/Laravel10-api/ | Laravel10-api/ | Proyecto base/Ejemplo | U5 | API con Laravel 10 + Sail | Laravel 10, Sail, Docker | Vigente | false | |
 | U5_Laravel/sail/Laravel11-api/ | Laravel11-api/ | Proyecto base/Ejemplo | U5 | API con Laravel 11 + Sail | Laravel 11, Sail, Docker | Vigente | false | |
 | U5_Laravel/sail/Laravel12-api/ | Laravel12-api/ | Proyecto base/Ejemplo | U5 | API con Laravel 12 + Sail | Laravel 12, Sail, Docker | Vigente (novedad) | false | Última versión de Laravel |
-| U5_Laravel/sail/recetas-api-laravel12/ | recetas-api-laravel12/ | Proyecto base/Ejemplo | U5 | API de recetas con Laravel 12 + Sail | Laravel 12, Sail, Docker | Vigente (novedad) | false | |
+| ud05-laravel/02-ejemplos/sail/Laravel12-api/recetas2-api-laravel12/ | recetas2-api-laravel12/ | Proyecto base/Ejemplo (canónico) | U5 | API de recetas con Laravel 12 + Sail (canónico, sustituye a recetas-api-laravel12 eliminado) | Laravel 12, Sail, Docker | Vigente | false | Proyecto activo; el scaffold duplicado recetas-api-laravel12 fue eliminado por no contener contenido docente único |
 | U6/UD6-AplicacionesHibridas.md | UD6-AplicacionesHibridas.md | Apunte | U6 | Aplicaciones híbridas: concepto y posibilidades | - | Vigente | false | Unidad muy pequeña, casi solo un documento |
 | Java/calc-api.zip | calc-api.zip | ZIP proyecto base | Java/Previos | API de calculadora en Java (ZIP) | Java | Vigente | false | |
 | Java/calc21.zip | calc21.zip | ZIP proyecto base | Java/Previos | Calculadora Java 21 (ZIP) | Java 21 | Vigente | false | |

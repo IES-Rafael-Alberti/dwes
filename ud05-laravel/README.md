@@ -42,4 +42,4 @@ Cada incremento sigue RED -> GREEN -> REFACTOR. Una API no se considera terminad
 - Ejemplo canónico identificado: API de Recetas Laravel 12.
 - Laravel 10/11 y ejemplos Blade/Vue: referencia histórica, fuera de la ruta obligatoria.
 - Ejemplo canónico validado con Sail: la suite cubre salud pública, autenticación, CRUD, validación, autorización y reglas de negocio.
-- Pendiente: consolidar la guía de Recetas y reconstruir el enunciado del proyecto sobre Laravel 12.
+- P3 completado: limpieza de derivados generados, movimiento de materiales L11 a su área histórica, actualización de `002-ConsideracionesProyecto.md` y eliminación de scaffold duplicado.

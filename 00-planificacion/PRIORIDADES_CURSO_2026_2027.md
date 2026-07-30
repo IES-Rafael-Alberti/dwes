@@ -28,7 +28,7 @@ Una unidad prioritaria solo se considera cerrada cuando:
 ## Alcance posterior a Navidad
 
 - **UD4**: cerrada para impartición; solo mantenimiento y verificaciones operativas no bloqueantes.
-- **UD5**: cerrada para impartición; solo limpieza histórica P3 no bloqueante.
+- **UD5**: cerrada y verificada; limpieza histórica P3 completada.
 - **UD6**: alcance auditado y definido, pero implementación pausada.
 - **UD7**: se diseñará según el calendario efectivo y la coordinación del proyecto integrador.
 
