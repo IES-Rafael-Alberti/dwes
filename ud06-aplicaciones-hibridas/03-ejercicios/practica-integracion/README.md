@@ -368,8 +368,9 @@ proyecto/
 
 Todas las clases de prueba del árbol son **entregables escritos por el estudiante**;
 se permite organizarlas en los paquetes correspondientes sin cambiar sus nombres.
-Las pruebas de aceptación reservadas para el futuro P2B serán instrumentos docentes
-separados: todavía no se suministran ni se invocan en esta práctica.
+El [proyecto evaluable P2B](../../04-proyectos/proyecto-integracion-hibrida/README.md)
+define después sus propios comandos de aceptación y exige transferencia a otras
+fuentes. No se suministran pruebas ocultas ni código de solución en esta práctica.
 
 La entrega incluye código fuente, fixtures permitidos, pruebas e informes. No
 incluye `target/`, secretos, volcados completos del proveedor, cuentas personales

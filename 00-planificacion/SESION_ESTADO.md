@@ -1,6 +1,6 @@
 # Estado del proyecto — DWES 2026/2027
 
-*Última actualización: 25 julio 2026*
+*Última actualización: 31 julio 2026*
 
 ---
 
@@ -138,9 +138,13 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] `ud02a_semanas_1_4.gift`: 12 preguntas (Spring Boot, TDD, REST, servicios, errores, slicing)
 - [x] `ud02a_semanas_5_8.gift`: 8 preguntas (seguridad JWT, Battleship, migración SB3→SB4)
 
-### 6. UD6 — Aplicaciones híbridas — P0, P1 y P2A completados; P2B pendiente
+### 6. UD6 — Aplicaciones híbridas — P0, P1 y P2 completados
 - [x] Contrato Fase 0 creado con fuentes (Open Library + Wikidata), modelo normalizado, contratos de integración, semántica de fallos y seams de pruebas offline.
-- [x] Ejemplo ejecutable P1 y práctica incremental con seguridad transversal P2A completados; proyecto evaluable e instrumentos P2B pendientes.
+- [x] Ejemplo ejecutable P1 y práctica guiada P2A completados, con seguridad transversal y análisis acotado con Tablesaw.
+- [x] P2B completado: proyecto independiente de transferencia, matriz oficial RA9.a-h y rúbrica criterial, sin solución pública.
+- [x] Banco privado de 14 preguntas preparado localmente para Moodle, ignorado y no versionado por la política de evaluación.
+- [ ] Importar el banco privado de UD6 en Moodle; verificación operativa docente no bloqueante.
+- [ ] P3 permanece como llamada de chat opcional; no bloquea el cierre del núcleo.
 
 ### 7. Decisiones marco (de DECISIONES_PENDIENTES.md)
 - [x] Segundo framework (Laravel/PHP seleccionado como secundario, .NET como anexo)

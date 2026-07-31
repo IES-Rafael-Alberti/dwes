@@ -208,9 +208,13 @@ prueba contacta con Open Library real ni espera un segundo real por el throttle.
 - **Sin Spring Actuator ni métricas de proveedor**: la observabilidad se limita al
   logging SLF4J de este ejemplo.
 
-## Siguiente paso: P2B
+## Continuidad: de la práctica al proyecto evaluable
 
 P2A ya está completado con la
 [práctica incremental](../../03-ejercicios/practica-integracion/README.md) y la
-[seguridad transversal](../../06-seguridad/README.md). Solo queda pendiente P2B:
-el proyecto evaluable, la rúbrica RA9.a-h y el cuestionario docente.
+[seguridad transversal](../../06-seguridad/README.md). Después se realiza el
+[proyecto evaluable P2B](../../04-proyectos/proyecto-integracion-hibrida/README.md),
+que exige transferir estos patrones a fuentes y decisiones propias. La
+[trazabilidad RA9](../../04-proyectos/proyecto-integracion-hibrida/ra-ce-evidencias.md)
+y la [rúbrica](../../04-proyectos/proyecto-integracion-hibrida/rubrica-ra9.md)
+se corrigen sobre evidencias del proyecto, no sobre una copia de este ejemplo.

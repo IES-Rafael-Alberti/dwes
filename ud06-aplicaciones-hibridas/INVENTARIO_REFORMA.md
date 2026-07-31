@@ -4,7 +4,7 @@
 
 UD6 estaba infradotada: solo contenía `01-documentacion/UD6-AplicacionesHibridas.md`. No había índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
-**Estado:** P0, P1 y P2A completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. P2A incorpora la práctica incremental, un requisito acotado de análisis con Tablesaw y la seguridad transversal. P2B permanece pendiente. Los reintentos seguros quedan como ampliación opcional y no bloquean P1.
+**Estado:** P0, P1 y P2 completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. P2A incorpora la práctica guiada, un requisito acotado de análisis con Tablesaw y la seguridad transversal. P2B aporta el proyecto evaluable independiente, la trazabilidad literal RA9.a-h y la rúbrica; el banco privado de 14 preguntas está preparado localmente para Moodle y no se versiona. Los reintentos seguros y P3 quedan como ampliaciones opcionales.
 
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
@@ -117,15 +117,18 @@ este inventario no sustituye esos entregables.
 - [x] Añadir la [seguridad transversal](06-seguridad/README.md): secretos, SSRF, datos externos no confiables, fallos, cuotas, caché, privacidad, licencias, dependencias y dobles de prueba.
 - [x] Delimitar la llamada de chat con Spring AI como enriquecimiento opcional que no acredita RA9.g por sí solo; excluir RAG, almacenes vectoriales, MCP y agentes.
 
-**P2B — Proyecto evaluable e instrumentos** (pendiente)
+**P2B — Proyecto evaluable e instrumentos** (completado)
 
-- [ ] Crear un proyecto evaluable independiente sin solución pública.
-- [ ] Crear la rúbrica específica de RA9.a-h.
-- [ ] Preparar, separadas de los tests que debe escribir el alumnado, las pruebas de aceptación P2B, documentación y cuestionario docente en sus ubicaciones correspondientes.
+- [x] Crear el [proyecto evaluable independiente](04-proyectos/proyecto-integracion-hibrida/README.md), sin solución pública y distinto del ejemplo de Open Library.
+- [x] Trazar la redacción oficial RA9.a-h a artefactos, pruebas, informe y defensa en la [matriz de evidencias](04-proyectos/proyecto-integracion-hibrida/ra-ce-evidencias.md).
+- [x] Crear la [rúbrica específica de RA9.a-h](04-proyectos/proyecto-integracion-hibrida/rubrica-ra9.md), sin pesos inventados y con descriptores observables.
+- [x] Definir comandos de aceptación offline y pruebas que debe escribir el alumnado sin publicar pruebas ocultas ni código de solución.
+- [x] Preparar localmente un banco privado de 14 preguntas para Moodle, no versionado ni enlazado públicamente por la política de evaluación.
+- [ ] Importar el banco privado en Moodle; paso operativo docente no bloqueante mientras no se haya realizado.
 
 ### P3 - ampliación opcional
 
-- [ ] Evaluar una integración mínima con Spring AI (chat model) o FastAPI solo si añade análisis útil no cubierto por el núcleo.
+- [ ] Evaluar, solo si aporta valor y hay tiempo, una integración mínima con Spring AI (chat model); no bloquea el cierre de P2 ni de la unidad.
 - **Decisión IA**: solo llamada a un chat model vía Spring AI. Quedan excluidos RAG, vector stores, MCP y agentes. La aplicación debe funcionar sin IA.
 
 ## Criterio de cierre

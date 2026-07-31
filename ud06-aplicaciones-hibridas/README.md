@@ -15,8 +15,8 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 | **P0** | Contrato, publicación, fuentes | **Completado** |
 | **P1** | Ejemplo ejecutable con Spring Boot | **Completado** — P1A/P1B/P1C: modelo e ingesta idempotente, cliente Open Library, caché oficial `spring-boot-starter-cache` + Caffeine (máx. 100, TTL 24 h, clave normalizada), control de tasa 1 req/s y observabilidad SLF4J. **55 pruebas offline superadas**; los reintentos son una ampliación opcional y no bloquean P1 |
 | **P2A** | Práctica incremental y seguridad transversal | **Completado** — entregables RA9.a-h, análisis acotado con Tablesaw y auditoría de consumo de terceros |
-| **P2B** | Proyecto evaluable, rúbrica e instrumentos docentes | Pendiente |
-| **P3** | Ampliación opcional (IA) | Planificado |
+| **P2B** | Proyecto de transferencia evaluable, trazabilidad RA9 y rúbrica; banco GIFT privado preparado para Moodle | **Completado** |
+| **P3** | Ampliación opcional (una llamada de chat) | Opcional; no iniciada |
 
 ## Prerrequisitos
 
@@ -26,10 +26,13 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 
 ## RA9 — Mapa de evidencias
 
-Esta tabla resume la trazabilidad. Los nombres de entregables y tests obligatorios
-se detallan en la [matriz de la práctica](03-ejercicios/practica-integracion/README.md#trazabilidad-minima-de-ra9).
+> **9. Desarrolla aplicaciones web híbridas seleccionando y utilizando tecnologías, frameworks servidor y repositorios heterogéneos de información.**
 
-| CE | Título | Evidencia prevista |
+La tabla siguiente resume la evidencia de aprendizaje de **P2A**. Sus nombres de
+prueba pertenecen a la [práctica guiada](03-ejercicios/practica-integracion/README.md#trazabilidad-minima-de-ra9)
+y no constituyen el mapa canónico del proyecto independiente P2B.
+
+| CE | Título | Evidencia guiada de P2A |
 |----|--------|--------------------|
 | a | Reutilización de código e información existente | Decisión y coste evitado en `docs/fuentes.md` |
 | b | Identificación de librerías y tecnologías | Comparativa y selección en `docs/fuentes.md`, incluida la alternativa a Tablesaw |
@@ -39,6 +42,21 @@ se detallan en la [matriz de la práctica](03-ejercicios/practica-integracion/RE
 | f | Programación con código de terceros | Contrato, licencia y atribución en el informe, verificados por tests de fuente |
 | g | Análisis e inteligencia de datos | Tablesaw sobre datos normalizados, comparación e interpretación en `docs/informe-final.md` y `RepositoryAnalysisTest`; el chat opcional no basta |
 | h | Pruebas, depuración y documentación | Nueve tests escritos por el alumnado, diagnóstico y comandos offline registrados en `docs/informe-final.md` |
+
+### Evidencia independiente de P2B
+
+P2B define [su propia tabla de pruebas y reproducibilidad](04-proyectos/proyecto-integracion-hibrida/README.md#8-pruebas-reproducibilidad-y-documentacion):
+el corte mínimo cubre siete comportamientos —carga y procedencia del dataset,
+invariantes del modelo neutral, contrato y mapeo del adaptador externo, identidad
+con idempotencia y rollback básico, análisis BI reproducible, un fallo controlado
+representativo y aplicable, y una política determinista de protección del
+proveedor—. Los dos refinamientos de nivel superior son la matriz de fallos
+aplicable y la concurrencia/conflicto con resultado transaccional observable.
+Los nombres de clase son orientativos y pueden adaptarse justificadamente.
+
+La trazabilidad se evalúa con la [matriz oficial de P2B](04-proyectos/proyecto-integracion-hibrida/ra-ce-evidencias.md)
+y su [rúbrica criterial](04-proyectos/proyecto-integracion-hibrida/rubrica-ra9.md),
+sin trasladar automáticamente las nueve clases de P2A.
 
 ## Secuencia canónica
 
@@ -54,8 +72,14 @@ se detallan en la [matriz de la práctica](03-ejercicios/practica-integracion/RE
 ## Material canónico para el alumnado
 
 - [Práctica incremental de integración](03-ejercicios/practica-integracion/README.md): recorrido evaluable offline por checkpoints, sin solución pública.
+- [Proyecto evaluable de integración híbrida](04-proyectos/proyecto-integracion-hibrida/README.md): transferencia independiente a fuentes y dominio aprobados, con entregables, hitos, aceptación y defensa.
+- [Evidencias RA9 del proyecto](04-proyectos/proyecto-integracion-hibrida/ra-ce-evidencias.md) y [rúbrica específica](04-proyectos/proyecto-integracion-hibrida/rubrica-ra9.md): trazabilidad y niveles observables sin ponderaciones inventadas.
 - [Seguridad al consumir APIs y datos de terceros](06-seguridad/README.md): modelo de amenazas, controles y lista de auditoría enlazada desde la práctica.
 - [Catálogo Cultural Híbrido](02-ejemplos/catalogo-cultural-hibrido/README.md): ejemplo P1 de referencia, no plantilla para copiar.
+
+El banco GIFT privado de 14 preguntas está preparado localmente para Moodle. No se
+versiona ni se enlaza públicamente por la política de evaluación. Su importación
+en Moodle continúa como paso operativo docente mientras no se haya realizado.
 
 ## Concepto conductor: Catálogo Cultural Híbrido
 
@@ -68,9 +92,13 @@ Aplicación Spring Boot que integra:
 
 No se implementa frontend completo, autenticación JWT como contenido nuevo, OpenAPI como novedad ni arquitectura por capas como aprendizaje.
 
-## Alcance obligatorio vs opcional
+## Alcance del ejemplo y del proyecto
 
-### Obligatorio (P1–P2)
+### Comportamiento del ejemplo canónico P1
+
+Estos requisitos describen el comportamiento implementado por el Catálogo
+Cultural Híbrido de P1. Son referencia técnica, no requisitos universales que
+P2B deba copiar con otras fuentes.
 
 | Requisito | Detalle |
 |-----------|---------|
@@ -84,6 +112,17 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | Análisis/BI | `tablesaw-core` sobre datos normalizados, comparación razonada, informe y test determinista |
 | Casos de error | Timeout, respuesta inválida, límite de cuota, proveedor no disponible |
 | Documentación | Arranque, arquitectura, fuentes, decisiones, limitaciones |
+
+### Corte obligatorio de P2B
+
+P2B exige offline al menos **un fallo controlado representativo y aplicable** a la
+fuente aprobada. La matriz separada de timeout, `429`, `5xx` y datos malformados
+aporta evidencia de nivel superior únicamente para los casos contemplados por su
+contrato. Del mismo modo, caché y control de tasa son obligatorios solo cuando los
+términos, la cuota o la carga prevista los justifican; en otro caso se documenta
+y prueba de forma determinista una política equivalente de protección del
+proveedor. El [enunciado de P2B](04-proyectos/proyecto-integracion-hibrida/README.md#corte-minimo-obligatorio)
+define el corte completo y sus refinamientos.
 
 ### Opcional (P3)
 
@@ -120,4 +159,5 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | P1A | 2026-07 | Modelo, repositorio JPA, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, `spring-boot-starter-webclient` para WebClient en P1B |
 | P1B | 2026-07 | Cliente Open Library (`/search.json`) con propiedades tipadas, mapeo a `CulturalRecord` y fallos controlados; orquestación `CatalogSearchService` sobre la ingesta idempotente; 39 pruebas offline con WireMock 3 |
 | P1C | 2026-07 | Integración oficial `spring-boot-starter-cache` + Caffeine (`SearchCachingConfig`, caché predeclarada, máx. 100, expire-after-write 24 h, clave = consulta normalizada + límite), control de tasa conservador 1 req/s y observabilidad SLF4J; 55 pruebas offline superadas. Reintentos seguros opcionales |
-| P2A | 2026-07 | Práctica incremental con nueve checkpoints y evidencia observable RA9.a-h; Tablesaw 0.44.4 aplicado a cobertura del repositorio con test offline; política SSRF por entorno y auditoría de secretos, datos no confiables, resiliencia, cuotas, privacidad, licencias y dobles. P2B permanece pendiente |
+| P2A | 2026-07 | Práctica guiada incremental con nueve checkpoints y evidencia observable RA9.a-h; Tablesaw 0.44.4 aplicado a cobertura del repositorio con test offline; política SSRF por entorno y auditoría de secretos, datos no confiables, resiliencia, cuotas, privacidad, licencias y dobles |
+| P2B | 2026-07 | Proyecto independiente de transferencia con aprobación previa de fuentes, matriz literal RA9.a-h, rúbrica criterial, aceptación offline y defensa. Banco GIFT privado de 14 preguntas preparado localmente para Moodle, no versionado; no se publica solución |
