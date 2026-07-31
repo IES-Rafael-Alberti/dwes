@@ -55,7 +55,8 @@ La operación de importación es **idempotente**: ejecutarla múltiples veces so
 - **Campos solicitados**: `key`, `title`, `author_name`, `first_publish_year`, `subject`, `cover_edition_key`.
 - **Cache**: las respuestas se almacenan localmente con TTL configurable (por defecto 24 h). No repetir la misma petición en el mismo TTL.
 - **User-Agent**: `DWES-UD6/1.0 (docencia; contacto: <email-del-docente>)`.
-- **Fallo de red/timeout**: reintento máximo 1 tras espera exponencial; si persiste, error controlado sin estado inconsistente.
+- **Fallo de red/timeout**: error controlado sin reintento automático y sin estado inconsistente.
+- **Política de reintentos de P1**: el camino núcleo no realiza reintentos automáticos. Los reintentos con backoff + jitter quedan como experimento futuro opcional de resiliencia.
 
 ### Importación desde Wikidata (fixture local)
 
@@ -74,12 +75,14 @@ La operación de importación es **idempotente**: ejecutarla múltiples veces so
 
 | Condición | Comportamiento |
 |-----------|----------------|
-| Open Library devuelve `429 Too Many Requests` | Esperar y reintentar 1 vez con backoff; si persiste, error informativo sin dato parcial |
-| Open Library devuelve `5xx` | Reintentar 1 vez tras espera breve; si persiste, error informativo |
+| Open Library devuelve `429 Too Many Requests` | Devolver error controlado e informativo, sin reintento automático ni dato parcial |
+| Open Library devuelve `5xx` | Devolver error controlado e informativo, sin reintento automático |
 | Timeout de conexión/lectura | Capturar como error controlado; no persistir estado inconsistente |
 | Respuesta malformada (JSON inválido) | Error controlado; no persistir datos corruptos |
 | Fixture local ausente o malformado | Error en arranque (fail-fast); detectable en pruebas |
 | Caché expirada sin conexión | Usar caché existente con advertencia; no fallar silenciosamente |
+
+P1 se considera completo con esta política: caché, control de tasa y errores controlados protegen el camino núcleo. Los reintentos limitados con backoff + jitter no son obligatorios; se reservan como experimento futuro opcional y deberán demostrar que no amplifican respuestas `429` ni fallos `5xx`.
 
 ## Seam de pruebas offline
 

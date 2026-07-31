@@ -1,6 +1,7 @@
 package es.iesrafaelalberti.dwes.catalogoculturalhibrido.service;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import es.iesrafaelalberti.dwes.catalogoculturalhibrido.cache.SearchCachingConfig;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.client.OpenLibraryClient;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.client.OpenLibraryClientException;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.model.CulturalItem;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -34,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code @DynamicPropertySource}, so the real Open Library is never contacted.</p>
  */
 @SpringBootTest
+@ActiveProfiles("test")
 class CatalogSearchServiceTest {
 
     private static final String TWO_DOCS_JSON = """
@@ -78,9 +83,16 @@ class CatalogSearchServiceTest {
     @Autowired
     private CulturalItemRepository repository;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @BeforeEach
-    void cleanDatabase() {
+    void cleanDatabaseAndCache() {
         repository.deleteAll();
+        Cache cache = cacheManager.getCache(SearchCachingConfig.SEARCH_RESULTS_CACHE);
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
     @Test

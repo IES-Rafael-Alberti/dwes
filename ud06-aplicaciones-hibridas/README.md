@@ -13,7 +13,7 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 | Fase | Contenido | Estado |
 |------|-----------|--------|
 | **P0** | Contrato, publicación, fuentes | **Completado** |
-| **P1** | Ejemplo ejecutable con Spring Boot | **P1A completado** — modelo, repositorio, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, WebClient para P1B — **P1B completado** — cliente Open Library con mapeo y fallos controlados, orquestación idempotente, 39 pruebas offline con WireMock |
+| **P1** | Ejemplo ejecutable con Spring Boot | **Completado** — P1A/P1B/P1C: modelo e ingesta idempotente, cliente Open Library, caché oficial `spring-boot-starter-cache` + Caffeine (máx. 100, TTL 24 h, clave normalizada), control de tasa 1 req/s y observabilidad SLF4J. **55 pruebas offline superadas**; los reintentos son una ampliación opcional y no bloquean P1 |
 | **P2** | Práctica y evaluación | Planificado |
 | **P3** | Ampliación opcional (IA) | Planificado |
 
@@ -68,7 +68,7 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | Ingesta dual | API externa + dataset versionado en formato diferente |
 | Mapeo y persistencia | Modelo propio, repositorio derivado, idempotencia |
 | Procedencia | Licencia, instante de actualización, política de refresco |
-| Resiliencia | Caché o degradación controlada; reintentos seguros y limitados |
+| Resiliencia | Caché y control de tasa; reintentos seguros como ampliación opcional |
 | Seguridad | API keys protegidas, validación de datos externos no confiables |
 | Pruebas offline | Dobles del proveedor, sin dependencia de Internet |
 | Casos de error | Timeout, respuesta inválida, límite de cuota, proveedor no disponible |
@@ -108,3 +108,4 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | P0 | 2026-07 | README, contrato, archivo de chat, planificación, rúbrica |
 | P1A | 2026-07 | Modelo, repositorio JPA, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, `spring-boot-starter-webclient` para WebClient en P1B |
 | P1B | 2026-07 | Cliente Open Library (`/search.json`) con propiedades tipadas, mapeo a `CulturalRecord` y fallos controlados; orquestación `CatalogSearchService` sobre la ingesta idempotente; 39 pruebas offline con WireMock 3 |
+| P1C | 2026-07 | Integración oficial `spring-boot-starter-cache` + Caffeine (`SearchCachingConfig`, caché predeclarada, máx. 100, expire-after-write 24 h, clave = consulta normalizada + límite), control de tasa conservador 1 req/s y observabilidad SLF4J; 55 pruebas offline superadas. Reintentos seguros opcionales |

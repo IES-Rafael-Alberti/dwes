@@ -4,7 +4,7 @@
 
 UD6 está infradotada: solo contiene `01-documentacion/UD6-AplicacionesHibridas.md`. No hay índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
-**Estado:** P0 completado (contrato, fuentes, planificación). Pendiente P1 (ejemplo ejecutable).
+**Estado:** P0 y P1 completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. Los reintentos seguros quedan como ampliación opcional y no bloquean P1.
 
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
@@ -95,12 +95,13 @@ Spring AI (llamada a un chat model) puede aparecer como ampliación opcional par
 - [x] 39 pruebas offline con WireMock 3 (`wiremock-standalone`, JUnit 5, puerto dinámico): ruta/query/fields/limit, User-Agent, mapeo, resultado vacío, 429, 5xx, JSON malformado, timeout con delay fijo y re-importación idempotente.
 - [x] Documentación actualizada del proyecto, la unidad y el inventario, con política de uso de Open Library (1 req/s, 3 req/s identificado, cacheo/atribución, sin rastreo masivo).
 
-**P1C — Resiliencia, caché y observabilidad** (pendiente)
+**P1C — Resiliencia, caché y observabilidad** (completado: 55 pruebas offline superadas)
 
-- [ ] Caché de respuestas con TTL (contrato: 24 h por defecto) respetando la política de cacheo de Open Library.
-- [ ] Control de tasa acorde a 1 req/s (3 req/s identificado).
-- [ ] Reintentos seguros y limitados (backoff + jitter) solo para 429/5xx, sin thundering herd.
-- [ ] Observabilidad de fallos y métricas del proveedor.
+- [x] Caché de respuestas con TTL (contrato: 24 h por defecto) respetando la política de Open Library: integración oficial `spring-boot-starter-cache` + Caffeine gestionada por Boot 4.0.5, `SearchCachingConfig` dedicado (`@Configuration @EnableCaching`), caché predeclarada `openLibrarySearchResults`, máx. 100 entradas y expire-after-write 24 h mediante propiedades Boot; clave = consulta normalizada (trim + minúsculas) + límite acotado (`OpenLibrarySearchKeyGenerator`); nunca se cachean fallos ni valores nulos/inválidos.
+- [x] Control de tasa acorde a 1 req/s (3 req/s identificado): `RequestThrottle` con `OpenLibraryRequestThrottle` conservador (mínimo 1 s) adquirido antes de cada llamada no cacheada; los aciertos de caché saltan proveedor y throttle; `Clock` y `ThrottleWait` inyectados para pruebas con tiempo falso sin dormir.
+- [x] Decisión de resiliencia documentada: no hay reintentos automáticos para evitar amplificar 429/5xx; backoff + jitter queda como ampliación opcional y no bloquea P1.
+- [x] Observabilidad de fallos del proveedor mediante logging SLF4J respetuoso con la privacidad: inicio, éxito (duración + nº de resultados) y categoría de fallo controlada (`rate_limit`, `server_error`, `timeout`, `malformed_response`, `unreachable`); la consulta cruda solo se registra a nivel DEBUG, nunca a INFO. No se incorporan Actuator ni Micrometer.
+- [x] 55 pruebas offline deterministas (39 previas + 16 nuevas): acierto de caché, normalización, límites distintos, fallos no cacheados, bypass de throttle en acierto, espaciado secuencial y concurrente del throttle con reloj falso, oversleep del scheduler, interrupción de la espera, y configuración de caché (máx. 100 / TTL 24 h).
 
 ### P2 - práctica y evaluación
 
