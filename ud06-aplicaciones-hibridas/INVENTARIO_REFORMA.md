@@ -72,8 +72,21 @@ Spring AI (llamada a un chat model) puede aparecer como ampliación opcional par
 
 ### P1 - ejemplo ejecutable
 
-- [ ] Crear un cliente mínimo que demuestre mapeo y tratamiento de fallos con pruebas offline.
-- [ ] Añadir ingesta idempotente, procedencia y repositorio derivado.
+**P1A — Fundación local** (completado)
+
+- [x] Crear proyecto Maven con Spring Boot 4.0.5 y Java 25.
+- [x] Modelo `CulturalItem` con identidad `(source, externalId)` y `@UniqueConstraint`.
+- [x] Spring Data JPA repository con `findBySourceAndExternalId`.
+- [x] IngestionService con upsert idempotente y control de errores.
+- [x] Fixture Wikidata CC0 con 5 registros verificados vía API (QIDs canónicos: incluye Las Meninas Q208758 y Hamlet Q41567, sin QIDs sintéticos).
+- [x] H2 para ejecución local y pruebas.
+- [x] 18 tests: 3 unitarios (CulturalItem), 5 repositorio, 10 integración (parseo, idempotencia, actualización, upsert mixto, batch multi-fuente, lista vacía, error, rollback real).
+- [x] Dependencia `spring-boot-starter-webclient` en lugar de `spring-boot-starter-webflux`: starter focalizado de Boot 4 que provee Jackson 3 (paquete `tools.jackson.*`) y WebClient para P1B sin arrancar un servidor reactivo.
+- [x] Documentación del proyecto, dataset y arquitectura.
+
+**P1B — Integración remota** (pendiente)
+
+- [ ] Crear un cliente mínimo que demuestre mapeo y tratamiento de fallos con pruebas offline (WebClient ya disponible vía `spring-boot-starter-webclient`).
 - [ ] Incorporar resiliencia, caché y observabilidad proporcionadas al alcance docente.
 - [ ] Validar todo con Java 25 y la versión vigente de Spring Boot usada en el módulo.
 

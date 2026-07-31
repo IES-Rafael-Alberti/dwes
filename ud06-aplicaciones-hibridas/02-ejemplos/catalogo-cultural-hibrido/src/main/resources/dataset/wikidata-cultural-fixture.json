@@ -1,0 +1,57 @@
+[
+  {
+    "source": "WIKIDATA",
+    "externalId": "Q480",
+    "title": "Don Quixote",
+    "creators": ["Miguel de Cervantes"],
+    "year": 1605,
+    "subjects": ["novel", "Spanish Golden Age", "picaresque"],
+    "sourceUrl": "https://www.wikidata.org/wiki/Q480",
+    "license": "CC0-1.0",
+    "retrievedAt": "2026-07-30T00:00:00"
+  },
+  {
+    "source": "WIKIDATA",
+    "externalId": "Q12418",
+    "title": "Mona Lisa",
+    "creators": ["Leonardo da Vinci"],
+    "year": 1503,
+    "subjects": ["painting", "Renaissance", "portrait"],
+    "sourceUrl": "https://www.wikidata.org/wiki/Q12418",
+    "license": "CC0-1.0",
+    "retrievedAt": "2026-07-30T00:00:00"
+  },
+  {
+    "source": "WIKIDATA",
+    "externalId": "Q252485",
+    "title": "The Great Wave off Kanagawa",
+    "creators": ["Katsushika Hokusai"],
+    "year": 1831,
+    "subjects": ["ukiyo-e", "woodblock print", "Japanese art"],
+    "sourceUrl": "https://www.wikidata.org/wiki/Q252485",
+    "license": "CC0-1.0",
+    "retrievedAt": "2026-07-30T00:00:00"
+  },
+  {
+    "source": "WIKIDATA",
+    "externalId": "Q208758",
+    "title": "Las Meninas",
+    "creators": ["Diego Velázquez"],
+    "year": 1656,
+    "subjects": ["painting", "Baroque", "Spanish Golden Age"],
+    "sourceUrl": "https://www.wikidata.org/wiki/Q208758",
+    "license": "CC0-1.0",
+    "retrievedAt": "2026-07-30T00:00:00"
+  },
+  {
+    "source": "WIKIDATA",
+    "externalId": "Q41567",
+    "title": "Hamlet",
+    "creators": ["William Shakespeare"],
+    "year": 1601,
+    "subjects": ["play", "tragedy", "Elizabethan theatre"],
+    "sourceUrl": "https://www.wikidata.org/wiki/Q41567",
+    "license": "CC0-1.0",
+    "retrievedAt": "2026-07-30T00:00:00"
+  }
+]
