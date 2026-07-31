@@ -138,9 +138,9 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] `ud02a_semanas_1_4.gift`: 12 preguntas (Spring Boot, TDD, REST, servicios, errores, slicing)
 - [x] `ud02a_semanas_5_8.gift`: 8 preguntas (seguridad JWT, Battleship, migración SB3→SB4)
 
-### 6. UD6 — Aplicaciones híbridas — P0 completado; P1 pendiente
+### 6. UD6 — Aplicaciones híbridas — P0, P1 y P2A completados; P2B pendiente
 - [x] Contrato Fase 0 creado con fuentes (Open Library + Wikidata), modelo normalizado, contratos de integración, semántica de fallos y seams de pruebas offline.
-- [x] Planificación actualizada: PRIORIDADES_CURSO, DECISIONES_PENDIENTES, INVENTARIO_REFORMA, docs/unidades/ud06.md reflejan P0 completado.
+- [x] Ejemplo ejecutable P1 y práctica incremental con seguridad transversal P2A completados; proyecto evaluable e instrumentos P2B pendientes.
 
 ### 7. Decisiones marco (de DECISIONES_PENDIENTES.md)
 - [x] Segundo framework (Laravel/PHP seleccionado como secundario, .NET como anexo)
@@ -150,7 +150,7 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [ ] Decidir publicación de enunciados de ejercicios/proyectos en GitHub Pages
 - [x] Crear rúbrica común del módulo por RA/CE (v1 creada — pendiente de refinar)
 - [x] Decidir futuro de U2c (GraphQL) (relegado a demostración introductoria)
-- [ ] Decidir futuro de U6 (Híbridas)
+- [x] Decidir futuro de U6 (Híbridas)
 
 ### 8. Reforma de UD3 — ✅ NÚCLEO COMPLETADO
 

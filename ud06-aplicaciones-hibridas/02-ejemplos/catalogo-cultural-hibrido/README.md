@@ -28,6 +28,12 @@ atribución y límites de uso del proveedor (cacheo obligatorio, ~1 req/s), con 
 
 Requiere Java 25+ y Maven 3.6+.
 
+Para trabajar sin red no basta con descargar las dependencias directas: Maven
+necesita también plugins y todos los artefactos transitivos. Docente y estudiante
+deben ejecutar una vez con red estos comandos exactos —o ejecutar primero
+`mvn dependency:go-offline` y después los mismos comandos—. Tras desconectar, se
+repiten como `mvn -o compile`, `mvn -o test` y `mvn -o package`.
+
 ## Arquitectura (P1C)
 
 ```
@@ -202,9 +208,9 @@ prueba contacta con Open Library real ni espera un segundo real por el throttle.
 - **Sin Spring Actuator ni métricas de proveedor**: la observabilidad se limita al
   logging SLF4J de este ejemplo.
 
-## Siguiente paso: P2
+## Siguiente paso: P2B
 
-- Reintentos seguros y limitados como ampliación opcional, sobre el throttle y la
-  caché ya implementados.
-- Práctica incremental y proyecto evaluable.
-- Seguridad transversal (secretos, SSRF, cuotas, licencias, datos externos no confiables).
+P2A ya está completado con la
+[práctica incremental](../../03-ejercicios/practica-integracion/README.md) y la
+[seguridad transversal](../../06-seguridad/README.md). Solo queda pendiente P2B:
+el proyecto evaluable, la rúbrica RA9.a-h y el cuestionario docente.

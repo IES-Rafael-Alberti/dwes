@@ -14,7 +14,8 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 |------|-----------|--------|
 | **P0** | Contrato, publicación, fuentes | **Completado** |
 | **P1** | Ejemplo ejecutable con Spring Boot | **Completado** — P1A/P1B/P1C: modelo e ingesta idempotente, cliente Open Library, caché oficial `spring-boot-starter-cache` + Caffeine (máx. 100, TTL 24 h, clave normalizada), control de tasa 1 req/s y observabilidad SLF4J. **55 pruebas offline superadas**; los reintentos son una ampliación opcional y no bloquean P1 |
-| **P2** | Práctica y evaluación | Planificado |
+| **P2A** | Práctica incremental y seguridad transversal | **Completado** — entregables RA9.a-h, análisis acotado con Tablesaw y auditoría de consumo de terceros |
+| **P2B** | Proyecto evaluable, rúbrica e instrumentos docentes | Pendiente |
 | **P3** | Ampliación opcional (IA) | Planificado |
 
 ## Prerrequisitos
@@ -25,16 +26,19 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 
 ## RA9 — Mapa de evidencias
 
+Esta tabla resume la trazabilidad. Los nombres de entregables y tests obligatorios
+se detallan en la [matriz de la práctica](03-ejercicios/practica-integracion/README.md#trazabilidad-minima-de-ra9).
+
 | CE | Título | Evidencia prevista |
 |----|--------|--------------------|
-| a | Reutilización de código e información existente | Justificación de qué código/datos se reutilizan y qué coste evitan |
-| b | Identificación de librerías y tecnologías | Comparación y selección razonada de cliente HTTP, mapeo, persistencia, resiliencia |
-| c | Recuperación y procesamiento | Ingesta real de una API externa y un dataset versionado |
-| d | Creación de repositorios propios | Construcción idempotente con procedencia, licencia y fecha de actualización |
-| e | Uso de librerías para funcionalidades específicas | Empleo justificado de librerías para HTTP, mapeo, resiliencia o análisis |
-| f | Programación con código de terceros | Servicio que respeta contrato, licencia y atribución de la fuente original |
-| g | Análisis e inteligencia de datos | Análisis reproducible; IA externa solo como ampliación opcional (P3) |
-| h | Pruebas, depuración y documentación | Pruebas con proveedor simulado, diagnóstico de fallos, documentación reproducible |
+| a | Reutilización de código e información existente | Decisión y coste evitado en `docs/fuentes.md` |
+| b | Identificación de librerías y tecnologías | Comparativa y selección en `docs/fuentes.md`, incluida la alternativa a Tablesaw |
+| c | Recuperación y procesamiento | Adaptadores demostrados por `LocalDatasetTest` y `ExternalProviderClientTest` |
+| d | Creación de repositorios propios | Contrato e ingesta demostrados por `NormalizedContractTest` e `IdempotentIngestionTest` |
+| e | Uso de librerías para funcionalidades específicas | Dependencias usadas y comportamiento en los tests de cliente, caché/throttle y análisis |
+| f | Programación con código de terceros | Contrato, licencia y atribución en el informe, verificados por tests de fuente |
+| g | Análisis e inteligencia de datos | Tablesaw sobre datos normalizados, comparación e interpretación en `docs/informe-final.md` y `RepositoryAnalysisTest`; el chat opcional no basta |
+| h | Pruebas, depuración y documentación | Nueve tests escritos por el alumnado, diagnóstico y comandos offline registrados en `docs/informe-final.md` |
 
 ## Secuencia canónica
 
@@ -43,9 +47,15 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 3. Cliente HTTP resiliente con WebClient
 4. Ingesta, mapeo y normalización
 5. Persistencia idempotente del repositorio derivado
-6. Consulta o análisis agregado
+6. Análisis acotado de cobertura con una librería tabular
 7. Pruebas offline con dobles del proveedor
 8. Documentación de arquitectura, fuentes y limitaciones
+
+## Material canónico para el alumnado
+
+- [Práctica incremental de integración](03-ejercicios/practica-integracion/README.md): recorrido evaluable offline por checkpoints, sin solución pública.
+- [Seguridad al consumir APIs y datos de terceros](06-seguridad/README.md): modelo de amenazas, controles y lista de auditoría enlazada desde la práctica.
+- [Catálogo Cultural Híbrido](02-ejemplos/catalogo-cultural-hibrido/README.md): ejemplo P1 de referencia, no plantilla para copiar.
 
 ## Concepto conductor: Catálogo Cultural Híbrido
 
@@ -71,6 +81,7 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | Resiliencia | Caché y control de tasa; reintentos seguros como ampliación opcional |
 | Seguridad | API keys protegidas, validación de datos externos no confiables |
 | Pruebas offline | Dobles del proveedor, sin dependencia de Internet |
+| Análisis/BI | `tablesaw-core` sobre datos normalizados, comparación razonada, informe y test determinista |
 | Casos de error | Timeout, respuesta inválida, límite de cuota, proveedor no disponible |
 | Documentación | Arranque, arquitectura, fuentes, decisiones, limitaciones |
 
@@ -78,7 +89,7 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 
 | Ampliación | Condición |
 |------------|-----------|
-| Spring AI | Llamada a un chat model como análisis adicional; sin RAG, vectores ni MCP |
+| Spring AI | Enriquecimiento posterior opcional; no satisface RA9.g por sí solo; sin RAG, vectores ni MCP |
 | FastAPI | Solo si el equipo docente lo considera útil; sin unidad propia |
 
 ### Excluido
@@ -98,7 +109,7 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | Enlaces | Sin rotos en la publicación |
 | Archivo | Contenido no publicable en `90-archivo/`, `90-historico/` o `99-profesor/`. El histórico de chat se conserva en `01-documentacion/90-historico/` (rastreado por Git, excluido de MkDocs). |
 | Navegación | Generada automáticamente por `hooks/nav_generator.py` |
-| Pruebas | `mvn test` verde en el ejemplo ejecutable |
+| Pruebas | Dependencias, plugins y transitivos resueltos; los comandos exactos se ejecutan una vez con red y después `mvn -o test` queda verde en el ejemplo y la entrega |
 | Offline | Ninguna prueba depende de Internet real |
 
 ## Histórico de fases
@@ -109,3 +120,4 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 | P1A | 2026-07 | Modelo, repositorio JPA, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, `spring-boot-starter-webclient` para WebClient en P1B |
 | P1B | 2026-07 | Cliente Open Library (`/search.json`) con propiedades tipadas, mapeo a `CulturalRecord` y fallos controlados; orquestación `CatalogSearchService` sobre la ingesta idempotente; 39 pruebas offline con WireMock 3 |
 | P1C | 2026-07 | Integración oficial `spring-boot-starter-cache` + Caffeine (`SearchCachingConfig`, caché predeclarada, máx. 100, expire-after-write 24 h, clave = consulta normalizada + límite), control de tasa conservador 1 req/s y observabilidad SLF4J; 55 pruebas offline superadas. Reintentos seguros opcionales |
+| P2A | 2026-07 | Práctica incremental con nueve checkpoints y evidencia observable RA9.a-h; Tablesaw 0.44.4 aplicado a cobertura del repositorio con test offline; política SSRF por entorno y auditoría de secretos, datos no confiables, resiliencia, cuotas, privacidad, licencias y dobles. P2B permanece pendiente |

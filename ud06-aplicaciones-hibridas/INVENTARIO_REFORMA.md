@@ -1,10 +1,10 @@
 # Inventario de reforma de UD6
 
-## Diagnóstico
+## Diagnóstico inicial (antes de la reforma)
 
-UD6 está infradotada: solo contiene `01-documentacion/UD6-AplicacionesHibridas.md`. No hay índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
+UD6 estaba infradotada: solo contenía `01-documentacion/UD6-AplicacionesHibridas.md`. No había índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
-**Estado:** P0 y P1 completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. Los reintentos seguros quedan como ampliación opcional y no bloquean P1.
+**Estado:** P0, P1 y P2A completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. P2A incorpora la práctica incremental, un requisito acotado de análisis con Tablesaw y la seguridad transversal. P2B permanece pendiente. Los reintentos seguros quedan como ampliación opcional y no bloquean P1.
 
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
@@ -14,20 +14,24 @@ UD6 se mantiene y se amplía porque RA9 tiene un objeto propio: **integrar infor
 
 La unidad tendrá un único proyecto conductor con Spring Boot. Debe consumir una API externa y un conjunto de datos versionado, normalizar ambas fuentes, registrar su procedencia, persistir un repositorio derivado y exponer una consulta o análisis agregado.
 
-Spring AI (llamada a un chat model) puede aparecer como ampliación opcional para el criterio `g`. Quedan excluidos RAG, vector stores, MCP y cualquier infraestructura de agentes. La aplicación debe funcionar sin IA. FastAPI se evalúa en P3 si el equipo docente lo considera útil.
+Spring AI (llamada a un chat model) puede aparecer como enriquecimiento opcional posterior al criterio `g`, pero no lo satisface por sí solo. Quedan excluidos RAG, vector stores, MCP y cualquier infraestructura de agentes. La aplicación debe funcionar sin IA. FastAPI se evalúa en P3 si el equipo docente lo considera útil.
 
 ## Alineación con RA9
 
+El detalle ejecutable se mantiene en la [matriz de trazabilidad de la
+práctica](03-ejercicios/practica-integracion/README.md#trazabilidad-minima-de-ra9);
+este inventario no sustituye esos entregables.
+
 | CE | Evidencia mínima prevista |
 |---|---|
-| a | Justificación de qué código e información se reutilizan y qué coste evitan. |
-| b | Comparación y selección razonada de cliente HTTP, librerías de mapeo, persistencia y resiliencia. |
-| c | Recuperación y procesamiento real de una API y un repositorio de datos existente. |
-| d | Construcción idempotente de un repositorio propio normalizado, con procedencia y fecha de actualización. |
-| e | Uso justificado de librerías para incorporar cliente HTTP, mapeo, resiliencia o análisis. |
-| f | Servicio web construido sobre información o código de terceros, respetando contrato, licencia y atribución. |
-| g | Análisis reproducible de los datos integrados; IA externa solo como ampliación opcional. |
-| h | Pruebas con proveedor simulado, diagnóstico de fallos y documentación reproducible. |
+| a | Justificación y coste evitado en `docs/fuentes.md`. |
+| b | Comparación y selección en `docs/fuentes.md`, incluida la alternativa a Tablesaw. |
+| c | Dos adaptadores procesando fuentes heterogéneas, demostrados por `LocalDatasetTest` y `ExternalProviderClientTest`. |
+| d | Repositorio normalizado e idempotente, demostrado por `NormalizedContractTest` e `IdempotentIngestionTest`. |
+| e | Dependencias realmente usadas y tests del cliente, caché/throttle y análisis. |
+| f | Contrato, licencia y atribución en el informe y en los tests de las fuentes. |
+| g | Tablesaw sobre datos normalizados, comparación e interpretación en `docs/informe-final.md` y `RepositoryAnalysisTest`; la IA es solo enriquecimiento opcional. |
+| h | Nueve tests escritos por el alumnado, diagnóstico, auditoría y comandos offline registrados en el informe. |
 
 ## Material existente y destino
 
@@ -105,10 +109,19 @@ Spring AI (llamada a un chat model) puede aparecer como ampliación opcional par
 
 ### P2 - práctica y evaluación
 
-- [ ] Crear una práctica incremental y un proyecto evaluable sin solución pública.
-- [ ] Mapear cada evidencia a RA9.a-h y crear rúbrica específica.
-- [ ] Añadir seguridad transversal: secretos, SSRF, cuotas, licencias y datos externos no confiables.
-- [ ] Preparar pruebas, documentación y cuestionario docente en sus ubicaciones correspondientes.
+**P2A — Práctica incremental y seguridad transversal** (completado)
+
+- [x] Crear la [práctica incremental](03-ejercicios/practica-integracion/README.md) sin solución pública y con verificación completamente offline.
+- [x] Mapear en cada checkpoint los entregables y evidencias observables de RA9.a-h, sin porcentajes ni ponderaciones.
+- [x] Exigir comparación y uso acotado de `tablesaw-core:0.44.4` sobre el repositorio normalizado, con interpretación y prueba offline específica para RA9.g.
+- [x] Añadir la [seguridad transversal](06-seguridad/README.md): secretos, SSRF, datos externos no confiables, fallos, cuotas, caché, privacidad, licencias, dependencias y dobles de prueba.
+- [x] Delimitar la llamada de chat con Spring AI como enriquecimiento opcional que no acredita RA9.g por sí solo; excluir RAG, almacenes vectoriales, MCP y agentes.
+
+**P2B — Proyecto evaluable e instrumentos** (pendiente)
+
+- [ ] Crear un proyecto evaluable independiente sin solución pública.
+- [ ] Crear la rúbrica específica de RA9.a-h.
+- [ ] Preparar, separadas de los tests que debe escribir el alumnado, las pruebas de aceptación P2B, documentación y cuestionario docente en sus ubicaciones correspondientes.
 
 ### P3 - ampliación opcional
 

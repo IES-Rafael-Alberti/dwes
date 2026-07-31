@@ -29,7 +29,7 @@ Una unidad prioritaria solo se considera cerrada cuando:
 
 - **UD4**: cerrada para impartición; solo mantenimiento y verificaciones operativas no bloqueantes.
 - **UD5**: cerrada y verificada; limpieza histórica P3 completada.
-- **UD6**: P0 completado; P1 pendiente (ejemplo ejecutable).
+- **UD6**: P0, P1 y P2A completados; P2B pendiente (proyecto evaluable e instrumentos docentes).
 - **UD7**: se diseñará según el calendario efectivo y la coordinación del proyecto integrador.
 
 La prioridad no es completar superficialmente todas las unidades, sino asegurar que el bloque anterior a Navidad sea sólido, reproducible y evaluable.
