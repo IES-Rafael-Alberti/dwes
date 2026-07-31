@@ -4,7 +4,7 @@
 
 UD6 estaba infradotada: solo contenía `01-documentacion/UD6-AplicacionesHibridas.md`. No había índice, ejemplo ejecutable, práctica, proyecto evaluable, seguridad específica ni mapa de evidencias para RA9.
 
-**Estado:** P0, P1 y P2 completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; las 55 pruebas offline pasan. P2A incorpora la práctica guiada, un requisito acotado de análisis con Tablesaw y la seguridad transversal. P2B aporta el proyecto evaluable independiente, la trazabilidad literal RA9.a-h y la rúbrica; el banco privado de 14 preguntas está preparado localmente para Moodle y no se versiona. Los reintentos seguros y P3 quedan como ampliaciones opcionales.
+**Estado:** UD6 cerrada con P0, P1, P2 y P3 completados. P1A/P1B/P1C incluyen integración oficial `spring-boot-starter-cache` + Caffeine, control de tasa y observabilidad; sus 55 pruebas offline se conservan. P2A incorpora la práctica guiada, un requisito acotado de análisis con Tablesaw y la seguridad transversal. P2B aporta el proyecto evaluable independiente, la trazabilidad literal RA9.a-h y la rúbrica. P3 añade una sola llamada opcional con Spring AI/Ollama, desactivada por defecto, con 21 pruebas nuevas: 76 totales offline. El banco privado de 14 preguntas está preparado localmente para Moodle y no se versiona; solo su importación operativa continúa pendiente.
 
 El documento existente es una conversación sin depurar. Enumera tecnologías y propone EcoViajes, pero el código es incompleto, no tiene pruebas y confunde el criterio `g` de análisis de datos con el criterio `h` de pruebas y documentación. No puede ser la fuente canónica de la unidad.
 
@@ -128,8 +128,12 @@ este inventario no sustituye esos entregables.
 
 ### P3 - ampliación opcional
 
-- [ ] Evaluar, solo si aporta valor y hay tiempo, una integración mínima con Spring AI (chat model); no bloquea el cierre de P2 ni de la unidad.
-- **Decisión IA**: solo llamada a un chat model vía Spring AI. Quedan excluidos RAG, vector stores, MCP y agentes. La aplicación debe funcionar sin IA.
+- [x] Integrar Spring AI 2.0.0 con el starter Ollama focalizado, compatible con Spring Boot 4.0.5, sin API key ni descarga automática.
+- [x] Implementar puerto, orquestación pura y adaptador condicional para una sola llamada sobre un máximo de diez registros normalizados.
+- [x] Delimitar y acotar datos no confiables en el prompt; validar salida estructurada e IDs contra los candidatos.
+- [x] Mantener el núcleo operativo con IA desactivada y demostrarlo con 21 pruebas P3 offline (76 totales), sin Ollama.
+- [x] Publicar la [guía canónica de P3](01-documentacion/03-integracion-chat-spring-ai.md) con riesgos, no determinismo, límites y exclusiones.
+- **Decisión IA**: solo llamada a un chat model vía Spring AI. Quedan excluidos RAG, embeddings, vector stores, MCP, agentes, tools, memoria, streaming, controlador y frontend. La aplicación funciona sin IA. P3 no satisface RA9.g por sí solo.
 
 ## Criterio de cierre
 
@@ -138,3 +142,4 @@ este inventario no sustituye esos entregables.
 - Las pruebas no requieren acceso real a servicios de terceros.
 - El alumnado puede explicar procedencia, licencia, transformación y comportamiento ante fallos.
 - La IA es opcional y no sustituye los fundamentos de integración de datos y servicios.
+- P3 y su documentación pasan pruebas offline; solo queda la importación privada del GIFT en Moodle como paso operativo no bloqueante.

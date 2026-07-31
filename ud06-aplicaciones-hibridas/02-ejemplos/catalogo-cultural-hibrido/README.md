@@ -1,4 +1,4 @@
-# Catálogo Cultural Híbrido — P1C
+# Catálogo Cultural Híbrido — P1C + P3 opcional
 
 Ejemplo ejecutable de aplicación híbrida para UD6 del módulo DWES.
 Integra dos fuentes distintas en un repositorio derivado normalizado e idempotente:
@@ -9,7 +9,9 @@ Integra dos fuentes distintas en un repositorio derivado normalizado e idempoten
 El modelo, el repositorio y la ingesta idempotente provienen de P1A y se mantienen
 sin reescrituras; P1B añadió el cliente HTTP, el mapeo y la orquestación; P1C añade
 por encima caché Caffeine con Spring Cache, control de tasa conservador (1 req/s) y
-observabilidad SLF4J, sin reintentos automáticos.
+observabilidad SLF4J, sin reintentos automáticos. P3 añade un puerto y un adaptador
+opcionales para una sola recomendación con Spring AI/Ollama sobre los registros ya
+normalizados; están desactivados por defecto.
 
 ## Propósito
 
@@ -34,7 +36,7 @@ deben ejecutar una vez con red estos comandos exactos —o ejecutar primero
 `mvn dependency:go-offline` y después los mismos comandos—. Tras desconectar, se
 repiten como `mvn -o compile`, `mvn -o test` y `mvn -o package`.
 
-## Arquitectura (P1C)
+## Arquitectura (P1C + P3 opcional)
 
 ```
 Application
@@ -51,6 +53,11 @@ Application
   └── IngestionService   ← upsert idempotente en transacción propia
         ├── CulturalItemRepository  ← Spring Data JPA
         └── CulturalRecord          ← DTO normalizado (ambas fuentes)
+
+CulturalRecord (máx. 10)
+  └── CatalogRecommendationService  ← orquestación pura, una llamada
+        └── CulturalChatGateway     ← puerto de aplicación
+              └── SpringAiCulturalChatGateway  ← ChatClient + salida estructurada
 ```
 
 - **Modelo**: `CulturalItem` (JPA entity) con identidad compuesta `(source, externalId)`.
@@ -65,6 +72,31 @@ Application
 - **Orquestación**: `CatalogSearchService` llama al cliente **antes** de abrir la
   transacción de persistencia; no mantiene transacciones abiertas a través de I/O de red.
 - **Colecciones**: `creators` y `subjects` se serializan con `||` vía `StringListConverter`.
+
+## Chat opcional con Spring AI (P3)
+
+El núcleo funciona sin Ollama. El adaptador solo existe con
+`catalogo.ai.enabled=true`, `spring.ai.model.chat=ollama` y
+`spring.ai.model.embedding=none`; cualquier otra selección deja este slice y su
+`RetryTemplate` sin registrar. El `ChatClient.Builder` se resuelve de forma perezosa al
+invocar el adaptador para evitar condiciones dependientes del orden de
+autoconfiguración; si falta, se devuelve un fallo de dominio controlado. La configuración
+versionada también fija `spring.ai.model.chat=none` y
+`spring.ai.model.embedding=none`; para una prueba local deliberada se activa chat
+con `SPRING_AI_MODEL_CHAT=ollama`. Nunca hay descarga automática:
+`spring.ai.ollama.init.pull-model-strategy=never`.
+
+El servicio limita la entrada a diez `CulturalRecord`; el prompt escapa y delimita
+títulos, autorías y materias como datos no confiables. La salida estructurada contiene
+resumen, IDs recomendados y nota de fuente. IDs inventados, salida vacía/inválida o
+modelo no disponible producen `CatalogChatException`; no se capturan errores JPA ni
+de programación. Resumen y nota se acotan y no admiten caracteres de control. No se
+registran prompts ni metadatos. Todo consumidor HTML/UI futuro debe escapar estos
+textos al renderizarlos.
+
+La [guía canónica de P3](../../01-documentacion/03-integracion-chat-spring-ai.md)
+documenta activación manual, arquitectura, riesgos, pruebas y exclusiones. Esta
+llamada generativa no acredita RA9.g por sí sola.
 
 ## Configuración Open Library (P1B)
 
@@ -157,7 +189,7 @@ Logging SLF4J con nivel por defecto `INFO`, privacidad por defecto:
 La categoría se deriva de la jerarquía `OpenLibraryClientException` en
 `CachedOpenLibraryClient.failureCategory`.
 
-## Dependencias (P1C)
+## Dependencias (P1C + P3)
 
 Se usa `spring-boot-starter-webclient` (Boot 4.0.5) en lugar de
 `spring-boot-starter-webflux`: aporta WebClient y Jackson 3 (`tools.jackson.*`) sin
@@ -165,6 +197,15 @@ arrancar un servidor reactivo. Para pruebas, WireMock 3 (`wiremock-standalone`,
 Jetty 11 embebido) simula el proveedor en un puerto dinámico. P1C añade
 `spring-boot-starter-cache` y `caffeine`, sin versiones explícitas: Boot 4.0.5 gestiona
 ambas y autoconfigura `CaffeineCacheManager`.
+
+P3 importa `org.springframework.ai:spring-ai-bom:2.0.0` y declara únicamente el
+starter focalizado `org.springframework.ai:spring-ai-starter-model-ollama`. Se
+mantiene Spring Boot 4.0.5 conforme a la
+[compatibilidad oficial de Spring AI 2.0.0](https://docs.spring.io/spring-ai/reference/getting-started.html):
+Spring AI 2.0.x soporta Spring Boot 4.0.x y 4.1.x. No hay API key, starter vectorial,
+RAG, MCP ni agentes. El starter aporta transitivamente algunas clases/gestores de
+tools inevitables, pero tool calling está desactivado y no se configura ningún
+callback, advisor ni funcionalidad de tools.
 
 Jackson 3 conserva intencionadamente las anotaciones en el paquete
 `com.fasterxml.jackson.annotation`; el resto de sus APIs se importa desde `tools.jackson.*`.
@@ -191,12 +232,21 @@ Ver `src/main/resources/dataset/README.md` para procedencia y licencia.
 | `CachedOpenLibraryClientTest` | Integración Spring (WireMock) | Acierto de caché, normalización de consulta, límites distintos, fallos no cacheados, el acierto salta proveedor y throttle, clave normalizada, categorías de fallo |
 | `OpenLibraryRequestThrottleTest` | Unitario (reloj falso) | Espaciado 1 req/s secuencial y concurrente con tiempo falso, incluido oversleep del scheduler; interrupción rápida que conserva el flag y libera el monitor |
 | `SearchCachingConfigTest` | Integración Spring | Caché predeclarada con el nombre esperado; política Caffeine con máx. 100 y expire-after-write 24 h |
+| `CatalogRecommendationServiceTest` | Unitario | Una llamada al gateway falso, IDs normalizados y máximo 10 registros |
+| `CulturalChatPromptBuilderTest` | Unitario | Delimitación/escape de datos no confiables y límites de prompt |
+| `AiSafetyConfigurationTest` | Context runner | Binding de retry/tools y un solo intento transitorio sin Ollama |
+| `CulturalChatConfigurationTest` | Context runner | Arranque sin IA, fallo cerrado sin builder, auto-config real sin advisor de tools y scope exclusivo Ollama/sin embeddings |
+| `OllamaChatModelRetryIntegrationTest` | Integración Spring AI offline | Auto-configuración real de `OllamaChatModel`, inyección del `RetryTemplate` de cero reintentos y una única llamada al boundary falso `OllamaApi.chat(...)` |
+| `SpringAiCulturalChatGatewayTest` | Unitario, boundary falso | Mapeo, IDs, límites, controles y fallos controlados sin Ollama |
 
-Total: 55 tests (13 WireMock cliente, 5 propiedades, 3 orquestación, 10 ingesta,
+Total: 76 tests: 55 del núcleo P1C y 21 de P3 (3 orquestación, 3 prompt, 7
+configuración/seguridad/integración y 8 validación del adaptador). Las 55 pruebas anteriores
+se conservan: 13 WireMock cliente, 5 propiedades, 3 orquestación, 10 ingesta,
 5 repositorio, 3 modelo, 7 caché/throttle/observabilidad del cliente, 7 espaciado/concurrencia/oversleep/interrupción del
 throttle, 2 configuración de caché). **Todas offline y deterministas**: H2 embebida,
 fixture en classpath, WireMock en puerto dinámico y relojes falsos inyectados; ninguna
-prueba contacta con Open Library real ni espera un segundo real por el throttle.
+prueba contacta con Open Library u Ollama reales, descarga modelos ni espera un
+segundo real por el throttle.
 
 ## Límites P1C / frontera P2
 
@@ -204,7 +254,10 @@ prueba contacta con Open Library real ni espera un segundo real por el throttle.
   bloquean P1; la caché y el control de tasa ya protegen al proveedor.
 - **Sin controlador web**: no hay endpoints REST.
 - **Sin JWT, OpenAPI, frontend**: fuera del alcance de UD6.
-- **Sin Spring AI, RAG, vectores, MCP, agentes**: excluidos explícitamente.
+- **Spring AI limitado a P3**: una llamada opcional, síncrona, estructurada y sin
+  memoria sobre un máximo de diez registros normalizados.
+- **Sin RAG, embeddings, vector stores, MCP, agentes, tools, streaming, controlador,
+  frontend ni descarga automática de modelos**: excluidos explícitamente.
 - **Sin Spring Actuator ni métricas de proveedor**: la observabilidad se limita al
   logging SLF4J de este ejemplo.
 
