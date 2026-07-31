@@ -2,7 +2,16 @@ package es.iesrafaelalberti.dwes.catalogoculturalhibrido.service.dto;
 
 import java.util.List;
 
-public class WikidataCulturalRecord {
+/**
+ * Source-neutral normalized ingestion record used by every provider adapter
+ * (Wikidata fixture and Open Library remote API) before persistence.
+ *
+ * <p>Fields follow the Phase 0 contract ({@code source}, {@code externalId},
+ * {@code title}, {@code creators}, {@code year}, {@code subjects},
+ * {@code sourceUrl}, {@code license}, {@code retrievedAt}). {@code retrievedAt}
+ * is an ISO-8601 local timestamp string parsed by {@code IngestionService}.</p>
+ */
+public class CulturalRecord {
 
     private String source;
     private String externalId;
@@ -14,7 +23,7 @@ public class WikidataCulturalRecord {
     private String license;
     private String retrievedAt;
 
-    public WikidataCulturalRecord() {
+    public CulturalRecord() {
     }
 
     public String getSource() {

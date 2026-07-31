@@ -13,7 +13,7 @@ UD6 se imparte después de Navidad, con calendario reducido por prácticas en em
 | Fase | Contenido | Estado |
 |------|-----------|--------|
 | **P0** | Contrato, publicación, fuentes | **Completado** |
-| **P1** | Ejemplo ejecutable con Spring Boot | **P1A completado** — modelo, repositorio, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, WebClient para P1B |
+| **P1** | Ejemplo ejecutable con Spring Boot | **P1A completado** — modelo, repositorio, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, WebClient para P1B — **P1B completado** — cliente Open Library con mapeo y fallos controlados, orquestación idempotente, 39 pruebas offline con WireMock |
 | **P2** | Práctica y evaluación | Planificado |
 | **P3** | Ampliación opcional (IA) | Planificado |
 
@@ -107,3 +107,4 @@ No se implementa frontend completo, autenticación JWT como contenido nuevo, Ope
 |------|-------|--------|
 | P0 | 2026-07 | README, contrato, archivo de chat, planificación, rúbrica |
 | P1A | 2026-07 | Modelo, repositorio JPA, ingesta idempotente, fixture Wikidata verificado, 18 pruebas offline, `spring-boot-starter-webclient` para WebClient en P1B |
+| P1B | 2026-07 | Cliente Open Library (`/search.json`) con propiedades tipadas, mapeo a `CulturalRecord` y fallos controlados; orquestación `CatalogSearchService` sobre la ingesta idempotente; 39 pruebas offline con WireMock 3 |

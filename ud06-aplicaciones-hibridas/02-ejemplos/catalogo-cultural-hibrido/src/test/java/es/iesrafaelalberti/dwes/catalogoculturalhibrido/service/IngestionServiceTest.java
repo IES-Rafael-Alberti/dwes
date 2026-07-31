@@ -3,7 +3,7 @@ package es.iesrafaelalberti.dwes.catalogoculturalhibrido.service;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.model.CulturalItem;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.model.Source;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.repository.CulturalItemRepository;
-import es.iesrafaelalberti.dwes.catalogoculturalhibrido.service.dto.WikidataCulturalRecord;
+import es.iesrafaelalberti.dwes.catalogoculturalhibrido.service.dto.CulturalRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ class IngestionServiceTest {
     void shouldUpdateExistingRecordsOnReImport() {
         ingestionService.ingestFixture("dataset/wikidata-cultural-fixture.json");
 
-        var record = new WikidataCulturalRecord();
+        var record = new CulturalRecord();
         record.setSource("WIKIDATA");
         record.setExternalId("Q480");
         record.setTitle("Don Quixote (Updated)");
@@ -103,7 +103,7 @@ class IngestionServiceTest {
         ingestionService.ingestFixture("dataset/wikidata-cultural-fixture.json");
         assertEquals(5, repository.count());
 
-        var existing = new WikidataCulturalRecord();
+        var existing = new CulturalRecord();
         existing.setSource("WIKIDATA");
         existing.setExternalId("Q480");
         existing.setTitle("Don Quixote (Updated)");
@@ -114,7 +114,7 @@ class IngestionServiceTest {
         existing.setLicense("CC0-1.0");
         existing.setRetrievedAt("2026-07-30T12:00:00");
 
-        var fresh = new WikidataCulturalRecord();
+        var fresh = new CulturalRecord();
         fresh.setSource("WIKIDATA");
         fresh.setExternalId("Q45585");
         fresh.setTitle("The Starry Night");
@@ -149,13 +149,13 @@ class IngestionServiceTest {
 
     @Test
     void shouldUseEachRecordsOwnSourceInMixedSourceBatch() {
-        var wikidata = new WikidataCulturalRecord();
+        var wikidata = new CulturalRecord();
         wikidata.setSource("WIKIDATA");
         wikidata.setExternalId("SHARED-ID");
         wikidata.setTitle("From Wikidata");
         wikidata.setRetrievedAt("2026-07-30T12:00:00");
 
-        var openLibrary = new WikidataCulturalRecord();
+        var openLibrary = new CulturalRecord();
         openLibrary.setSource("OPEN_LIBRARY");
         openLibrary.setExternalId("SHARED-ID");
         openLibrary.setTitle("From Open Library");
@@ -178,13 +178,13 @@ class IngestionServiceTest {
 
     @Test
     void shouldRollBackOnConstraintViolation() {
-        var valid = new WikidataCulturalRecord();
+        var valid = new CulturalRecord();
         valid.setSource("WIKIDATA");
         valid.setExternalId("Q-ROLLBACK-1");
         valid.setTitle("Valid Record");
         valid.setRetrievedAt("2026-07-30T12:00:00");
 
-        var invalid = new WikidataCulturalRecord();
+        var invalid = new CulturalRecord();
         invalid.setSource("WIKIDATA");
         invalid.setExternalId("Q-ROLLBACK-2");
         invalid.setTitle(null);

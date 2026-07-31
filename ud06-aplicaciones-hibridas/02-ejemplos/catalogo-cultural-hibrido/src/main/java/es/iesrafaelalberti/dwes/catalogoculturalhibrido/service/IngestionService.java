@@ -6,7 +6,7 @@ import tools.jackson.databind.ObjectMapper;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.model.CulturalItem;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.model.Source;
 import es.iesrafaelalberti.dwes.catalogoculturalhibrido.repository.CulturalItemRepository;
-import es.iesrafaelalberti.dwes.catalogoculturalhibrido.service.dto.WikidataCulturalRecord;
+import es.iesrafaelalberti.dwes.catalogoculturalhibrido.service.dto.CulturalRecord;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +32,8 @@ public class IngestionService {
             if (is == null) {
                 throw new IngestionException("Fixture not found on classpath: " + classpathResource);
             }
-            List<WikidataCulturalRecord> records = objectMapper.readValue(
-                    is, new TypeReference<List<WikidataCulturalRecord>>() {
+            List<CulturalRecord> records = objectMapper.readValue(
+                    is, new TypeReference<List<CulturalRecord>>() {
                     });
             return ingestRecords(records);
         } catch (JacksonException | IOException e) {
@@ -42,13 +42,13 @@ public class IngestionService {
     }
 
     @Transactional
-    public List<CulturalItem> ingestRecords(List<WikidataCulturalRecord> records) {
+    public List<CulturalItem> ingestRecords(List<CulturalRecord> records) {
         return records.stream()
                 .map(record -> upsertRecord(Source.valueOf(record.getSource().toUpperCase()), record))
                 .toList();
     }
 
-    private CulturalItem upsertRecord(Source source, WikidataCulturalRecord record) {
+    private CulturalItem upsertRecord(Source source, CulturalRecord record) {
         var existing = repository.findBySourceAndExternalId(source, record.getExternalId());
         if (existing.isPresent()) {
             CulturalItem item = existing.get();

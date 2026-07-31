@@ -84,11 +84,23 @@ Spring AI (llamada a un chat model) puede aparecer como ampliación opcional par
 - [x] Dependencia `spring-boot-starter-webclient` en lugar de `spring-boot-starter-webflux`: starter focalizado de Boot 4 que provee Jackson 3 (paquete `tools.jackson.*`) y WebClient para P1B sin arrancar un servidor reactivo.
 - [x] Documentación del proyecto, dataset y arquitectura.
 
-**P1B — Integración remota** (pendiente)
+**P1B — Integración remota** (completado)
 
-- [ ] Crear un cliente mínimo que demuestre mapeo y tratamiento de fallos con pruebas offline (WebClient ya disponible vía `spring-boot-starter-webclient`).
-- [ ] Incorporar resiliencia, caché y observabilidad proporcionadas al alcance docente.
-- [ ] Validar todo con Java 25 y la versión vigente de Spring Boot usada en el módulo.
+- [x] DTO normalizado: `WikidataCulturalRecord` renombrado a `CulturalRecord` (source-neutral) sin referencias obsoletas.
+- [x] Cliente mínimo con `WebClient` sobre `spring-boot-starter-webclient`: `/search.json`, `q` validada no vacía, `limit` acotado y `fields` mínimos.
+- [x] Propiedades tipadas `catalogo.open-library.*` (Boot 4 `@ConfigurationProperties`): base URL, User-Agent identificado, timeout y `max-results` (defecto 10, máx. 10 classroom-safe), validación fail-fast y sin secretos.
+- [x] Mapeo a `CulturalRecord`: clave de obra normalizada, URL canónica de Open Library, `OPEN_LIBRARY`, instante de recuperación y nota de licencia/atribución.
+- [x] Fallos explícitos sin catch-all y sin reintento automático: timeout, 429, 5xx y JSON malformado (jerarquía `OpenLibraryClientException`).
+- [x] Orquestación `CatalogSearchService` sobre la ingesta idempotente existente (llamada remota antes de abrir transacción).
+- [x] 39 pruebas offline con WireMock 3 (`wiremock-standalone`, JUnit 5, puerto dinámico): ruta/query/fields/limit, User-Agent, mapeo, resultado vacío, 429, 5xx, JSON malformado, timeout con delay fijo y re-importación idempotente.
+- [x] Documentación actualizada del proyecto, la unidad y el inventario, con política de uso de Open Library (1 req/s, 3 req/s identificado, cacheo/atribución, sin rastreo masivo).
+
+**P1C — Resiliencia, caché y observabilidad** (pendiente)
+
+- [ ] Caché de respuestas con TTL (contrato: 24 h por defecto) respetando la política de cacheo de Open Library.
+- [ ] Control de tasa acorde a 1 req/s (3 req/s identificado).
+- [ ] Reintentos seguros y limitados (backoff + jitter) solo para 429/5xx, sin thundering herd.
+- [ ] Observabilidad de fallos y métricas del proveedor.
 
 ### P2 - práctica y evaluación
 
