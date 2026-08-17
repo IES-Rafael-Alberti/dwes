@@ -23,6 +23,18 @@
 **/90-archivo/
 **/*.gift
 
+**/AGENTS.md
+00-unidad-0-previos/docs/SESION-STATE.md
+ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/INSTRUCCIONES.md
+ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/SEGUIMIENTO.md
+ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/PENDIENTE.md
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.html
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_con_respuestas.pdf
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_calculadora.pdf
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.csv
+00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.xlsx
+
 # ============================================
 # BUILD ARTIFACTS
 # ============================================

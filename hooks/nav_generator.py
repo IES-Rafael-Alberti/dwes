@@ -1,15 +1,29 @@
 import os
 import re
+from fnmatch import fnmatch
 from pathlib import Path
 
 EXCLUDE_DIRS = {
-    '90-archivo', '90-historico', '99-profesor', '_profesor', 'Presentaciones', '__pycache__',
+    '90-archivo', '90-historico', '99-profesor', '_profesor', 'Presentaciones', 'soluciones', '__pycache__',
     'vendor', 'node_modules', '.git', '.idea', '.settings', 'build', 'target', 'bin',
     'Seguridad',
 }
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',
-    'mini-spring-boot-Guia.md',
+    'mini-spring-boot-Guia.md', 'SESION-STATE.md', 'AGENTS.md',
+}
+EXCLUDE_PATHS = {
+    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md',
+    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_resueltos.md',
+    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf',
+    'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/INSTRUCCIONES.md',
+    'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/SEGUIMIENTO.md',
+    'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/PENDIENTE.md',
+}
+EXCLUDE_PATTERNS = {
+    '**/*.iml', '**/*.phar', '**/composer.lock', '**/*.sqlite',
+    '**/bootstrap/cache', '**/bootstrap/cache/**', '**/storage/logs',
+    '**/storage/logs/**', '**/public/hot', '**/*.tex', '**/*~', '**/*.patch',
 }
 
 SECTION_ORDER = {
@@ -40,6 +54,13 @@ def clean_title(filename, rel_path=''):
     return name or filename.replace('.md', '')
 
 
+def is_excluded_path(rel_path):
+    normalized = rel_path.replace(os.sep, '/')
+    return normalized in EXCLUDE_PATHS or any(
+        fnmatch(normalized, pattern) for pattern in EXCLUDE_PATTERNS
+    )
+
+
 def scan_files(dirpath, docs_dir):
     entries = []
     try:
@@ -52,6 +73,9 @@ def scan_files(dirpath, docs_dir):
             continue
         path = os.path.join(dirpath, item)
         rel = str(Path(path).relative_to(docs_dir))
+
+        if is_excluded_path(rel):
+            continue
 
         if os.path.isdir(path):
             if item in EXCLUDE_DIRS:
@@ -77,6 +101,8 @@ def scan_unit(unit_symlink, docs_dir, index_path):
         if not item_path.is_file() or not item.endswith('.md'):
             continue
         rel = str(item_path.relative_to(docs_dir))
+        if is_excluded_path(rel):
+            continue
         title = clean_title(item, rel)
         children.append({title: rel})
 
