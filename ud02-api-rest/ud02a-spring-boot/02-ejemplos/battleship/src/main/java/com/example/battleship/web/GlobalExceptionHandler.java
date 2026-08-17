@@ -11,6 +11,8 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
@@ -51,6 +53,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorPayload> handleMalformedInput(Exception ex) {
         var payload = new ErrorPayload("BAD_REQUEST", "Malformed request input");
         return ResponseEntity.badRequest().body(payload);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorPayload> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        var payload = new ErrorPayload("UNSUPPORTED_MEDIA_TYPE", "Unsupported request content type");
+        return ResponseEntity.status(415).body(payload);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<Void> handleNotAcceptable(HttpMediaTypeNotAcceptableException ex) {
+        return ResponseEntity.status(406).build();
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)

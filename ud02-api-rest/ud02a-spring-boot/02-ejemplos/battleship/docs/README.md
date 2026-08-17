@@ -48,7 +48,33 @@ La respuesta `429` está declarada estructuralmente en las nueve operaciones
    el validador Atlassian fuerce el rate limit durante la matriz de conformidad.
    Esto complementa, no sustituye,
    `SecurityAuthorizationIntegrationTest`: sus casos de roles siguen siendo
-   la evidencia autoritativa de autorización.
+la evidencia autoritativa de autorización.
+
+### Caso de estudio opcional: negociación con MessagePack
+
+JSON sigue siendo el contrato canónico y la representación por defecto. Como
+ampliación, `GET /api/games/{id}` también responde `application/msgpack` si el
+cliente lo pide mediante `Accept`; la estructura semántica es la misma, pero
+el cuerpo es binario:
+
+```bash
+curl -H 'Accept: application/msgpack' http://localhost:8080/api/games/1 \
+  --output game.msgpack
+```
+
+El ejemplo solo cubre respuestas de lectura: los cuerpos de petición siguen
+siendo JSON, por lo que un `Content-Type` no soportado devuelve `415`; un
+`Accept` sin representación disponible devuelve `406`.
+
+| Formato | Ventaja | Coste principal |
+|---|---|---|
+| JSON | Legible y universal | Más bytes |
+| MessagePack | Compacto sin esquema | Conversor MVC y cliente compatible |
+| Protobuf | Esquema y contratos fuertes | `.proto` y código generado |
+| CBOR | Binario y cercano al ecosistema Jackson | Menor soporte de clientes que JSON |
+
+No es contenido obligatorio de UD2: sirve para estudiar `Accept`,
+`Content-Type` y `HttpMessageConverter` sin sustituir el contrato JSON.
 
 ### Verificación reproducible
 

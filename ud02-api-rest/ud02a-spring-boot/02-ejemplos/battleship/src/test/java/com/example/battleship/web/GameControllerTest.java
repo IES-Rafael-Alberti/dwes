@@ -14,7 +14,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.io.ByteArrayInputStream;
 import java.util.List;
+
+import org.msgpack.core.MessagePack;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -70,6 +73,40 @@ class GameControllerTest {
     }
 
     @Test
+    void getGame_returnsMessagePack_whenClientAcceptsIt() throws Exception {
+        GameResponseDTO response = new GameResponseDTO(1L, 10, "IN_PROGRESS",
+                LocalDateTime.of(2026, 8, 17, 10, 0), List.of(), List.of());
+        when(gameService.getGame(1L)).thenReturn(response);
+
+        byte[] body = mockMvc.perform(get("/api/games/1")
+                        .accept("application/msgpack"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/msgpack"))
+                .andReturn().getResponse().getContentAsByteArray();
+
+        try (var unpacker = MessagePack.newDefaultUnpacker(new ByteArrayInputStream(body))) {
+            var value = unpacker.unpackValue().asMapValue();
+            var id = value.map().entrySet().stream()
+                    .filter(entry -> entry.getKey().asStringValue().asString().equals("id"))
+                    .findFirst()
+                    .orElseThrow()
+                    .getValue();
+            org.junit.jupiter.api.Assertions.assertEquals(1, id.asIntegerValue().asInt());
+        }
+    }
+
+    @Test
+    void getGame_returns406_whenNoRepresentationIsAcceptable() throws Exception {
+        GameResponseDTO response = new GameResponseDTO(1L, 10, "IN_PROGRESS",
+                LocalDateTime.now(), List.of(), List.of());
+        when(gameService.getGame(1L)).thenReturn(response);
+
+        mockMvc.perform(get("/api/games/1")
+                        .accept(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
     void getGame_notFound_returns404() throws Exception {
         when(gameService.getGame(999L)).thenThrow(new com.example.battleship.domain.exceptions.GameNotFoundException(999L));
 
@@ -85,6 +122,29 @@ class GameControllerTest {
                         .content("{\"boardSize\":0}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+    }
+
+    @Test
+    void createGame_returns415_whenRequestContentTypeIsNotSupported() throws Exception {
+        mockMvc.perform(post("/api/games")
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content("<game><boardSize>10</boardSize></game>"))
+                .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    void createGame_returns415_whenRequestBodyIsMessagePack() throws Exception {
+        mockMvc.perform(post("/api/games")
+                        .contentType("application/msgpack")
+                        .content(new byte[]{(byte) 0x81, (byte) 0xa9, 'b', 'o', 'a', 'r', 'd', 'S', 'i', 'z', 'e', 10}))
+                .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    void listGames_returns406_whenClientRequestsMessagePack() throws Exception {
+        mockMvc.perform(get("/api/games")
+                        .accept("application/msgpack"))
+                .andExpect(status().isNotAcceptable());
     }
 
     @Test

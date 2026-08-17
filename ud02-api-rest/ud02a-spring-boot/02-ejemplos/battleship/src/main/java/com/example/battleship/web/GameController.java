@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +31,14 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PLAYER')")
     public ResponseEntity<GameResponseDTO> create(@Valid @RequestBody CreateGameDTO dto) {
         GameResponseDTO game = gameService.createGame(dto);
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<GameResponseDTO> list(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) @Min(1) Integer minBoardSize,
@@ -54,12 +55,12 @@ public class GameController {
         return PageResponse.from(gameService.listGames(spec, pageable));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, "application/msgpack"})
     public ResponseEntity<GameResponseDTO> get(@PathVariable @Min(1) Long id) {
         return ResponseEntity.ok(gameService.getGame(id));
     }
 
-    @PostMapping("/{id}/ships")
+    @PostMapping(value = "/{id}/ships", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PLAYER')")
     public ResponseEntity<GameResponseDTO> placeShip(
             @PathVariable @Min(1) Long id, @Valid @RequestBody PlaceShipDTO dto) {
@@ -67,7 +68,7 @@ public class GameController {
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 
-    @PostMapping("/{id}/attacks")
+    @PostMapping(value = "/{id}/attacks", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PLAYER')")
     public ResponseEntity<GameResponseDTO> attack(
             @PathVariable @Min(1) Long id, @Valid @RequestBody AttackDTO dto) {
@@ -75,7 +76,7 @@ public class GameController {
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> cancel(@PathVariable @Min(1) Long id) {
         gameService.cancelGame(id);

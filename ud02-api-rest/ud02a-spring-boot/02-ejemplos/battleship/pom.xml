@@ -19,6 +19,7 @@
         <java.version>25</java.version>
         <jjwt.version>0.12.6</jjwt.version>
         <h2.version>2.3.232</h2.version>
+        <msgpack.version>0.9.12</msgpack.version>
     </properties>
 
     <dependencies>
@@ -33,6 +34,13 @@
                     <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
             </exclusions>-->
+        </dependency>
+
+        <!-- Optional case study: binary HTTP representation via a custom MVC converter. -->
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>msgpack-core</artifactId>
+            <version>${msgpack.version}</version>
         </dependency>
         <!--
         <dependency>

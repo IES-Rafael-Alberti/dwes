@@ -213,7 +213,7 @@ paths:
         - $ref: '#/components/parameters/GameId'
       responses:
         '200':
-          description: Game found
+          description: Game found. JSON is the canonical representation; MessagePack is an optional binary case study selected with Accept.
           content:
             application/json:
               schema:
@@ -221,6 +221,9 @@ paths:
               examples:
                 pendingGame:
                   $ref: '#/components/examples/Game'
+            application/msgpack:
+              schema:
+                $ref: '#/components/schemas/Game'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
