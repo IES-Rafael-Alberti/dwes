@@ -253,4 +253,4 @@ la evidencia reproducible indicada a continuación.
 
 - [x] Las dos revisiones independientes aprobaron el candidato de higiene: exclusiones de publicación, retirada del índice de material privado y ausencia de secretos o soluciones en el sitio generado.
 - [x] Ampliado el anexo Java de UD2 con `Optional`, DTOs con `record`, Streams, interfaces funcionales, `var`/`static`, text blocks y `formatted()`; `mkdocs build --strict` termina correctamente.
-- [ ] Incorporar el anexo Java al candidato de higiene, revisar el árbol estable, confirmar el conjunto y publicar el commit aprobado.
+- [x] Anexo Java incorporado al candidato de higiene y publicado tras verificar `mkdocs build --strict`.
