@@ -82,7 +82,7 @@ git diff --check
 ```
 
 En la revisión final del 25 de julio de 2026, la primera orden terminó
-con **136 pruebas, 0 fallos y 0 errores** sobre Java 25.0.3; el build estricto
+con **141 pruebas, 0 fallos y 0 errores** sobre Java 25.0.3; el build estricto
 de MkDocs y `git diff --check` también terminaron correctamente.
 
 ## Persistencia y auditoría
@@ -94,6 +94,6 @@ herramienta concreta. Los artefactos de trabajo detallados se mantienen en el
 backend SDD privado configurado; esta guía es la referencia pública, versionada
 y estable para docencia y auditoría.
 
-Los ejemplos OpenAPI representativos más allá de la respuesta textual de
-registro continúan pendientes y se mantienen sin marcar en el inventario de
-reforma; no se confunden con la trazabilidad SDD ya documentada.
+Los ejemplos OpenAPI representativos de requests y responses están completos y
+validados por el contrato canónico y la matriz MockMvc. No se confunden con la
+trazabilidad SDD ya documentada.

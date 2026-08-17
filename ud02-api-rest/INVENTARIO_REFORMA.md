@@ -48,7 +48,7 @@ UD2 está **en revisión de cierre y no puede declararse cerrada**. La prioridad
 - H2 queda fijado en 2.3.232, última versión que la versión de Flyway utilizada declara verificada; las migraciones pasan sin advertencia de compatibilidad.
 - `Game.active` usa `@Builder.Default` y una prueba directa confirma que el builder conserva `true` antes de persistir.
 - En ese corte del 24 de julio, `./mvnw clean verify` ejecutó 51 pruebas verdes con Java 25, sin las advertencias de H2/Flyway ni Lombok.
-- El 25 de julio de 2026, la suite vigente `./mvnw clean verify` ejecutó **136 pruebas verdes**: estructura/publicación del contrato, conformidad MockMvc de las nueve operaciones y errores representativos, y **27 casos** de seguridad/autorización, incluida la lista CORS exacta. El JAR contiene `BOOT-INF/classes/static/api-docs/battleship-v1.yaml` y no contiene entradas de claves ni marcadores PEM. `mkdocs build --strict` terminó correctamente.
+- El 25 de julio de 2026, la suite vigente `./mvnw clean verify` ejecutó **141 pruebas verdes**: estructura/publicación del contrato, conformidad MockMvc de las nueve operaciones y errores representativos, y **27 casos** de seguridad/autorización, incluida la lista CORS exacta. El JAR contiene `BOOT-INF/classes/static/api-docs/battleship-v1.yaml` y no contiene entradas de claves ni marcadores PEM. `mkdocs build --strict` terminó correctamente.
 - La regresión de token emitido por login se integra deliberadamente en `SecurityAuthorizationIntegrationTest`: prueba el recorrido real login → token → solicitud protegida dentro de la matriz de roles, evitando un fixture duplicado en un `LoginTokenIntegrationTest` aislado.
 
 ### Rutas opcionales

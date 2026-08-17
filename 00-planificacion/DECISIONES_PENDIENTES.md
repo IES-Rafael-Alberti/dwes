@@ -104,18 +104,18 @@ Del inventario:
 | Material heredado | Reorganizado en la nueva estructura; cualquier limpieza restante se gestiona por unidad |
 | Formatos fuente | Markdown es el formato publicable; los fuentes únicos se conservan solo cuando aportan valor |
 
-## 9. Battleship: reconstrucción con TDD y SDD (✅ IMPLEMENTADO; VERIFICACIÓN SDD PENDIENTE)
+## 9. Battleship: reconstrucción con TDD y SDD (✅ IMPLEMENTADO Y VERIFICADO)
 
 - El proyecto Battleship original era un experimento con IA que no funcionó.
 - **Reconstruido** con TDD + Flyway + SB4 desde cero en `ud02a-spring-boot/02-ejemplos/battleship/`.
 - **Stack**: SB 4.0.5, Flyway, H2, JPA, Lombok, SpringDoc 3.0.3.
-- **Suite vigente**: 51/51 tests verdes en Java 25, distribuidos entre controlador, servicio, repositorio, integración, seguridad y contexto. Mockito se carga explícitamente como `-javaagent` desde Surefire; el contrato de servicio incluye solapamiento cruzado de barcos.
+- **Suite vigente**: 141/141 tests verdes en Java 25, distribuidos entre controlador, servicio, repositorio, integración, seguridad y contexto. Mockito se carga explícitamente como `-javaagent` desde Surefire; el contrato de servicio incluye solapamiento cruzado de barcos.
 - **API REST**: `POST /api/games`, `POST /api/games/{id}/ships`, `POST /api/games/{id}/attacks`, `GET /api/games`, `GET /api/games/{id}`.
 - **Validaciones**: fuera de límites, posiciones repetidas, nombres duplicados, barcos solapados.
 - **Demo**: script `demo.sh`, colección Insomnia `insomnia-battleship.json`.
 - **Documentación**: recorrido incremental canónico creado en `01-documentacion/08-battleship-caso-practico.md`; las guías extensas del proyecto quedan como ampliaciones por sesión y sus enlaces MkDocs están corregidos.
 - **Seguridad demostrada**: tests de integración con filtros activos cubren consultas públicas, `401` sin autenticación, `403` con rol sintético insuficiente y bearer tokens reales firmados por `JwtService` para acceso `PLAYER` y `ADMIN`. También cubren credenciales incorrectas, refresh inválido/expirado, refresh usado como access y claims de roles inválidos. CSRF se deshabilita porque la API es stateless y usa bearer tokens, no cookies de sesión. Swagger/API docs y Actuator requieren token; CORS cubre API y autenticación con orígenes externalizados.
-- **SDD/OpenAPI**: contrato estático OpenAPI 3.1 versionado como fuente de verdad, pruebas de conformidad y traza versionada implementados. Springdoc generado está deshabilitado y Swagger UI carga únicamente el YAML canónico. Quedan pendientes la repetición formal de la verificación SDD y los ejemplos representativos completos.
+- **SDD/OpenAPI**: contrato estático OpenAPI 3.1 versionado como fuente de verdad, pruebas de conformidad, ejemplos representativos y traza versionada implementados. Springdoc generado está deshabilitado y Swagger UI carga únicamente el YAML canónico. La verificación formal se repitió el 17 de agosto de 2026: `./mvnw clean verify` terminó con 141 pruebas verdes y `mkdocs build --strict` correctamente.
 
 ## 10. Proyectos grupales
 
@@ -123,6 +123,13 @@ Del inventario:
 - **Pendiente**: Definir tamaño máximo de grupo. Propuesta inicial: 4 personas.
 - Definir criterios de formación de grupos (docente asigna, alumnos se agrupan libremente, mixto).
 - Establecer mecanismo de evaluación individual dentro del grupo (para evitar free-riders).
+
+### 10.1 UD7 — proyecto integrador DWES (P0–P2 ✅ COMPLETADAS)
+
+- **Decisión**: UD7 es el proyecto final del módulo DWES, no el PFG. El proyecto debe demostrar servidor propio y puede coordinarse con otros módulos sin sustituir esa evidencia.
+- **Stack**: solo Spring Boot 4/Java 25 o Laravel 12/baseline actual de PHP. Node.js/Express no es un backend aceptado para DWES.
+- **Seguimiento**: la propuesta se aprueba después de Spring Boot; los hitos son relativos y el objetivo es llegar casi al final a finales de enero, sujeto al calendario escolar.
+- **Estado**: P1 aporta plantillas de proyecto y seguimiento; P2, instrumentos privados de evaluación, defensa e integración. UD7 está preparada para cierre editorial; la ejecución en clase y el seguimiento docente continúan pendientes. P3 será opcional y específico de cada proyecto, no una ampliación común.
 
 ## 11. Publicación de ejercicios y proyectos
 

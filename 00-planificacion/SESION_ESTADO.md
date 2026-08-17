@@ -126,7 +126,7 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 ### Notas de diseño
 - [x] Battleship: creado recorrido canónico paso a paso alineado con la progresión de UD2a (contrato → TDD → dominio/DTO → servicio → controlador → Flyway/JPA → errores → seguridad → integración).
 - [x] Battleship: corregidos los enlaces relativos de sus ampliaciones y diferenciada la documentación generada por SpringDoc de un futuro contrato OpenAPI/SDD.
-- [x] Battleship: Mockito configurado explícitamente como agente Java mediante `maven-dependency-plugin` y Surefire; la suite vigente ejecuta **136/136 tests verdes en Java 25**.
+- [x] Battleship: Mockito configurado explícitamente como agente Java mediante `maven-dependency-plugin` y Surefire; la suite vigente ejecuta **141/141 tests verdes en Java 25**.
 - [x] Battleship: añadido contrato de solapamiento cruzado con evidencia RED contra una mutación sin validación y GREEN con la implementación existente.
 - [x] Battleship: matriz mínima de acceso demostrada con filtros reales: consultas públicas, `401` sin autenticación, `403` con rol insuficiente, mutaciones de juego para `PLAYER` y cancelación para `ADMIN`.
 - [x] Battleship: endurecidos login, refresh y filtro JWT; hay pruebas bearer reales para `PLAYER`/`ADMIN`, claims inválidos, token malformed/expirado y refresh usado como access. El YAML canónico, Swagger UI y su configuración son públicos; `/api-docs` generado exige autenticación y, con bearer válido, devuelve `404` porque está deshabilitado. Actuator requiere autenticación. CORS comparte configuración externalizada para `/api/**` y `/auth/**`.
@@ -149,13 +149,22 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 
 ### 7. Decisiones marco (de DECISIONES_PENDIENTES.md)
 - [x] Segundo framework (Laravel/PHP seleccionado como secundario, .NET como anexo)
-- [ ] Unidad Proyecto Integrador
+- [x] Unidad Proyecto Integrador — P0–P2 completadas; preparada para cierre editorial, con ejecución en clase pendiente
 - [x] Tratamiento de FastAPI / PIA (relegado a ejemplo opcional de lectura/autoestudio)
 - [ ] Definir tamaño máximo de grupos y criterios de formación
 - [ ] Decidir publicación de enunciados de ejercicios/proyectos en GitHub Pages
 - [x] Crear rúbrica común del módulo por RA/CE (v1 creada — pendiente de refinar)
 - [x] Decidir futuro de U2c (GraphQL) (relegado a demostración introductoria)
 - [x] Decidir futuro de U6 (Híbridas)
+
+### 19. UD7 — Proyecto integrador DWES — P0–P2 completadas (1 agosto 2026)
+
+- [x] Sustituido el marcador vacío por el contrato canónico de UD7: proyecto final de DWES, no PFG; evidencia servidor propia y coordinación intermodular delimitada.
+- [x] Fijadas las únicas rutas de servidor admitidas: Spring Boot 4/Java 25 o Laravel 12/baseline PHP; Node.js/Express queda explícitamente rechazado.
+- [x] Publicados enunciado, hitos relativos, matriz práctica RA1–RA9 y rúbrica/checklist sin pesos; las soluciones y el material de evaluación privado permanecen fuera de Git y MkDocs.
+- [x] Registrada la referencia de casi finalización a finales de enero, condicionada al calendario escolar.
+- [x] Completadas P1 con plantillas de propuesta, seguimiento y defensa, y P2 con instrumentos privados de revisión, defensa y comprobación de integración; no contienen soluciones, respuestas ni baremos inventados.
+- [ ] Ejecutar las revisiones y defensas reales en clase y registrar el seguimiento docente cuando corresponda.
 
 ### 8. Reforma de UD3 — ✅ NÚCLEO COMPLETADO
 
@@ -225,18 +234,23 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] UD0 migrada a Java 25: GeoNotes con 15 pruebas, Calc25 con 4 pruebas y wrappers reproducibles.
 - [x] Todos los cortes anteriores se publicaron en `origin/main`; `mkdocs build --strict` continúa terminando correctamente.
 - [x] Incorporada la regla operativa de verificar, confirmar y subir cada unidad funcional relevante antes de cambiar de contexto.
-- [x] Núcleo canónico OpenAPI/SDD de UD2 implementado; la verificación SDD está pendiente de repetirse tras corregir los hallazgos críticos. El alcance documental obligatorio general sigue abierto hasta completar los ejemplos representativos y los demás pendientes de su inventario.
+- [x] Núcleo canónico OpenAPI/SDD de UD2 implementado y verificado formalmente el 17 de agosto de 2026: 141/141 pruebas verdes y `mkdocs build --strict` correcto.
 
-### Fase 18 — Núcleo OpenAPI/SDD de Battleship implementado; verificación pendiente de repetición (25 julio 2026)
+### Fase 18 — Núcleo OpenAPI/SDD de Battleship implementado y verificado (25 julio–17 agosto 2026)
 
-Este corte conserva hechos técnicos ya comprobados, pero **no** declara cerrada la
-verificación SDD: debe repetirse después de corregir los hallazgos críticos. Los
-ejemplos representativos de requests/responses también permanecen pendientes en
-`ud02-api-rest/INVENTARIO_REFORMA.md`.
+La verificación SDD formal se repitió el 17 de agosto de 2026. El contrato,
+los ejemplos representativos y las pruebas de conformidad quedan cerrados con
+la evidencia reproducible indicada a continuación.
 
 - [x] OpenAPI 3.1 v1 versionado como fuente canónica de las nueve operaciones; las rutas HTTP no se versionan.
 - [x] Swagger UI carga únicamente `/api-docs/battleship-v1.yaml`; la generación de Springdoc está deshabilitada.
-- [x] Autenticación, roles esperados, errores, paginación con campo `page` y cabeceras `Location` están documentados; la conformidad SDD se debe volver a ejecutar antes de declararla verificada. Los ejemplos completos siguen pendientes en el inventario.
-- [x] Matriz Atlassian MockMvc implementada y complementaria a los 27 casos de seguridad/autorización, incluida la lista CORS exacta; pendiente de reejecución de verificación SDD.
+- [x] Autenticación, roles esperados, errores, paginación con campo `page`, cabeceras `Location` y ejemplos representativos están documentados y validados contra el contrato canónico.
+- [x] Matriz Atlassian MockMvc implementada y complementaria a los 27 casos de seguridad/autorización, incluida la lista CORS exacta; la verificación formal fue repetida con éxito.
 - [x] Traza SDD docente, pública y auditable versionada en `docs/10-sdd-openapi.md`; los artefactos detallados permanecen en el backend SDD privado configurado.
-- [x] Evidencia técnica de la suite vigente: `./mvnw clean verify` con 136/136 pruebas, YAML canónico presente en el JAR sin material de claves y `mkdocs build --strict` correcto. Esta evidencia no sustituye la repetición pendiente de la verificación SDD.
+- [x] Evidencia técnica de la verificación formal: `./mvnw clean verify` con 141/141 pruebas, YAML canónico presente en el JAR sin material de claves y `mkdocs build --strict` correcto.
+
+### Fase 19 — Higiene de publicación y refuerzo Java para UD2 (pendiente de consolidación)
+
+- [x] Las dos revisiones independientes aprobaron el candidato de higiene: exclusiones de publicación, retirada del índice de material privado y ausencia de secretos o soluciones en el sitio generado.
+- [x] Ampliado el anexo Java de UD2 con `Optional`, DTOs con `record`, Streams, interfaces funcionales, `var`/`static`, text blocks y `formatted()`; `mkdocs build --strict` termina correctamente.
+- [ ] Incorporar el anexo Java al candidato de higiene, revisar el árbol estable, confirmar el conjunto y publicar el commit aprobado.
