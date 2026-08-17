@@ -19,7 +19,7 @@ ud03-mvc-spring-boot/      → Spring Boot MVC
 ud04-php/                  → PHP básico a OOP CRUD
 ud05-laravel/              → Laravel 12
 ud06-aplicaciones-hibridas/
-ud07-proyecto-integrador/  → Proyecto intermodular
+ud07-proyecto-integrador/  → Proyecto integrador de DWES; otros módulos solo coordinan calendario y ritmo, sin evaluación compartida
 evaluacion-global/         → Exámenes y rúbricas globales
 docs/                      → Publicación mkdocs → GitHub Pages
 hooks/                     → Hook Python para navegación automática

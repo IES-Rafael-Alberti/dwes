@@ -15,7 +15,7 @@ Material didáctico del módulo **Desarrollo Web en Entorno Servidor (DWES)** �
 | [UD4 — PHP](unidades/ud04.md) | PHP básico a OOP, CRUD, Laravel bridge |
 | [UD5 — Laravel](unidades/ud05.md) | Laravel 12, Sail, API, proyectos |
 | [UD6 — Aplicaciones Híbridas](unidades/ud06.md) | Conceptos y tecnologías híbridas |
-| [UD7 — Proyecto Integrador](unidades/ud07.md) | Proyecto conjunto intermodular |
+| [UD7 — Proyecto Integrador](unidades/ud07.md) | Proyecto integrador de DWES; otros módulos solo coordinan calendario y ritmo, sin ámbito de evaluación compartido |
 
 ## Metodología
 
