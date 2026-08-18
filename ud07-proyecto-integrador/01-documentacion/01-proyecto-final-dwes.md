@@ -33,13 +33,13 @@ El servidor DWES debe construirse con una de estas rutas:
 - **Spring Boot 4 con Java 25**.
 - **Laravel 12 con PHP 8.4**.
 
-**PostgreSQL es obligatorio por defecto**. MySQL puede aceptarse como alternativa. MongoDB solo puede aprobarse si el diseño de datos MongoDB se ha impartido efectivamente a ese grupo y el dominio del proyecto lo justifica; en cualquier otro caso se exige una base de datos relacional.
+**PostgreSQL es obligatorio por defecto**. MySQL puede aceptarse como alternativa. MongoDB es un plus opcional, normalmente propio del módulo de stack MERN, y no un requisito de DWES; solo puede aprobarse si el dominio lo justifica. Su diseño debe ser explícito y justificar cómo la aplicación mantiene consistencia e integridad sin las restricciones relacionales habituales. En cualquier otro caso se exige una base de datos relacional.
 
 **Node.js, Express y cualquier framework de servidor no visto en clase están estrictamente prohibidos como evidencia DWES.** Tampoco se acepta sustituir el servidor por un frontend, una maqueta visual o una configuración de despliegue.
 
 ## Diseño y requisitos de servidor DWES
 
-Antes de implementar de forma sostenida, documenta el diseño y **por qué** tomas cada elección significativa. Para un modelo relacional incluye un diagrama entidad-relación, entidades, relaciones, restricciones y su vínculo con las reglas. Explica cómo se plasma en entidades, repositorios y migraciones de Spring Boot, o en modelos y migraciones de Laravel. Actualiza el diseño cuando la implementación se aparte materialmente de él y registra el motivo.
+Antes de implementar de forma sostenida, documenta el diseño y **por qué** tomas cada elección significativa. Para un modelo relacional incluye un diagrama entidad-relación, entidades, relaciones, restricciones y su vínculo con las reglas. Define una política explícita de ciclo de vida y retención: no apliques `ON DELETE CASCADE` por inercia; justifica conservación, archivo, anonimización, baja lógica o borrado de históricos como antiguos clientes o trabajadores. Si el dominio incluye existencias, modela y prueba disponibilidad, reserva o ajuste, validación, concurrencia/integridad y auditoría o ciclo de vida. Explica cómo se plasma en entidades, repositorios y migraciones de Spring Boot, o en modelos y migraciones de Laravel. Actualiza el diseño cuando la implementación se aparte materialmente de él y registra el motivo.
 
 El proyecto debe aportar evidencia adecuada al dominio de:
 
@@ -74,7 +74,7 @@ Usa GitHub, GitLab, Bitbucket u otro alojamiento Git equivalente accesible para 
 
 No subas contraseñas, tokens, claves, datos privados ni archivos `.env` con valores reales. Incluye una plantilla segura y documenta las variables necesarias sin revelar sus valores.
 
-CI/CD puede aportar valor como mejora de calidad, pero no es obligatorio ni añade un peso de calificación por sí mismo.
+CI/CD y despliegue pueden aportar valor como integración opcional, pero no son obligatorios ni se califican en DWES: su evaluación obligatoria corresponde al módulo de Despliegue y a su profesorado.
 
 ## Entrega y defensa
 

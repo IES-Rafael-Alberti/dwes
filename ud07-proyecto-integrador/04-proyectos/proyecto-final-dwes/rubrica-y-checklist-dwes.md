@@ -25,7 +25,9 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 ### 2. Datos, migraciones e integridad
 
 - [ ] El modelo representa el dominio y sus restricciones, no solo las pantallas; para datos relacionales incluye un diagrama ER, relaciones y cardinalidades.
-- [ ] PostgreSQL es la opción aplicada por defecto; MySQL o MongoDB solo se usan con la autorización y justificación exigidas.
+- [ ] El modelo relacional define y justifica el ciclo de vida/retención de históricos (conservación, archivo, anonimización, baja lógica o borrado); `ON DELETE CASCADE` no se usa por defecto.
+- [ ] Si el dominio maneja existencias, las reglas de disponibilidad, reserva o ajuste, validación, concurrencia/integridad y auditoría/ciclo de vida están diseñadas y probadas.
+- [ ] PostgreSQL es la opción aplicada por defecto; MySQL o MongoDB solo se usan con la autorización y justificación exigidas; para MongoDB se explica el diseño y la consistencia/integridad que gestiona la aplicación.
 - [ ] Las migraciones o mecanismo equivalente permiten recrear los cambios sin editar manualmente la base de datos.
 - [ ] Las relaciones, restricciones y transacciones necesarias protegen la integridad.
 - [ ] Las consultas y transformaciones relevantes evitan errores previsibles y se justifican.
@@ -63,6 +65,7 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 - [ ] El trabajo en equipo permite identificar la autoría y aportación de cada integrante.
 - [ ] La declaración de IA marca **No** si no se usó o registra cada uso material, qué se cambió/rechazó y la evidencia de la verificación.
 - [ ] La defensa recorre el servidor en vivo y permite explicar o realizar un cambio pequeño dirigido, incluidas las decisiones o resultados de IA usados.
+- [ ] CI/CD o despliegue, si se muestran, se registran solo como integración opcional: no sustituyen evidencias de servidor ni se califican en DWES.
 
 ## Restricciones de stack
 

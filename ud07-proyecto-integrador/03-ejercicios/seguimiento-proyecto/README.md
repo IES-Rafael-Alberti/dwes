@@ -41,6 +41,8 @@ Duplica esta plantilla para cada hito relativo acordado: propuesta, fundación, 
 - **Cambio de modelo o migración:** `<qué cambia y cómo se reproduce>`
 - **Datos de prueba o semilla:** `<origen seguro y cómo cargarlos, si aplica>`
 - **Comprobación de integridad:** `<restricción, transición o caso de error revisado>`
+- **Ciclo de vida/retención:** `<archivo, anonimización, baja lógica o borrado justificado; por qué no cascade por defecto>`
+- **Existencias/inventario, si aplica:** `<disponibilidad, reserva/ajuste, concurrencia/integridad, auditoría y prueba ejecutada>`
 
 ### Integración con cliente, si existe
 

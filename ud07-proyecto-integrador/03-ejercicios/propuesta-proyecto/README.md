@@ -44,8 +44,10 @@ Documenta el diseño y el **porqué** de sus decisiones. Si usas base de datos r
 - **Diagrama ER o diseño equivalente:** `<enlace o imagen versionada sin datos privados>`
 - **Restricciones e integridad que debe imponer la base de datos:** `<lista concreta>`
 - **Correspondencia con el stack:** `<Spring: entidades/repositorios/migraciones; Laravel: modelos/migraciones>`
+- **Ciclo de vida y retención:** `<conservación, archivo, anonimización, baja lógica o borrado justificado; no usar cascade por defecto>`
+- **Existencias/inventario, si aplica:** `<disponibilidad, reserva o ajuste; validación, concurrencia/integridad, auditoría y pruebas previstas>`
 
-PostgreSQL es la opción obligatoria por defecto; MySQL puede autorizarse como alternativa. MongoDB solo se puede proponer si se ha impartido su diseño de datos para este grupo y el dominio lo justifica. Si el diseño cambia materialmente durante el proyecto, actualízalo y registra el motivo en un hito.
+PostgreSQL es la opción obligatoria por defecto; MySQL puede autorizarse como alternativa. MongoDB es un plus opcional, normalmente propio del módulo MERN, y solo se puede proponer si el dominio lo justifica: detalla el diseño y cómo la aplicación mantiene consistencia e integridad sin restricciones relacionales habituales. Si el diseño cambia materialmente durante el proyecto, actualízalo y registra el motivo en un hito.
 
 ### Flujo cliente-servidor previsto
 
@@ -87,6 +89,8 @@ No incluyas secretos, datos personales ni datos privados del proyecto en los pro
 ### Coordinación opcional con otros módulos
 
 `<nota opcional de calendario o ritmo con Cliente, DIW o DAW>`
+
+CI/CD y despliegue pueden anotarse como integración opcional, pero no son requisito ni objeto de calificación en DWES: pertenecen al módulo de Despliegue.
 
 Esta nota solo sirve para coordinar tiempos. No crea entregables compartidos ni sustituye las evidencias de servidor de DWES.
 

@@ -43,15 +43,15 @@ El alumnado puede proponer su grupo, pero el docente aprueba conjuntamente el te
 
 ## Diseño, datos y arquitectura
 
-Antes de consolidar el desarrollo, documenta el diseño y la razón de cada elección significativa. Para una base de datos relacional incluye un diagrama entidad-relación, relaciones, restricciones e impacto en las reglas. Explica cómo ese diseño se traduce a entidades, repositorios y migraciones en Spring Boot, o a modelos y migraciones en Laravel. Si la implementación se separa materialmente del diseño, actualízalo y deja trazada la decisión.
+Antes de consolidar el desarrollo, documenta el diseño y la razón de cada elección significativa. Para una base de datos relacional incluye un diagrama entidad-relación, relaciones, restricciones e impacto en las reglas. Define además una política explícita de ciclo de vida y retención: no uses `ON DELETE CASCADE` por inercia; justifica conservación, archivo, anonimización, baja lógica o borrado de históricos como antiguos clientes o trabajadores. Si el dominio incluye existencias, diseña y prueba disponibilidad, reserva o ajuste, validación, concurrencia/integridad y auditoría o ciclo de vida. Explica cómo el diseño se traduce a entidades, repositorios y migraciones en Spring Boot, o a modelos y migraciones en Laravel. Si la implementación se separa materialmente del diseño, actualízalo y deja trazada la decisión.
 
 En Spring Boot se aplican los elementos vistos en el curso que correspondan al proyecto: configuración, entidades/modelos, controladores, servicios o casos de uso, repositorios, DTO/formularios cuando eviten exponer el modelo, validación, errores, seguridad cuando proceda y **migraciones obligatorias**. Laravel puede organizarse de forma idiomática, pero el controlador no debe absorber reglas de negocio o persistencia sin una justificación documentada.
 
 ## Persistencia y límites tecnológicos
 
-**PostgreSQL es la opción obligatoria por defecto**; MySQL puede aceptarse como alternativa. MongoDB solo puede aprobarse si el diseño de datos MongoDB se ha impartido efectivamente a ese grupo y el dominio justifica su uso. En cualquier otro caso, la persistencia debe ser relacional.
+**PostgreSQL es la opción obligatoria por defecto**; MySQL puede aceptarse como alternativa. MongoDB es un plus opcional, normalmente propio del módulo de stack MERN, y no un requisito de DWES: solo puede aprobarse si el dominio lo justifica. Su diseño debe ser explícito y debe justificar cómo la aplicación conserva consistencia e integridad sin las restricciones relacionales habituales. En cualquier otro caso, la persistencia debe ser relacional.
 
-Solo Spring Boot 4/Java 25 o Laravel 12/PHP 8.4 son rutas de servidor aceptadas. Node.js, Express y cualquier framework de servidor no impartido en clase están estrictamente prohibidos como evidencia DWES. GitHub, GitLab, Bitbucket u otro alojamiento Git equivalente es obligatorio; CI/CD es un plus si aporta valor, no un requisito ni una fuente de peso de calificación.
+Solo Spring Boot 4/Java 25 o Laravel 12/PHP 8.4 son rutas de servidor aceptadas. Node.js, Express y cualquier framework de servidor no impartido en clase están estrictamente prohibidos como evidencia DWES. GitHub, GitLab, Bitbucket u otro alojamiento Git equivalente es obligatorio. CI/CD y despliegue son pluses opcionales de integración; su evaluación obligatoria corresponde al módulo de Despliegue y su profesorado, no a DWES.
 
 ## Uso responsable de IA
 
