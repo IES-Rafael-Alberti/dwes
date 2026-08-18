@@ -41,11 +41,23 @@ El trabajo es **individual por defecto**. Las parejas requieren aprobación doce
 
 El alumnado puede proponer su grupo, pero el docente aprueba conjuntamente el tema, el reparto inicial de responsabilidades de servidor y el acceso al repositorio. En cada hito, cada persona deja evidencia localizable de su responsabilidad —una incidencia, commit o equivalente— y de lo que puede explicar y modificar. La evaluación es individual: no existe una nota común automática.
 
+## Diseño, datos y arquitectura
+
+Antes de consolidar el desarrollo, documenta el diseño y la razón de cada elección significativa. Para una base de datos relacional incluye un diagrama entidad-relación, relaciones, restricciones e impacto en las reglas. Explica cómo ese diseño se traduce a entidades, repositorios y migraciones en Spring Boot, o a modelos y migraciones en Laravel. Si la implementación se separa materialmente del diseño, actualízalo y deja trazada la decisión.
+
+En Spring Boot se aplican los elementos vistos en el curso que correspondan al proyecto: configuración, entidades/modelos, controladores, servicios o casos de uso, repositorios, DTO/formularios cuando eviten exponer el modelo, validación, errores, seguridad cuando proceda y **migraciones obligatorias**. Laravel puede organizarse de forma idiomática, pero el controlador no debe absorber reglas de negocio o persistencia sin una justificación documentada.
+
+## Persistencia y límites tecnológicos
+
+**PostgreSQL es la opción obligatoria por defecto**; MySQL puede aceptarse como alternativa. MongoDB solo puede aprobarse si el diseño de datos MongoDB se ha impartido efectivamente a ese grupo y el dominio justifica su uso. En cualquier otro caso, la persistencia debe ser relacional.
+
+Solo Spring Boot 4/Java 25 o Laravel 12/PHP 8.4 son rutas de servidor aceptadas. Node.js, Express y cualquier framework de servidor no impartido en clase están estrictamente prohibidos como evidencia DWES. GitHub, GitLab, Bitbucket u otro alojamiento Git equivalente es obligatorio; CI/CD es un plus si aporta valor, no un requisito ni una fuente de peso de calificación.
+
 ## Uso responsable de IA
 
-La [declaración común de uso de IA](../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: marca **No** si no has usado IA y registra cada uso material si la has usado. La IA está permitida como asistente supervisado, no como sustituto de la autoría. Debes verificar, comprender, probar y poder defender cualquier resultado utilizado.
+La [declaración común de uso de IA](../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria: marca **No** si no has usado IA. Si la usaste, registra qué herramienta y propósito tuvo, qué aceptaste/cambiaste/rechazaste, cómo lo verificaste y la evidencia (pruebas, documentación oficial, comprobaciones manuales o revisión). Debes poder explicarlo en la defensa; la IA es un asistente supervisado, no una sustitución de autoría.
 
-No incluyas secretos, datos personales ni datos privados del proyecto en los prompts. Si no has usado IA, indícalo también en la declaración.
+No incluyas secretos, datos personales ni datos privados del proyecto en los prompts.
 
 ## Modelo temporal
 
@@ -72,9 +84,10 @@ P0, P1 y P2 están completadas: la unidad dispone de contrato y seguimiento púb
 
 - [ ] El tema está aprobado y delimita claramente el servidor propio.
 - [ ] El repositorio accesible al docente contiene trazabilidad, sin secretos ni archivos `.env` versionados.
+- [ ] El diseño documenta decisiones y razones, datos, relaciones, restricciones, migraciones y su correspondencia con el código.
 - [ ] Hay una puesta en marcha local reproducible y pruebas de las reglas relevantes.
 - [ ] La integración cliente-servidor, si existe, muestra el recorrido completo y los errores relevantes.
 - [ ] La defensa permite recorrer el servidor y realizar o razonar un cambio pequeño dirigido.
-- [ ] La declaración común de IA está incluida: marca **No** si no se usó IA o registra cada uso material, verificado y defendible.
+- [ ] La declaración común de IA está incluida: marca **No** si no se usó IA o registra cada uso material, qué se cambió/rechazó y la evidencia de su verificación.
 
 La evaluación se apoya en `00-planificacion/rubrica_comun_DWES_por_RA_CE.md` y en los instrumentos específicos de esta unidad; no se publican soluciones, respuestas GIFT ni baremos numéricos en este material.

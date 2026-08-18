@@ -15,15 +15,17 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 
 ### 1. Dominio y arquitectura servidor
 
-- [ ] El dominio aprobado contiene reglas, procesos o restricciones no triviales.
+- [ ] El dominio aprobado contiene al menos tres reglas, procesos o restricciones no triviales, independientes y comprobables en servidor.
+- [ ] Existe un diseño versionado que explica las decisiones significativas y se actualiza cuando la implementación diverge materialmente.
 - [ ] La entrada HTTP/MVC, los casos de uso/reglas y el acceso a datos tienen responsabilidades distinguibles.
 - [ ] Los controladores no concentran reglas de negocio ni persistencia sin una razón documentada.
-- [ ] **Spring Boot 4/Java 25:** la estructura usa controladores, servicios/casos de uso, DTO cuando evita exponer el modelo y repositorios/JPA de manera coherente.
-- [ ] **Laravel 12/PHP 8.4:** la estructura usa controladores, servicios/acciones cuando aportan separación, Form Requests/Resources y Eloquent de manera coherente.
+- [ ] **Spring Boot 4/Java 25:** la estructura aplica lo visto y pertinente: configuración, entidades/modelos, controladores, servicios/casos de uso, repositorios/JPA, DTO/formularios, validación, errores, seguridad si aplica y migraciones obligatorias.
+- [ ] **Laravel 12/PHP 8.4:** la estructura separa responsabilidades de forma idiomática; los controladores no absorben reglas de negocio o persistencia sin justificación.
 
 ### 2. Datos, migraciones e integridad
 
-- [ ] El modelo representa el dominio y sus restricciones, no solo las pantallas.
+- [ ] El modelo representa el dominio y sus restricciones, no solo las pantallas; para datos relacionales incluye un diagrama ER, relaciones y cardinalidades.
+- [ ] PostgreSQL es la opción aplicada por defecto; MySQL o MongoDB solo se usan con la autorización y justificación exigidas.
 - [ ] Las migraciones o mecanismo equivalente permiten recrear los cambios sin editar manualmente la base de datos.
 - [ ] Las relaciones, restricciones y transacciones necesarias protegen la integridad.
 - [ ] Las consultas y transformaciones relevantes evitan errores previsibles y se justifican.
@@ -54,15 +56,16 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 - [ ] El comportamiento del servidor puede revisarse aunque el cliente proceda de otro módulo.
 - [ ] La interfaz, diseño o despliegue no se presentan como sustitutos de la evidencia de servidor.
 
-### 7. Git, trazabilidad y defensa
+### 7. Git, trazabilidad, IA y defensa
 
-- [ ] El alojamiento Git es accesible para el docente, aunque el repositorio sea privado.
+- [ ] El alojamiento Git (GitHub, GitLab, Bitbucket o equivalente) es accesible para el docente, aunque el repositorio sea privado.
 - [ ] Commits, issues/tablero y etiquetas/releases periódicas muestran evolución y responsabilidades.
 - [ ] El trabajo en equipo permite identificar la autoría y aportación de cada integrante.
-- [ ] La defensa recorre el servidor en vivo y permite explicar o realizar un cambio pequeño dirigido.
+- [ ] La declaración de IA marca **No** si no se usó o registra cada uso material, qué se cambió/rechazó y la evidencia de la verificación.
+- [ ] La defensa recorre el servidor en vivo y permite explicar o realizar un cambio pequeño dirigido, incluidas las decisiones o resultados de IA usados.
 
 ## Restricciones de stack
 
-Solo se admiten **Spring Boot 4 con Java 25** o **Laravel 12 con PHP 8.4** para el servidor DWES. **Node.js/Express no es una ruta equivalente ni aceptada.**
+Solo se admiten **Spring Boot 4 con Java 25** o **Laravel 12 con PHP 8.4** para el servidor DWES. **Node.js, Express y cualquier framework de servidor no impartido no son una ruta equivalente ni aceptada.**
 
 Esta lista guía la revisión; no asigna pesos, porcentajes ni puntos. Debe leerse junto con el [enunciado](../../01-documentacion/01-proyecto-final-dwes.md) y la [matriz RA/CE](ra-ce-evidencias.md).

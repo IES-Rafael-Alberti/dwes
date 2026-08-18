@@ -129,9 +129,11 @@ Del inventario:
 ### 10.1 UD7 — proyecto integrador DWES (P0–P2 ✅ COMPLETADAS)
 
 - **Decisión**: UD7 es el proyecto final del módulo DWES, no el PFG. El proyecto debe demostrar servidor propio y puede coordinarse con otros módulos sin sustituir esa evidencia.
-- **Stack**: solo Spring Boot 4/Java 25 o Laravel 12/baseline actual de PHP. Node.js/Express no es un backend aceptado para DWES.
+- **Stack y persistencia**: solo Spring Boot 4/Java 25 o Laravel 12/baseline actual de PHP; PostgreSQL por defecto (MySQL como alternativa). MongoDB solo se autoriza si su diseño se impartió realmente al grupo y el dominio lo justifica. Node.js, Express y frameworks de servidor no impartidos están prohibidos como evidencia DWES.
 - **Seguimiento**: la propuesta se aprueba después de Spring Boot; los hitos son relativos y el objetivo es llegar casi al final a finales de enero, sujeto al calendario escolar.
-- **Uso responsable de IA**: se permite como asistente supervisado, nunca como delegación de autoría. Cada uso material se declara con la plantilla común, se verifica, se comprende, se prueba y se puede defender. No se incluyen secretos, datos personales ni datos privados del proyecto en los prompts.
+- **Diseño y arquitectura**: la fase de diseño es obligatoria y justifica elecciones; exige ER, restricciones y correspondencia con entidades/modelos y migraciones. Spring Boot aplica las capas y migraciones vistas; Laravel mantiene separación idiomática justificable.
+- **Uso responsable de IA**: se permite como asistente supervisado, nunca como delegación de autoría. Cada uso material se declara con herramienta, propósito, resultado aceptado/modificado/rechazado y evidencia de verificación; debe poder explicarse en defensa. No se incluyen secretos, datos personales ni datos privados del proyecto en los prompts.
+- **Trazabilidad**: alojamiento Git accesible al docente obligatorio; CI/CD es una mejora opcional sin peso de calificación por sí sola.
 - **Estado**: P1 aporta plantillas de proyecto y seguimiento; P2, instrumentos privados de evaluación, defensa e integración. UD7 está preparada para cierre editorial; la ejecución en clase y el seguimiento docente continúan pendientes. P3 será opcional y específico de cada proyecto, no una ampliación común.
 
 ## 11. Publicación de ejercicios y proyectos

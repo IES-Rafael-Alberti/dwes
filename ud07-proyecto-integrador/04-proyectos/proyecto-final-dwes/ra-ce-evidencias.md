@@ -4,12 +4,12 @@ Esta matriz conecta evidencia práctica con `00-planificacion/rubrica_comun_DWES
 
 | RA | Evidencia práctica posible | Qué revisar |
 |---|---|---|
-| RA1 — Arquitecturas y tecnologías | Decisión de stack, diagrama o explicación de componentes, configuración de ejecución local. | La tecnología y las fronteras responden al problema; no son una plantilla sin comprender. |
+| RA1 — Arquitecturas y tecnologías | Decisión de stack y persistencia, diseño razonado, diagrama de componentes o ER cuando proceda, configuración de ejecución local. | La tecnología, datos y fronteras responden al problema; no son una plantilla sin comprender. |
 | RA2 — Sentencias de servidor | Código Java/PHP y controladores o plantillas MVC que ejecutan un caso de uso. | Tipos, sintaxis, configuración y respuesta del servidor son correctos y mantenibles. |
 | RA3 — Estructuras embebidas | Formularios MVC, colecciones, validación y control de flujo cuando el proyecto los use. | La estructura está al servicio de la regla y no mezcla innecesariamente presentación y negocio. |
 | RA4 — Estado y autenticación | Sesión, token o mecanismo equivalente si el dominio protege identidad o acciones. | Credenciales, estado y acceso se gestionan con seguridad proporcional al dominio. |
 | **RA5 — Separación presentación/negocio** | Controlador/entrada delgada, servicios/casos de uso, DTO o form request, pruebas de reglas. | El flujo demuestra separación real, errores controlados y lógica testeable. |
-| **RA6 — Datos e integridad** | Modelo, migraciones, restricciones, repositorios/ORM, transacciones y pruebas de persistencia pertinentes. | El esquema se reproduce y la integridad no depende solo de la interfaz. |
+| **RA6 — Datos e integridad** | Modelo, diagrama ER relacional cuando proceda, migraciones, restricciones, repositorios/ORM, transacciones y pruebas de persistencia pertinentes. | El esquema se reproduce y la integridad no depende solo de la interfaz. |
 | **RA7 — Servicios web** | API documentada, contrato OpenAPI si se expone API, respuestas y errores, pruebas HTTP. | Recursos o endpoints son coherentes, documentados y verificables. |
 | **RA8 — Cliente y servidor** | Flujo real desde un cliente hacia el servidor, incluyendo un error visible. | Se observa petición, endpoint, servicio, persistencia y respuesta; el cliente no tapa el servidor. |
 | RA9 — Integración heterogénea | Adaptador a API/dataset externo, normalización, procedencia y pruebas de fallo. | **Solo si el proyecto usa realmente integración heterogénea.** No es requisito automático de UD7. |

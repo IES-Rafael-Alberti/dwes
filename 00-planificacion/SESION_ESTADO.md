@@ -164,7 +164,9 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] Publicados enunciado, hitos relativos, matriz práctica RA1–RA9 y rúbrica/checklist sin pesos; las soluciones y el material de evaluación privado permanecen fuera de Git y MkDocs.
 - [x] Registrada la referencia de casi finalización a finales de enero, condicionada al calendario escolar.
 - [x] Completadas P1 con plantillas de propuesta, seguimiento y defensa, y P2 con instrumentos privados de revisión, defensa y comprobación de integración; no contienen soluciones, respuestas ni baremos inventados.
-- [x] Fijada la política de grupos y de IA responsable: declaración de cada uso material mediante la plantilla común, verificación, comprensión, pruebas y defensa; quedan prohibidos secretos, datos personales y datos privados en prompts.
+- [x] Fijada la política de grupos, IA y autoría: cada uso material declara herramienta, propósito, aceptación/cambio/rechazo y evidencia de verificación; se contrasta en defensa con preguntas privadas sin respuestas modelo. Quedan prohibidos secretos, datos personales y datos privados en prompts.
+- [x] Fijadas fase de diseño y arquitectura: diseño razonado, ER relacional, restricciones, correspondencia con entidades/modelos y migraciones; Spring aplica las capas vistas y Laravel mantiene separación idiomática.
+- [x] Fijados límites tecnológicos: PostgreSQL por defecto (MySQL alternativo; MongoDB solo si se impartió y se justifica), Git alojado obligatorio, CI/CD opcional y Node.js/Express/frameworks no impartidos prohibidos como evidencia DWES.
 - [ ] Ejecutar las revisiones y defensas reales en clase y registrar el seguimiento docente cuando corresponda.
 
 ### 8. Reforma de UD3 — ✅ NÚCLEO COMPLETADO

@@ -35,11 +35,17 @@ Como referencia, encajan una reserva que evita conflictos de disponibilidad, una
 | `<regla 2>` | `<situación>` | `<respuesta o cambio de estado>` |
 | `<regla 3>` | `<situación>` | `<respuesta o cambio de estado>` |
 
-### Modelo de datos inicial
+### Diseño de datos inicial
 
-Incluye un boceto sencillo: entidades o agregados relevantes, relaciones y restricciones que afecten a las reglas. Puede ser un diagrama enlazado o texto estructurado.
+Documenta el diseño y el **porqué** de sus decisiones. Si usas base de datos relacional, incluye un diagrama entidad-relación versionado, entidades, relaciones, cardinalidades, restricciones e impacto en las reglas. Explica también cómo se transformará en entidades, repositorios y migraciones de Spring Boot, o en modelos y migraciones de Laravel.
 
-`<enlace, imagen versionada sin datos privados o descripción del modelo>`
+- **Persistencia propuesta:** `<PostgreSQL / MySQL / MongoDB solo si está autorizado>`
+- **Justificación de la persistencia y del modelo:** `<por qué encaja con el dominio>`
+- **Diagrama ER o diseño equivalente:** `<enlace o imagen versionada sin datos privados>`
+- **Restricciones e integridad que debe imponer la base de datos:** `<lista concreta>`
+- **Correspondencia con el stack:** `<Spring: entidades/repositorios/migraciones; Laravel: modelos/migraciones>`
+
+PostgreSQL es la opción obligatoria por defecto; MySQL puede autorizarse como alternativa. MongoDB solo se puede proponer si se ha impartido su diseño de datos para este grupo y el dominio lo justifica. Si el diseño cambia materialmente durante el proyecto, actualízalo y registra el motivo en un hito.
 
 ### Flujo cliente-servidor previsto
 
@@ -56,7 +62,7 @@ Marca una ruta y justifica brevemente por qué encaja con el alcance:
 - [ ] Spring Boot 4 con Java 25 — `<justificación>`
 - [ ] Laravel 12 con PHP 8.4 — `<justificación>`
 
-**Express y Node.js no se aceptan como servidor para la evidencia de DWES.** No los propongas como backend alternativo de este proyecto.
+**Node.js, Express y cualquier framework de servidor no visto en clase están estrictamente prohibidos como evidencia de DWES.** No los propongas como backend alternativo de este proyecto.
 
 ### Seguridad y autenticación
 
@@ -74,7 +80,7 @@ Solo completa esta sección si una integración externa responde a una necesidad
 
 ### Uso responsable de IA
 
-La [declaración común de uso de IA](../../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: márcala con **No** si no usas IA y registra cada uso material si la usas. La IA se permite como asistente supervisado, no como delegación de autoría. Todo resultado usado debe verificarse, comprenderse, probarse y poder defenderse.
+La [declaración común de uso de IA](../../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: márcala con **No** si no usas IA y registra cada uso material si la usas. La IA se permite como asistente supervisado, no como delegación de autoría. Para cada uso material registra qué incorporaste, modificaste o rechazaste, cómo lo verificaste y su evidencia (pruebas, documentación oficial, fuentes contrastadas, comprobación manual o revisión). Todo resultado usado debe comprenderse, probarse y poder defenderse.
 
 No incluyas secretos, datos personales ni datos privados del proyecto en los prompts.
 

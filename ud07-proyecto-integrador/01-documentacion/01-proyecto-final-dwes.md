@@ -22,24 +22,30 @@ En cada hito, documenta la responsabilidad, una incidencia/commit o evidencia eq
 
 ## Uso responsable de IA
 
-La [declaración común de uso de IA](../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: marca **No** si no has usado IA y registra cada uso material si la has usado. Puedes usar IA como asistente supervisado, pero no para delegar tu autoría. Verifica, comprende, prueba y prepárate para defender cualquier resultado que incorpores.
+La [declaración común de uso de IA](../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria: marca **No** si no has usado IA. Si la usaste, registra la herramienta y el propósito, qué resultado incorporaste, modificaste o rechazaste, y cómo lo verificaste. La verificación debe aportar evidencia: pruebas, documentación oficial, fuentes contrastadas, comprobación manual o revisión. En la defensa debes poder explicar esas decisiones; la IA es un asistente supervisado, no una delegación de autoría.
 
 No incluyas secretos, datos personales ni datos privados del proyecto en los prompts.
 
-## Stack permitido
+## Stack, persistencia y límites tecnológicos
 
 El servidor DWES debe construirse con una de estas rutas:
 
 - **Spring Boot 4 con Java 25**.
 - **Laravel 12 con PHP 8.4**.
 
-**Node.js y Express no están aceptados como servidor DWES.** Tampoco se acepta sustituir el servidor por un frontend, una maqueta visual o una configuración de despliegue.
+**PostgreSQL es obligatorio por defecto**. MySQL puede aceptarse como alternativa. MongoDB solo puede aprobarse si el diseño de datos MongoDB se ha impartido efectivamente a ese grupo y el dominio del proyecto lo justifica; en cualquier otro caso se exige una base de datos relacional.
 
-## Requisitos de servidor DWES
+**Node.js, Express y cualquier framework de servidor no visto en clase están estrictamente prohibidos como evidencia DWES.** Tampoco se acepta sustituir el servidor por un frontend, una maqueta visual o una configuración de despliegue.
+
+## Diseño y requisitos de servidor DWES
+
+Antes de implementar de forma sostenida, documenta el diseño y **por qué** tomas cada elección significativa. Para un modelo relacional incluye un diagrama entidad-relación, entidades, relaciones, restricciones y su vínculo con las reglas. Explica cómo se plasma en entidades, repositorios y migraciones de Spring Boot, o en modelos y migraciones de Laravel. Actualiza el diseño cuando la implementación se aparte materialmente de él y registra el motivo.
 
 El proyecto debe aportar evidencia adecuada al dominio de:
 
 - arquitectura con responsabilidades separadas: entrada HTTP o MVC, reglas/casos de uso y acceso a datos no se mezclan sin justificación;
+- en **Spring Boot**, configuración, entidades/modelos, controladores, servicios/casos de uso, repositorios, DTO/formularios cuando hagan falta, validación, errores, seguridad cuando aplique y **migraciones obligatorias** según lo visto en el curso;
+- en **Laravel**, una separación idiomática de responsabilidades; los controladores no concentran reglas de negocio o persistencia sin justificación;
 - modelo de datos y cambios reproducibles mediante migraciones o mecanismo equivalente del stack;
 - validación en servidor y respuestas/errores consistentes para datos inválidos, ausencia de recursos y conflictos de reglas cuando proceda;
 - autenticación y autorización cuando el dominio tenga identidades, datos o acciones que proteger; la solución debe corresponder al riesgo real, no añadirse como adorno;
@@ -58,7 +64,7 @@ El cliente no sustituye el código, las pruebas ni la explicación del servidor.
 
 ## Repositorio y trazabilidad
 
-Usa GitHub, GitLab u otro alojamiento Git equivalente accesible para el docente. El repositorio puede ser privado. Debe conservar:
+Usa GitHub, GitLab, Bitbucket u otro alojamiento Git equivalente accesible para el docente. El repositorio puede ser privado. Debe conservar:
 
 - commits que expliquen el avance y permitan revisar responsabilidades;
 - incidencias, tablero o mecanismo equivalente para decisiones, tareas y seguimiento;
@@ -67,6 +73,8 @@ Usa GitHub, GitLab u otro alojamiento Git equivalente accesible para el docente.
 - la [declaración de uso de IA](../../plantillas/plantilla-declaracion-uso-ia.md), obligatoria y marcada explícitamente con **No** si no hubo uso.
 
 No subas contraseñas, tokens, claves, datos privados ni archivos `.env` con valores reales. Incluye una plantilla segura y documenta las variables necesarias sin revelar sus valores.
+
+CI/CD puede aportar valor como mejora de calidad, pero no es obligatorio ni añade un peso de calificación por sí mismo.
 
 ## Entrega y defensa
 
