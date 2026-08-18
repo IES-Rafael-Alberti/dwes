@@ -151,7 +151,7 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] Segundo framework (Laravel/PHP seleccionado como secundario, .NET como anexo)
 - [x] Unidad Proyecto Integrador — P0–P2 completadas; preparada para cierre editorial, con ejecución en clase pendiente
 - [x] Tratamiento de FastAPI / PIA (relegado a ejemplo opcional de lectura/autoestudio)
-- [ ] Definir tamaño máximo de grupos y criterios de formación
+- [x] Definida la política de UD7: individual por defecto; parejas con aprobación; equipos de tres solo con tres responsabilidades de servidor separables; aprobación docente de tema, reparto inicial y acceso al repositorio; evaluación individual con evidencia por hito.
 - [ ] Decidir publicación de enunciados de ejercicios/proyectos en GitHub Pages
 - [x] Crear rúbrica común del módulo por RA/CE (v1 creada — pendiente de refinar)
 - [x] Decidir futuro de U2c (GraphQL) (relegado a demostración introductoria)
@@ -164,6 +164,7 @@ marca no cierra el alcance documental obligatorio vigente de UD2.
 - [x] Publicados enunciado, hitos relativos, matriz práctica RA1–RA9 y rúbrica/checklist sin pesos; las soluciones y el material de evaluación privado permanecen fuera de Git y MkDocs.
 - [x] Registrada la referencia de casi finalización a finales de enero, condicionada al calendario escolar.
 - [x] Completadas P1 con plantillas de propuesta, seguimiento y defensa, y P2 con instrumentos privados de revisión, defensa y comprobación de integración; no contienen soluciones, respuestas ni baremos inventados.
+- [x] Fijada la política de grupos y de IA responsable: declaración de cada uso material mediante la plantilla común, verificación, comprensión, pruebas y defensa; quedan prohibidos secretos, datos personales y datos privados en prompts.
 - [ ] Ejecutar las revisiones y defensas reales en clase y registrar el seguimiento docente cuando corresponda.
 
 ### 8. Reforma de UD3 — ✅ NÚCLEO COMPLETADO

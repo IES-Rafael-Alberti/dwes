@@ -12,9 +12,19 @@ La elección de Laravel es posible, pero Laravel puede no estar concluido cuando
 
 ## Alcance del proyecto
 
-Elige un dominio con decisiones y reglas del lado servidor: estados, permisos, reservas, cálculos, límites, transiciones, consistencia o procesos verificables. Un catálogo o formulario puede formar parte del proyecto, pero no basta si todo se reduce a CRUD sin reglas.
+Elige un dominio con decisiones y reglas del lado servidor: estados, permisos, reservas, cálculos, límites, transiciones, consistencia o procesos verificables. Incluye al menos **tres reglas, estados o procesos de negocio independientes y comprobables en servidor**. La calidad y la pertinencia para el dominio importan más que el número: un catálogo, formulario o CRUD no cuentan por sí solos como regla de negocio.
 
-Puedes trabajar individualmente o en equipo si el docente lo autoriza. En equipo se documentan responsabilidades, aportaciones y decisiones de cada persona. La defensa y la trazabilidad deben permitir atribuir autoría real: nadie acredita trabajo de servidor que no pueda explicar, localizar y modificar.
+Son ejemplos adecuados una reserva de recursos con conflictos de disponibilidad, una gestión de incidencias con estados y permisos, un préstamo de material con sanciones o una planificación de turnos con restricciones. Evita proponer una tienda en línea si solo contiene catálogo, carrito y pedidos: suele reducirse a CRUD y solo será viable si incorpora reglas de servidor sustanciales y verificables más allá de esas operaciones.
+
+El trabajo es individual por defecto. Puedes trabajar en pareja si el docente lo autoriza. Un equipo de tres personas solo se autoriza cuando el dominio aprobado tiene tres responsabilidades de servidor claramente separables; no se aceptan grupos de más de tres personas. El alumnado puede proponer el grupo, pero el docente aprueba a la vez el tema, el reparto inicial de responsabilidades de servidor y el acceso al repositorio.
+
+En cada hito, documenta la responsabilidad, una incidencia/commit o evidencia equivalente y aquello que cada persona puede explicar y modificar. La defensa y la trazabilidad deben permitir atribuir autoría real: nadie acredita trabajo de servidor que no pueda explicar, localizar y modificar. La evaluación es individual; no hay una nota común automática.
+
+## Uso responsable de IA
+
+La [declaración común de uso de IA](../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: marca **No** si no has usado IA y registra cada uso material si la has usado. Puedes usar IA como asistente supervisado, pero no para delegar tu autoría. Verifica, comprende, prueba y prepárate para defender cualquier resultado que incorpores.
+
+No incluyas secretos, datos personales ni datos privados del proyecto en los prompts.
 
 ## Stack permitido
 
@@ -54,6 +64,7 @@ Usa GitHub, GitLab u otro alojamiento Git equivalente accesible para el docente.
 - incidencias, tablero o mecanismo equivalente para decisiones, tareas y seguimiento;
 - etiquetas o releases periódicos asociados a los hitos;
 - documentación de cómo ejecutar, probar y demostrar el proyecto.
+- la [declaración de uso de IA](../../plantillas/plantilla-declaracion-uso-ia.md), obligatoria y marcada explícitamente con **No** si no hubo uso.
 
 No subas contraseñas, tokens, claves, datos privados ni archivos `.env` con valores reales. Incluye una plantilla segura y documenta las variables necesarias sin revelar sus valores.
 

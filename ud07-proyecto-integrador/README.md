@@ -14,6 +14,10 @@ El proyecto parte de los contenidos de Spring Boot. El tema se propone y aprueba
 
 El dominio debe ser no trivial en el servidor: debe contener reglas, estados, restricciones o procesos que no se reduzcan a pantallas conectadas a operaciones CRUD planas.
 
+Como referencia, son dominios adecuados una reserva de recursos con conflictos de disponibilidad, una gestión de incidencias con estados y permisos, un préstamo de material con sanciones o una planificación de turnos con restricciones. Una tienda en línea suele quedarse en catálogo, carrito y pedidos CRUD; no la propongas salvo que el alcance demuestre reglas de servidor sustanciales y verificables más allá de esas operaciones.
+
+Incluye como mínimo **tres reglas, estados o procesos de negocio independientes y comprobables en servidor**. La calidad y la pertinencia para el dominio importan más que el número: CRUD por sí solo no cuenta como una regla de negocio.
+
 ## Stacks oficiales
 
 | Permitido | Condición |
@@ -30,6 +34,18 @@ La coordinación con Cliente, Diseño de Interfaces Web y Despliegue de Aplicaci
 - reutilizar un cliente de otro módulo es opcional; solo aporta evidencia a DWES cuando prueba un flujo completo y visible a través del servidor propio permitido del estudiante: acción visible → petición → endpoint → servicio/regla → persistencia → respuesta o error, incluida la gestión de respuestas y errores;
 - el trabajo exclusivamente de frontend, diseño visual o despliegue no acredita por sí mismo el servidor;
 - cada integrante debe poder explicar y defender su aportación de servidor, también en trabajos de equipo.
+
+## Modalidad de trabajo y autoría
+
+El trabajo es **individual por defecto**. Las parejas requieren aprobación docente. Un equipo de tres personas solo se aprueba cuando el dominio propuesto contiene tres responsabilidades de servidor claramente separables; no se admiten equipos de más de tres personas.
+
+El alumnado puede proponer su grupo, pero el docente aprueba conjuntamente el tema, el reparto inicial de responsabilidades de servidor y el acceso al repositorio. En cada hito, cada persona deja evidencia localizable de su responsabilidad —una incidencia, commit o equivalente— y de lo que puede explicar y modificar. La evaluación es individual: no existe una nota común automática.
+
+## Uso responsable de IA
+
+La [declaración común de uso de IA](../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: marca **No** si no has usado IA y registra cada uso material si la has usado. La IA está permitida como asistente supervisado, no como sustituto de la autoría. Debes verificar, comprender, probar y poder defender cualquier resultado utilizado.
+
+No incluyas secretos, datos personales ni datos privados del proyecto en los prompts. Si no has usado IA, indícalo también en la declaración.
 
 ## Modelo temporal
 
@@ -59,5 +75,6 @@ P0, P1 y P2 están completadas: la unidad dispone de contrato y seguimiento púb
 - [ ] Hay una puesta en marcha local reproducible y pruebas de las reglas relevantes.
 - [ ] La integración cliente-servidor, si existe, muestra el recorrido completo y los errores relevantes.
 - [ ] La defensa permite recorrer el servidor y realizar o razonar un cambio pequeño dirigido.
+- [ ] La declaración común de IA está incluida: marca **No** si no se usó IA o registra cada uso material, verificado y defendible.
 
 La evaluación se apoya en `00-planificacion/rubrica_comun_DWES_por_RA_CE.md` y en los instrumentos específicos de esta unidad; no se publican soluciones, respuestas GIFT ni baremos numéricos en este material.

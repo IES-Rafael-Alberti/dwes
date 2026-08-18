@@ -12,6 +12,8 @@ Completa esta plantilla antes de consolidar el desarrollo. Describe decisiones r
 | Repositorio Git y acceso docente | `<URL y forma de acceso; puede ser privado>` |
 | Issue, tablero o registro inicial | `<URL o referencia>` |
 
+El trabajo es individual por defecto. Las parejas requieren aprobación docente. Un equipo de tres solo puede proponerse si el dominio tiene tres responsabilidades de servidor claramente separables; no se admiten grupos mayores. La aprobación docente abarca el tema, el grupo, el reparto inicial y el acceso al repositorio.
+
 ## Problema y alcance de servidor
 
 ### Dominio, problema y usuarios
@@ -23,12 +25,15 @@ Completa esta plantilla antes de consolidar el desarrollo. Describe decisiones r
 
 ### Reglas no triviales del servidor
 
-Escribe reglas, estados, restricciones o procesos que el servidor deba decidir y validar. Un listado de pantallas o de operaciones CRUD no basta.
+Escribe al menos **tres reglas, estados, restricciones o procesos de negocio independientes** que el servidor deba decidir y validar. Deben ser relevantes para el dominio y comprobables con una prueba o escenario; un listado de pantallas u operaciones CRUD no basta.
+
+Como referencia, encajan una reserva que evita conflictos de disponibilidad, una incidencia con transiciones y permisos, un préstamo con límites o sanciones, o una planificación de turnos con restricciones. Evita una tienda en línea limitada a catálogo, carrito y pedidos: suele ser CRUD sin lógica de negocio suficiente.
 
 | Regla, estado o restricción | Cuándo se aplica | Resultado esperado o error |
 |---|---|---|
 | `<regla 1>` | `<situación>` | `<respuesta o cambio de estado>` |
 | `<regla 2>` | `<situación>` | `<respuesta o cambio de estado>` |
+| `<regla 3>` | `<situación>` | `<respuesta o cambio de estado>` |
 
 ### Modelo de datos inicial
 
@@ -66,6 +71,12 @@ Solo completa esta sección si una integración externa responde a una necesidad
 - **Servicio, dataset o API externa:** `<nombre y enlace>`
 - **Justificación:** `<qué necesidad resuelve>`
 - **Fallo, límite o alternativa local prevista:** `<cómo se comportará el servidor>`
+
+### Uso responsable de IA
+
+La [declaración común de uso de IA](../../../plantillas/plantilla-declaracion-uso-ia.md) es obligatoria en todos los proyectos: márcala con **No** si no usas IA y registra cada uso material si la usas. La IA se permite como asistente supervisado, no como delegación de autoría. Todo resultado usado debe verificarse, comprenderse, probarse y poder defenderse.
+
+No incluyas secretos, datos personales ni datos privados del proyecto en los prompts.
 
 ### Coordinación opcional con otros módulos
 

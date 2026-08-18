@@ -117,18 +117,21 @@ Del inventario:
 - **Seguridad demostrada**: tests de integración con filtros activos cubren consultas públicas, `401` sin autenticación, `403` con rol sintético insuficiente y bearer tokens reales firmados por `JwtService` para acceso `PLAYER` y `ADMIN`. También cubren credenciales incorrectas, refresh inválido/expirado, refresh usado como access y claims de roles inválidos. CSRF se deshabilita porque la API es stateless y usa bearer tokens, no cookies de sesión. Swagger/API docs y Actuator requieren token; CORS cubre API y autenticación con orígenes externalizados.
 - **SDD/OpenAPI**: contrato estático OpenAPI 3.1 versionado como fuente de verdad, pruebas de conformidad, ejemplos representativos y traza versionada implementados. Springdoc generado está deshabilitado y Swagger UI carga únicamente el YAML canónico. La verificación formal se repitió el 17 de agosto de 2026: `./mvnw clean verify` terminó con 141 pruebas verdes y `mkdocs build --strict` correctamente.
 
-## 10. Proyectos grupales
+## 10. Proyectos grupales (✅ DECIDIDO PARA UD7)
 
-- Se trabajará con proyectos individuales y grupales.
-- **Pendiente**: Definir tamaño máximo de grupo. Propuesta inicial: 4 personas.
-- Definir criterios de formación de grupos (docente asigna, alumnos se agrupan libremente, mixto).
-- Establecer mecanismo de evaluación individual dentro del grupo (para evitar free-riders).
+- **Modalidad por defecto**: trabajo individual.
+- **Parejas**: permitidas únicamente con aprobación docente.
+- **Equipos de tres**: permitidos solo si el dominio aprobado contiene tres responsabilidades de servidor claramente separables. No se admiten grupos de más de tres personas.
+- **Formación y aprobación**: el alumnado puede proponer su grupo, pero el docente aprueba conjuntamente el tema, el reparto inicial de responsabilidades de servidor y el acceso al repositorio.
+- **Evidencia por hito**: cada integrante registra su responsabilidad, una incidencia/commit o evidencia equivalente y aquello que puede explicar y defender.
+- **Evaluación**: la calificación es individual; no existe reparto automático de una nota común. Cada persona acredita únicamente el trabajo de servidor que puede localizar, explicar y modificar.
 
 ### 10.1 UD7 — proyecto integrador DWES (P0–P2 ✅ COMPLETADAS)
 
 - **Decisión**: UD7 es el proyecto final del módulo DWES, no el PFG. El proyecto debe demostrar servidor propio y puede coordinarse con otros módulos sin sustituir esa evidencia.
 - **Stack**: solo Spring Boot 4/Java 25 o Laravel 12/baseline actual de PHP. Node.js/Express no es un backend aceptado para DWES.
 - **Seguimiento**: la propuesta se aprueba después de Spring Boot; los hitos son relativos y el objetivo es llegar casi al final a finales de enero, sujeto al calendario escolar.
+- **Uso responsable de IA**: se permite como asistente supervisado, nunca como delegación de autoría. Cada uso material se declara con la plantilla común, se verifica, se comprende, se prueba y se puede defender. No se incluyen secretos, datos personales ni datos privados del proyecto en los prompts.
 - **Estado**: P1 aporta plantillas de proyecto y seguimiento; P2, instrumentos privados de evaluación, defensa e integración. UD7 está preparada para cierre editorial; la ejecución en clase y el seguimiento docente continúan pendientes. P3 será opcional y específico de cada proyecto, no una ampliación común.
 
 ## 11. Publicación de ejercicios y proyectos
