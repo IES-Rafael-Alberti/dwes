@@ -30,6 +30,6 @@ Una unidad prioritaria solo se considera cerrada cuando:
 - **UD4**: cerrada para impartición; solo mantenimiento y verificaciones operativas no bloqueantes.
 - **UD5**: cerrada y verificada; limpieza histórica P3 completada.
 - **UD6 — CERRADA**: P0–P3 completados. P3 aporta una llamada opcional con Spring AI/Ollama, desactivada por defecto y probada offline (76 pruebas totales), sin sustituir RA9.g. El banco privado de 14 preguntas está preparado localmente y no se versiona; solo queda su importación operativa en Moodle.
-- **UD7**: se diseñará según el calendario efectivo y la coordinación del proyecto integrador.
+- **UD7 — PREPARADA PARA CIERRE EDITORIAL**: P0–P2 completadas con contrato, seguimiento, instrumentos privados de evaluación/defensa e integración. La ejecución en clase y el seguimiento docente siguen pendientes; P3 solo admitirá extensiones opcionales por proyecto.
 
 La prioridad no es completar superficialmente todas las unidades, sino asegurar que el bloque anterior a Navidad sea sólido, reproducible y evaluable.
