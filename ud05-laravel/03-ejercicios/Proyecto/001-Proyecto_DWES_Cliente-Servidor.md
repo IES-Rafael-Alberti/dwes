@@ -26,6 +26,12 @@ Diseña y construye una API REST para un dominio elegido y aprobado por el profe
 
 ## Entrega
 
+Al ser un proyecto de alcance amplio, entrega especificación, backlog TDD, plan
+técnico, plan de pruebas, contrato API, README e issue de entrega. Se usan las
+plantillas de `00-recursos-comunes/plantillas/guia-documentacion-autoria.md`.
+La máquina de estados solo aplica si el dominio incorpora transiciones de negocio
+relevantes; el cliente web sigue siendo opcional.
+
 El `README.md` del repositorio debe incluir:
 
 - Problema que resuelve la API y modelo de recursos.

@@ -29,6 +29,12 @@ capas solo se permite para una tarea compartida justificada.
 - Tests automatizados y resultado reproducible.
 - Contrato HTTP/OpenAPI o colección REST, si aplica.
 
+Para una práctica menor, el README e issue son el dossier de autoría: incluyen
+la tabla de slices, reglas, pruebas y evidencia. No se exige una especificación,
+plan técnico o máquina de estados separados salvo que el enunciado la convierta
+en un proyecto de alcance amplio. Consulta
+`00-recursos-comunes/plantillas/guia-documentacion-autoria.md`.
+
 ## Criterios de aceptación
 
 - [ ] Cada slice funciona y tiene una prueba de éxito.

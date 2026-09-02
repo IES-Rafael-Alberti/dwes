@@ -51,3 +51,11 @@ La entrega debe mantener esa dirección de dependencias: HTTP y PDO dependen del
 ## Entrega
 
 Incluye tests propios, una breve decisión de arquitectura y evidencia RED → GREEN → REFACTOR por etapa. Búsqueda, filtros, roles, API JSON y subida de archivos quedan fuera del núcleo.
+
+## Documentación y autoría
+
+GTask es un proyecto de alcance amplio. Entrega especificación, backlog TDD,
+plan técnico, plan de pruebas, README e issue de entrega usando las plantillas
+de `00-recursos-comunes/plantillas/guia-documentacion-autoria.md`.
+El contrato API solo aplica si se añade una API JSON aprobada; la máquina de
+estados solo se exige si el grupo introduce un flujo con transiciones relevantes.

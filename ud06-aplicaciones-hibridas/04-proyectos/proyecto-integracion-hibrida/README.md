@@ -57,6 +57,16 @@ operativa exhaustiva, diagnóstico avanzado y demás refinamientos solo se abord
 cuando el núcleo ya es reproducible; aportan evidencia para niveles superiores,
 pero no amplían el tiempo ni sustituyen ningún CE.
 
+## Documentación y autoría
+
+Por su presupuesto de cinco sesiones, P2B aplica el nivel de proyecto acotado:
+`docs/fuentes.md`, una especificación breve, backlog TDD, plan de pruebas,
+README e issue de entrega. El modelo neutral, mapeos, identidad, procedencia y
+política de fallos se documentan en esos artefactos, sin duplicarlos en un plan
+técnico separado. Consulta `00-recursos-comunes/plantillas/guia-documentacion-autoria.md`.
+No se exige cliente propio ni máquina de estados salvo que el dominio aprobado
+lo necesite.
+
 ## Paso 1: aprobación de las fuentes
 
 Cada estudiante o equipo propone una **API externa** y un **dataset local abierto**

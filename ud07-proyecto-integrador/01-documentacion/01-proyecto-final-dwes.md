@@ -78,6 +78,16 @@ No subas contraseñas, tokens, claves, datos privados ni archivos `.env` con val
 
 CI/CD y despliegue pueden aportar valor como integración opcional, pero no son obligatorios ni se califican en DWES: su evaluación obligatoria corresponde al módulo de Despliegue y a su profesorado.
 
+## Documentación de autoría
+
+El proyecto final aplica el nivel de alcance amplio de
+`00-recursos-comunes/plantillas/guia-documentacion-autoria.md`.
+Debe contener especificación, backlog TDD, plan técnico, plan de pruebas,
+README e issue de entrega; incorpora contrato API cuando exponga endpoints o
+integraciones HTTP propias. La máquina de estados solo es obligatoria si el
+dominio tiene transiciones relevantes. El cliente sigue siendo opcional y puede
+demostrarse el servidor con una colección REST.
+
 ## Entrega y defensa
 
 La entrega final incluye el repositorio y las evidencias necesarias para revisarlo. En la defensa se realizará un recorrido vivo del servidor: dominio, flujo relevante, datos, reglas, pruebas y decisiones. También podrás recibir un cambio pequeño dirigido o una petición de razonarlo y localizar sus capas afectadas. El objetivo es demostrar comprensión y autoría, no memorizar una presentación.
