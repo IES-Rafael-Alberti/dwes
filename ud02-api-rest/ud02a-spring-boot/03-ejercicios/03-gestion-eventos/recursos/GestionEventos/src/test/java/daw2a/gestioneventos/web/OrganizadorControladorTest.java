@@ -26,8 +26,7 @@ class OrganizadorControladorTest {
     @MockitoBean
     private OrganizadorServicio organizadorServicio;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void listShouldReturnOrganizadores() throws Exception {

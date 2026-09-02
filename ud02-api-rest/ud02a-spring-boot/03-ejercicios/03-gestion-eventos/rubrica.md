@@ -20,3 +20,20 @@
 
 - Para obtener el 4 en cualquier criterio, el estudiante debe poder defenderlo oralmente si se le pregunta.
 - El uso de IA sin declarar se considera falta de honestidad académica.
+
+## Aplicación 2026/2027
+
+La entrega se organiza en grupos de 3-4 y slices verticales de dominio, API,
+persistencia y pruebas. Se exige issue, README, revisión de pares y defensa
+individual. El resultado común no sustituye la comprobación de autoría.
+
+La ruta 2026/2027 exige además migraciones Flyway reproducibles, sin creación
+automática de esquema en producción, y un contrato OpenAPI versionado con
+pruebas MockMvc del slice. Estas evidencias cubren RA6.e-g y RA7.g-h; su peso
+es el 25 % de UD2a para esta práctica en 2026/2027.
+
+| Evidencia adicional 2026/2027 | Comprobación mínima |
+| --- | --- |
+| Migraciones y perfil de producción | Flyway aplica el esquema desde cero y el perfil productivo no usa `ddl-auto` para crearlo o actualizarlo. |
+| Contrato OpenAPI | El YAML versionado declara las operaciones, JWT, esquemas y errores del slice. |
+| Conformidad | Una prueba MockMvc contrasta al menos el flujo correcto y un error del slice contra el contrato. |

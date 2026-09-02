@@ -1,9 +1,10 @@
 package daw2a.gestioneventos.repo;
 
 import daw2a.gestioneventos.dominio.Participante;
+import daw2a.gestioneventos.dominio.Evento;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
 
@@ -15,10 +16,17 @@ class ParticipanteRepoTest {
     @Autowired
     private ParticipanteRepo participanteRepo;
 
+    @Autowired
+    private EventoRepo eventoRepo;
+
     @Test
     void findByNombreContainingIgnoreCaseShouldReturnResults() {
-        Participante p1 = Participante.builder().nombre("Alice").usuario("alice01").contrasenia("secret").build();
-        Participante p2 = Participante.builder().nombre("Bob").usuario("bob02").contrasenia("secret").build();
+        Evento evento = eventoRepo.save(Evento.builder()
+                .nombre("Evento de prueba")
+                .descripcion("Descripcion de prueba")
+                .build());
+        Participante p1 = Participante.builder().nombre("Alice").usuario("alice001").contrasenia("secret").evento(evento).build();
+        Participante p2 = Participante.builder().nombre("Bob").usuario("bob0002").contrasenia("secret").evento(evento).build();
         participanteRepo.save(p1);
         participanteRepo.save(p2);
 

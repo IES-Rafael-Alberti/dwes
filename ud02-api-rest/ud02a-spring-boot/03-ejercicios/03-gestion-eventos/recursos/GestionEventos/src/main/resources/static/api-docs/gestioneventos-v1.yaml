@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: API de gestion de eventos
+  version: v1
+  description: Completa este contrato antes de implementar o modificar cada slice.
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

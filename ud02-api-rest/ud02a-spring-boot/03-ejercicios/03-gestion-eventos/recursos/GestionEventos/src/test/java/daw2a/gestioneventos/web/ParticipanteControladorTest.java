@@ -26,8 +26,7 @@ class ParticipanteControladorTest {
     @MockitoBean
     private ParticipanteServicio participanteServicio;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void listShouldReturnParticipantes() throws Exception {
@@ -52,4 +51,3 @@ class ParticipanteControladorTest {
                 .andExpect(jsonPath("$.id").value(7));
     }
 }
-

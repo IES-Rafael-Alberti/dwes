@@ -28,7 +28,7 @@ Esto creará una subcarpeta `project/` con un repositorio Git listo. Navega por 
 4. **Tag `v4`**: Introducción de la capa de servicios (`TaskService`) para encapsular la lógica de negocio y uso de DTOs (`CreateTaskDTO`, `UpdateTaskDTO`).
 5. **Tag `v4-extras`**: Paginación, caché (ETag/Cache-Control), parámetros de búsqueda y métodos HEAD.
 
-### 2. Ejecutar y testear cada etapa
+### 2. Ejecutar, explicar y completar cada etapa
 
 Utiliza Maven para verificar las etapas:
 - Corre el servidor en local: `mvn spring-boot:run`
@@ -39,11 +39,25 @@ Utiliza Maven para verificar las etapas:
   mvn -q -Ptests-extras test
   ```
 
+### 3. Ampliación evaluable: persistencia y API básica
+
+Sobre la versión `v4`, cada grupo completa un slice pequeño y acotado: una
+operación de consulta o modificación de tareas con controlador, servicio,
+repositorio JPA, DTO de entrada o salida y prueba automatizada. Debe conservar
+la separación por capas y devolver una respuesta HTTP coherente, incluido el
+caso de recurso inexistente.
+
+Además, documenta en `aprendizaje.md` cómo se configura la conexión H2, qué
+responsabilidad tiene la entidad y el repositorio, y por qué la operación se
+ejecuta en la capa de servicio. No se pide todavía una migración versionada ni
+un contrato OpenAPI: esos incrementos se incorporan en las prácticas siguientes.
+
 ## Entregables
 
 - Documento `aprendizaje.md` donde expliques en tus propias palabras qué mejoras se introducen en la arquitectura al pasar de `v1` → `v2`, `v2` → `v3` y `v3` → `v4`.
 - Captura de pantalla de la ejecución exitosa de los tests (`mvn test -Pall-tests`).
 - Declaración de uso de IA cumplimentada (ver plantilla en `00-recursos-comunes/plantillas/`).
+- Commit del slice adicional y su prueba verde.
 
 ## Política de IA
 
@@ -60,8 +74,9 @@ Ver `rubrica.md` y `ra-ce.md` en este directorio.
 
 ## Relación con Battleship
 
-Este ejercicio complementa las sesiones de Battleship sobre TDD,
-controladores, capas y test slicing. Consulta el
+Este ejercicio complementa las sesiones 1 a 6 de Battleship: arranque con H2,
+TDD, controladores, capas, DTOs, errores y test slicing. Consulta el
 [recorrido canónico de Battleship](../../02-ejemplos/battleship/docs/README.md)
-antes de analizar las etapas. Battleship es el proyecto conductor; aquí
-practicas la lectura de esa evolución en un contexto más pequeño.
+antes de analizar las etapas. Battleship es el proyecto conductor; aquí se
+practica hasta ese punto en un contexto más pequeño. No se entrega Battleship
+ni se exigen todavía JWT, migraciones versionadas u OpenAPI.

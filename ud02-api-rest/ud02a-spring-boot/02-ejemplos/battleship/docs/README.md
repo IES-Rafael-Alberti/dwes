@@ -100,13 +100,13 @@ Horario semanal: **2h + 2h + 3h** (tres días a la semana).
 
 Dentro de cada sesión:
 - **Code-along**: el profe explica teoría y escribe código en vivo con los alumnos (Battleship)
-- **Tarea individual**: los últimos 30 min (sesiones de 2h) o 60 min (sesión de 3h) trabajan en el ejercicio correspondiente
+- **Práctica cooperativa**: los últimos 30 min (sesiones de 2h) o 60 min (sesión de 3h) los grupos trabajan en el slice correspondiente
 
 Los alumnos avanzan en paralelo con su proyecto (book-catalog, mini-tasks, gestion-eventos) aplicando los mismos conceptos que ven en Battleship.
 
 ## Sesiones
 
-| # | Code-along (Battleship) | Tarea individual | Tiempo estimado |
+| # | Code-along (Battleship) | Práctica cooperativa | Tiempo estimado |
 |---|------------------------|------------------|-----------------|
 | 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Book-catalog entrega 1 | 2h |
 | 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |

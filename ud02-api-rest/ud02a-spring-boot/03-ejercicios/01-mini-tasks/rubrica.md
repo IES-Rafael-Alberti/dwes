@@ -13,3 +13,15 @@
 
 - Para obtener el 4 en cualquier criterio, el estudiante debe poder defenderlo oralmente si se le pregunta.
 - El uso de IA sin declarar se considera falta de honestidad académica.
+
+## Aplicación 2026/2027
+
+La práctica se ejecuta en grupos de 3-4 por vertical slices. Además del resultado
+común se valoran responsabilidad individual, tests del slice, trazabilidad Git,
+revisión de pares y defensa oral. Las ponderaciones históricas no se trasladan
+automáticamente.
+
+El slice adicional es obligatorio para la ruta 2026/2027: debe evidenciar la
+conexión JPA/H2, una operación en servicio y repositorio, DTO, respuesta HTTP y
+prueba. Corresponde a RA6.a-d y RA7.a-d; la práctica representa el 15 % de la
+calificación de UD2a en 2026/2027.

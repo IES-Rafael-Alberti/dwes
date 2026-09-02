@@ -19,3 +19,15 @@
 
 - Para obtener el 4 en cualquier criterio, el estudiante debe poder defenderlo oralmente si se le pregunta.
 - El uso de IA sin declarar se considera falta de honestidad académica.
+
+## Aplicación 2026/2027
+
+Los checkpoints se integran en una práctica cooperativa incremental. Cada alumno
+debe aportar un flujo completo con pruebas, documentarlo en README/issue y
+defenderlo brevemente. La rúbrica separa resultado del grupo y responsabilidad
+individual; las ponderaciones quedan pendientes de aprobación.
+
+Para la ruta 2026/2027, el README y las pruebas MockMvc deben demostrar el
+contrato REST de los endpoints implementados: verbos, códigos, cabeceras,
+DTOs y errores. Esta evidencia cubre RA7.a-f y se incorpora a la ponderación
+del 20 % de UD2a para esta práctica en 2026/2027.

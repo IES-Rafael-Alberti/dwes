@@ -28,8 +28,7 @@ class EventoControladorTest {
     @MockitoBean
     private EventoServicio eventoServicio;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void listShouldReturnEvents() throws Exception {

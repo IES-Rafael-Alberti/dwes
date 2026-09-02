@@ -22,6 +22,15 @@ Realiza commits siguiendo el formato `Entrega X: ...`:
 5. **Entrega 5** — Excepciones: define excepciones propias y lanza errores desde el servicio.
 6. **Entrega 6** — Global handler: implementa `@RestControllerAdvice` para manejo centralizado de errores.
 
+### Ampliación evaluable: contrato REST verificable
+
+Al completar las seis entregas, el grupo debe añadir pruebas MockMvc de las
+operaciones creadas y justificar en el README los verbos, códigos de estado,
+cabeceras `Location`, DTOs y errores JSON. La API debe responder de forma
+coherente ante alta, consulta, modificación o borrado según las operaciones que
+implemente el starter. No se exige aún autenticación, migraciones ni OpenAPI:
+se añaden en Gestión de eventos.
+
 ## Entregables
 
 - Repositorio Git con los 6 commits en el formato indicado.
@@ -48,7 +57,8 @@ Ver `rubrica.md` y `ra-ce.md` en este directorio.
 
 ## Relación con Battleship
 
-Este ejercicio aplica la progresión por capas que Battleship demuestra en
-clase: servicios, DTOs, manejo de errores y `@RestControllerAdvice`. Consulta
+Este ejercicio alcanza las sesiones 1 a 6 de Battleship: TDD, controladores,
+servicios, DTOs, reglas y manejo de errores. Consulta
 las [sesiones de Battleship](../../02-ejemplos/battleship/docs/README.md) y
 traslada cada concepto al catálogo antes de avanzar a la entrega siguiente.
+Battleship es la referencia de aula, no una entrega.
