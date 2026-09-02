@@ -17,3 +17,10 @@
 - Una captura no sustituye una explicación técnica.
 - El alumnado debe poder reproducir y defender oralmente cualquier apartado.
 - El uso de IA generativa incumple la política de esta actividad y se gestiona mediante las normas de integridad académica, no como un criterio que otorgue puntos.
+
+## Aplicación 2026/2027
+
+La entrega puede realizarse en grupo de 3-4. El resultado técnico puede ser
+común, pero cada integrante debe tener una evidencia localizable y responder una
+pregunta breve en la defensa. Se revisan también README, issue, commits y
+revisión de pares. Las ponderaciones quedan en la evaluación común del curso.
