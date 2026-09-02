@@ -192,3 +192,18 @@ P2 está implementada y validada como Notes, antes de GTask y sin duplicar su au
 o arquitectura por capas. Solo queda validar el banco GIFT mediante
 una importación real en Moodle; es una comprobación operativa no bloqueante y no
 debe declararse realizada antes de esa prueba.
+
+## 17. Evaluación para 30 alumnos (✅ MODELO OPERATIVO PREPARADO)
+
+- **Modelo**: prácticas cooperativas de 3-4 alumnos, slices verticales,
+  README/issue/release, revisión de pares y defensa breve individual.
+- **Evidencias individuales**: dos hitos, uno al final del primer trimestre y el
+  proyecto final como hito individual 2. Los cuestionarios complementan la
+  práctica y no sustituyen la defensa ni los tests.
+- **Integración**: cliente propio opcional. Insomnia, Postman u otro cliente REST
+  permite demostrar llamadas y errores del servidor, pero no equivale a una
+  integración cliente-servidor completa.
+- **GitHub**: script local con `gh` preparado en modo simulación; no se han creado
+  repositorios remotos ni asignado colaboradores sin una organización aprobada.
+- **Pendiente**: aprobar ponderaciones, ejecutar el piloto real de UD1 e importar
+  y previsualizar los bancos GIFT en Moodle.

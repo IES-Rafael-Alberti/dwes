@@ -2,6 +2,24 @@
 
 Esta rúbrica transversal sirve como marco de evaluación para todas las entregas prácticas, proyectos y exámenes del módulo de **Desarrollo Web en Entorno Servidor (DWES)**. Está alineada con los 9 Resultados de Aprendizaje (RA) y Criterios de Evaluación (CE) oficiales, ponderados según su madurez técnica, seguridad y calidad de código.
 
+## Aplicación a prácticas cooperativas 2026/2027
+
+Las prácticas de grupo se valoran separando explícitamente estas evidencias; la
+ponderación concreta de cada instrumento queda pendiente de aprobación docente:
+
+| Dimensión | Evidencia mínima | Aplicación |
+|---|---|---|
+| Resultado del grupo | Flujo ejecutable, reglas, persistencia y pruebas | Puede ser común al grupo, pero debe poder explicarse |
+| Responsabilidad individual | Slice identificable de principio a fin | Se comprueba en código, commits, revisión y defensa |
+| TDD y pruebas | Test previo, caso correcto y error/límite | No basta con afirmar que la suite pasa |
+| Trazabilidad | README, issue, commits, PR/revisión y tag | Sirve para seleccionar evidencias, no como contador automático |
+| Defensa | Pregunta directa a cada integrante | Si no puede explicar su slice, no acredita esa parte |
+| Cuestionario | Comprensión individual de conceptos y lectura de código | Complementa, no sustituye, la evidencia práctica |
+
+La ausencia de cliente no penaliza por sí misma. Se puede demostrar la API con
+Insomnia, Postman u otro cliente REST; eso acredita llamadas y respuestas del
+servidor, pero no una integración cliente-servidor completa.
+
 ---
 
 ## Niveles Generales de Logro (Escala Transversal)
