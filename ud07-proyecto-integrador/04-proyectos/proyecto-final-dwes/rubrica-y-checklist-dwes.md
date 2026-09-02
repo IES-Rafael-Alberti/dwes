@@ -13,6 +13,14 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 
 ## Criterios y lista de comprobación
 
+## Aplicación del modelo 2026/2027
+
+Las prácticas previas pueden ser cooperativas, pero este proyecto final es el
+**hito individual 2**. La evaluación separa resultado técnico, responsabilidad
+individual, pruebas, trazabilidad, defensa y, si existe, evidencia de
+integración. La ausencia de cliente no penaliza: se aceptan Insomnia, Postman u
+otro cliente REST para demostrar llamadas al servidor.
+
 ### 1. Dominio y arquitectura servidor
 
 - [ ] El dominio aprobado contiene al menos tres reglas, procesos o restricciones no triviales, independientes y comprobables en servidor.
@@ -55,7 +63,9 @@ La revisión observa comportamiento, código, pruebas, trazabilidad y defensa. C
 ### 6. Integración cliente-servidor
 
 - [ ] Si existe cliente, al menos un flujo visible prueba la cadena cliente → petición → endpoint → servicio/regla → persistencia → respuesta/error.
+- [ ] Si no existe cliente, una colección o guion de Insomnia, Postman u otro cliente REST demuestra que los endpoints, respuestas y errores del servidor son invocables.
 - [ ] El comportamiento del servidor puede revisarse aunque el cliente proceda de otro módulo.
+- [ ] La ausencia de cliente no penaliza por sí misma; la demostración REST alternativa no se presenta como integración completa.
 - [ ] La interfaz, diseño o despliegue no se presentan como sustitutos de la evidencia de servidor.
 
 ### 7. Git, trazabilidad, IA y defensa

@@ -58,9 +58,11 @@ La aplicación puede ser API, MVC o combinar ambos estilos de forma justificada.
 
 ## Integración con cliente
 
-Se puede reutilizar un cliente desarrollado en otros módulos. En DWES solo se considera evidencia la integración real con el servidor propio. Debe poder mostrarse un flujo visible que llegue a una petición, endpoint, lógica de negocio/servicio, persistencia y respuesta o error controlado.
+La integración con cliente es opcional. Se puede reutilizar un cliente desarrollado en otros módulos o crear un cliente mínimo propio. En ambos casos, en DWES solo se considera evidencia la conexión real con el servidor propio: debe poder mostrarse un flujo visible que llegue a una petición, endpoint, lógica de negocio/servicio, persistencia y respuesta o error controlado.
 
-El cliente no sustituye el código, las pruebas ni la explicación del servidor. Del mismo modo, un despliegue correcto no sustituye la puesta en marcha local reproducible requerida en DWES.
+Si no se desarrolla cliente, se acepta demostrar los endpoints con Insomnia, Postman o cualquier otro cliente REST. Esta alternativa demuestra que el servidor puede ser llamado y que su contrato funciona, pero no acredita una integración cliente-servidor completa. No se exige una interfaz gráfica ni un cliente completo.
+
+El cliente o la herramienta REST no sustituyen el código, las pruebas ni la explicación del servidor. Del mismo modo, un despliegue correcto no sustituye la puesta en marcha local reproducible requerida en DWES.
 
 ## Repositorio y trazabilidad
 

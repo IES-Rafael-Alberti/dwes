@@ -36,6 +36,9 @@ Los proyectos Laravel 10 y 11, el blog Blade y el cliente Vue se conservan como 
 
 Cada incremento sigue RED -> GREEN -> REFACTOR. Una API no se considera terminada porque responda desde Postman: debe validar entrada en servidor, exponer un contrato JSON consistente, autenticar, autorizar por recurso y estar cubierta por pruebas feature o unitarias.
 
+Para el grupo de 30 alumnos, la práctica cooperativa y su defensa se describen
+en [`03-ejercicios/PLAN-MODALIDAD-2026-2027.md`](03-ejercicios/PLAN-MODALIDAD-2026-2027.md).
+
 ## Estado de la reforma
 
 - Baseline decidido: Laravel 12 API-first y Sail.

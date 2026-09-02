@@ -70,8 +70,10 @@ Los hitos son relativos al avance efectivo del curso, no fechas rígidas. El pro
 | [Enunciado canónico](01-documentacion/01-proyecto-final-dwes.md) | Qué debe entregar y demostrar el alumnado. |
 | [Seguimiento por hitos](01-documentacion/02-seguimiento-hitos.md) | Cómo mostrar avance, recibir feedback y reducir riesgos. |
 | [Propuesta y aprobación](03-ejercicios/propuesta-proyecto/README.md) | Plantilla para delimitar y aprobar el tema antes de consolidar el desarrollo. |
+| [Hito individual 1](03-ejercicios/hito-individual-1/README.md) | Evidencia individual acotada del primer trimestre, separada del proyecto final. |
 | [Seguimiento de hitos](03-ejercicios/seguimiento-proyecto/README.md) | Plantilla reutilizable de evidencias, trazabilidad, autoría y feedback. |
 | [Preparación de defensa](03-ejercicios/seguimiento-proyecto/plantilla-defensa.md) | Guion para demostrar y explicar el servidor con evidencia real. |
+| Plantillas documentales comunes | Disponibles en `00-recursos-comunes/plantillas/`: especificación, plan técnico, contrato API, TDD, backlog, estados e integración. |
 | [Evidencias RA/CE](04-proyectos/proyecto-final-dwes/ra-ce-evidencias.md) | Qué evidencias pueden relacionarse con la rúbrica común. |
 | [Rúbrica y checklist](04-proyectos/proyecto-final-dwes/rubrica-y-checklist-dwes.md) | Criterios observables para revisión y autoevaluación. |
 | [Inventario de reforma](INVENTARIO_REFORMA.md) | Estado editorial de UD7 y fases restantes. |
@@ -87,6 +89,8 @@ P0, P1 y P2 están completadas: la unidad dispone de contrato y seguimiento púb
 - [ ] El diseño documenta decisiones y razones, datos, relaciones, restricciones, migraciones y su correspondencia con el código.
 - [ ] Hay una puesta en marcha local reproducible y pruebas de las reglas relevantes.
 - [ ] La integración cliente-servidor, si existe, muestra el recorrido completo y los errores relevantes.
+- [ ] Si no hay cliente, una colección o guion de Insomnia, Postman u otro cliente REST demuestra los endpoints, respuestas y errores relevantes.
+- [ ] El proyecto final se entrega individualmente como hito individual 2 y no se confunde con las prácticas cooperativas de las unidades anteriores.
 - [ ] La defensa permite recorrer el servidor y realizar o razonar un cambio pequeño dirigido.
 - [ ] La declaración común de IA está incluida: marca **No** si no se usó IA o registra cada uso material, qué se cambió/rechazó y la evidencia de su verificación.
 

@@ -76,6 +76,7 @@ sin trasladar automáticamente las nueve clases de P2A.
 
 - [Práctica incremental de integración](03-ejercicios/practica-integracion/README.md): recorrido evaluable offline por checkpoints, sin solución pública.
 - [Proyecto evaluable de integración híbrida](04-proyectos/proyecto-integracion-hibrida/README.md): transferencia independiente a fuentes y dominio aprobados, con entregables, hitos, aceptación y defensa.
+- [Modalidad 2026/2027](03-ejercicios/PLAN-MODALIDAD-2026-2027.md): práctica cooperativa, slices, entrega y defensa para 30 alumnos.
 - [Evidencias RA9 del proyecto](04-proyectos/proyecto-integracion-hibrida/ra-ce-evidencias.md) y [rúbrica específica](04-proyectos/proyecto-integracion-hibrida/rubrica-ra9.md): trazabilidad y niveles observables sin ponderaciones inventadas.
 - [Seguridad al consumir APIs y datos de terceros](06-seguridad/README.md): modelo de amenazas, controles y lista de auditoría enlazada desde la práctica.
 - [Catálogo Cultural Híbrido](02-ejemplos/catalogo-cultural-hibrido/README.md): ejemplo P1 de referencia, no plantilla para copiar.

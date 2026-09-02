@@ -39,6 +39,14 @@ la defensa; ninguna tecnología nombrada acredita por sí sola un criterio.
   necesaria para alcanzar Sobresaliente. RAG, vectores, MCP y agentes están fuera
   de alcance.
 
+## Aplicación 2026/2027 para grupos
+
+Si P2B se mantiene como práctica cooperativa, cada integrante debe acreditar un
+slice completo y una prueba asociada. La rúbrica se aplica por CE, separando
+resultado compartido, responsabilidad individual, trazabilidad Git y defensa.
+La colección REST o el cliente propio son evidencias complementarias; no se
+exige frontend.
+
 ## Condiciones que impiden una evaluación válida
 
 Estas condiciones no son penalizaciones automáticas ajenas a los CE; impiden

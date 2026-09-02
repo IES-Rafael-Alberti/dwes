@@ -19,6 +19,9 @@ Esta unidad construye una aplicación web segura sin framework para comprender q
 
 La [guía de seguridad](06-seguridad/README.md) se aplica desde el primer formulario; no es un tema final aislado.
 
+La modalidad de evaluación para el grupo de 30 alumnos está en
+[`03-ejercicios/PLAN-MODALIDAD-2026-2027.md`](03-ejercicios/PLAN-MODALIDAD-2026-2027.md).
+
 ## Forma de trabajo
 
 La unidad sigue RED → GREEN → REFACTOR. El starter público de GTask entrega el entorno y contratos activables; la única solución final se conserva localmente en `99-profesor/`. No se considera terminado un CRUD porque funcione manualmente: debe validar, escapar, autorizar y conservar pruebas automatizadas.

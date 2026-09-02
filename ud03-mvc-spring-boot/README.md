@@ -49,6 +49,7 @@ La redacción completa de los RA y CE se conserva en el documento normativo de p
 - `01-documentacion/`: fuentes Markdown canónicas en el orden del recorrido.
 - `02-ejemplos/SpringMVC/`: Gestor de tareas integrador con Gradle Wrapper.
 - `03-ejercicios/`: enunciado incremental y starter público de Productos.
+- `03-ejercicios/PLAN-MODALIDAD-2026-2027.md`: modalidad cooperativa y defensa del curso 2026/2027.
 - `06-seguridad/`: guía transversal de seguridad de la unidad.
 
 Los cuestionarios, soluciones y guías docentes permanecen fuera de la publicación. Mustache aparece únicamente como comparación sintáctica opcional en la guía de Thymeleaf.
