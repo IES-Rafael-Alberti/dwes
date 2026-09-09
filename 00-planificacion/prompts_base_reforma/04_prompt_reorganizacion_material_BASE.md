@@ -54,7 +54,7 @@ Estructura base recomendada a partir del material actual (U1, U2a, U2b, U2c, U3,
 ├── README.md
 ├── 00-planificacion/
 ├── 00-recursos-comunes/
-├── 00-unidad-0-previos/
+├── ud00-previos/
 │   ├── 01-teoria/
 │   ├── 02-ejemplos/
 │   ├── 03-practicas/
@@ -81,7 +81,7 @@ Estructura base recomendada a partir del material actual (U1, U2a, U2b, U2c, U3,
 
 Puedes mejorar esta estructura si el inventario lo justifica, pero debes explicar por qué. Presta atención especial a:
 
-- **Java**: decidir si va como previos (en `00-unidad-0-previos/`) o como unidad independiente.
+- **Java**: decidir si va como previos (en `ud00-previos/`) o como unidad independiente.
 - **U2a/b/c**: si conviene mantener separado o unificar en una unidad de API REST con subvariantes tecnológicas.
 - **ProyectoConjunto**: si va como unidad final o se distribuye entre unidades.
 - **Examenes**: si va a `00-planificacion/` o a una carpeta de evaluación global.

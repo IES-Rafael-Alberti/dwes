@@ -17,19 +17,19 @@ exclude_docs: |
   **/_profesor/
   **/README_Docente.md
   **/AGENTS.md
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf
-  00-unidad-0-previos/docs/SESION-STATE.md
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.html
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_con_respuestas.pdf
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_calculadora.pdf
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.csv
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.xlsx
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_resueltos.*
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_con_respuestas.pdf
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_calculadora.pdf
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_equipos.csv
-  00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_equipos.xlsx
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf
+  ud00-previos/docs/SESION-STATE.md
+  ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md
+  ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.html
+  ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_con_respuestas.pdf
+  ud00-previos/03-ejercicios/02-calculadora/recursos/rubrica_calculadora.pdf
+  ud00-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.csv
+  ud00-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.xlsx
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_resueltos.*
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_con_respuestas.pdf
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_calculadora.pdf
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_equipos.csv
+  ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/rubrica_equipos.xlsx
   **/mini-spring-boot-Guia.md
   **/Presentaciones/
   **/correccion/

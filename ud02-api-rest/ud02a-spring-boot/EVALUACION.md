@@ -1,5 +1,8 @@
 # Evaluación de UD2a
 
+Las adaptaciones de acceso y ritmo se aplican conforme al protocolo transversal
+docente. No modifican RA/CE ni ponderaciones.
+
 Para 2026/2027, las entregas evaluables de UD2a se reorganizan en prácticas
 cooperativas incrementales. Los enunciados y rúbricas individuales existentes se
 conservan como material alternativo para recuperación, grupos pequeños o cursos
@@ -24,6 +27,11 @@ futuros. Battleship no es una entrega independiente.
 Las tres prácticas suman el 60 %. Los cuestionarios y la defensa son
 individuales. No se atribuye ningún porcentaje a Battleship ni a un examen
 global no publicado.
+
+El hito individual 1 se programa al final de la unidad como evidencia de
+acreditación práctica de RA1, RA5 y RA7. Se registra en Moodle, pero no añade
+una sexta ponderación: su resultado concreta o refuerza la valoración individual
+ya recogida por las evidencias de la unidad.
 
 ## Modalidad 2026/2027 para 30 alumnos
 

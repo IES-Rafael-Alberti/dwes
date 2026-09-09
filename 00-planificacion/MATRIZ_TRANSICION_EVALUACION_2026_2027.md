@@ -4,9 +4,9 @@
 
 **Inventario de la fase 1; actualizado como referencia tras ejecutar las fases 2
 y 3.** El inventario original no se reescribe como si hubiera sido una decisión
-definitiva: las transiciones siguen siendo propuestas y las ponderaciones quedan
-pendientes de revisión docente. Los cambios operativos de fases 2-3 se describen
-en los documentos enlazados desde cada unidad.
+definitiva. Las ponderaciones operativas se cerraron para 2026/2027 en
+`CONFIGURACION_CALIFICADOR_MOODLE_2026_2027.md`; los cambios futuros se tratarán
+como una revisión expresa, no como una modificación implícita del inventario.
 
 ## Criterios usados
 
@@ -40,7 +40,7 @@ medición de horas. Debe validarse con la experiencia real del curso anterior.
 | Unidad | Actividad actual | RA/CE documentados | Modalidad actual | Corrección actual | Decisión de transición propuesta | Archivos candidatos a cambiar |
 |---|---|---|---|---|---|---|
 | UD1 | Laboratorio HTTP | RA1.a-g; principal en evaluación UD1 | Individual | Alta | Grupal pequeña: análisis dividido por evidencias, informe común y defensa individual | `ud01-introduccion-entorno-servidor/EVALUACION.md`; `03-ejercicios/01-analisis-http/README.md`; `rubrica.md`; `ra-ce.md` |
-| UD1 | Extensión TDD Hello Server | RA1.e-g; principal en evaluación UD1 | Individual | Media/alta | Integrar como slice de la práctica UD1 o convertir en formativa; candidato a hito individual 1 solo si no se integra | `ud01-introduccion-entorno-servidor/EVALUACION.md`; `03-ejercicios/02-extension-hello-server/README.md`; `rubrica.md`; `ra-ce.md` |
+| UD1 | Extensión TDD Hello Server | RA1.e-g; principal en evaluación UD1 | Individual | Media/alta | Integrada como slice de la práctica cooperativa HTTP + Hello Server; el hito individual 1 se sitúa al final de UD2a | `ud01-introduccion-entorno-servidor/EVALUACION.md`; `03-ejercicios/02-extension-hello-server/README.md`; `rubrica.md`; `ra-ce.md` |
 | UD1 | Repaso Moodle | RA1.a-g | Individual | Automática | Cuestionario | `ud01-introduccion-entorno-servidor/05-cuestionarios/ud01_repaso.gift`; `05-cuestionarios/README.md` |
 | UD1 | Seguridad HTTP y entorno | RA1.e-g; relación con servidor | Guiada | Baja | Formativa y cubierta por cuestionario y práctica | `ud01-introduccion-entorno-servidor/06-seguridad/README.md`; materiales enlazados |
 | UD2a | Mini Spring Boot Tasks | RA1.g, RA5.b/h, RA6.a-d, RA7.a-d | Individual | Muy alta | Primer tramo cooperativo: JPA/H2, endpoint, DTO y prueba; imita las sesiones 1-6 de Battleship | `ud02-api-rest/ud02a-spring-boot/EVALUACION.md`; `03-ejercicios/01-mini-tasks/README.md`; `rubrica.md`; `ra-ce.md` |
@@ -70,7 +70,7 @@ medición de horas. Debe validarse con la experiencia real del curso anterior.
 | UD7 | Proyecto integrador final | Servidor propio, reglas, pruebas y defensa | Individual por defecto | Muy alta | Hito individual 2; conservar como evidencia final individual | `01-documentacion/01-proyecto-final-dwes.md`; `04-proyectos/proyecto-final-dwes/`; rúbrica |
 | UD7 | Defensa/code review | Autoría y comprensión | Individual dentro del grupo | Alta pero acotable | Mantener como defensa de prácticas grupales y hito 2; 5-10 minutos por grupo con preguntas a cada miembro | `99-profesor/guion-defensa-y-cambio-guiado.md`; `99-profesor/checklist-integracion-cliente-servidor.md` |
 | UD7 | Integración con cliente | Evidencia complementaria de servidor | Opcional | Variable | Si hay cliente, demostrar flujo completo; si no, Insomnia/Postman/REST. No exigir cliente completo | `99-profesor/checklist-integracion-cliente-servidor.md`; rúbrica UD7 |
-| UD7 | Hito individual 1 | Pendiente de definir RA/CE y alcance | No existe todavía | Nula | Crear en fase posterior; final del primer trimestre, acotado y reproducible | Nuevo enunciado/rúbrica; ubicación por decidir |
+| UD7 | Hito individual 1 | RA1, RA5 y RA7; alcance en enunciado | Individual | Media | Se realiza al final de UD2a; evidencia de acreditación sin ponderación adicional | `ud07-proyecto-integrador/03-ejercicios/hito-individual-1/README.md` |
 
 ## Inventario de cuestionarios GIFT
 
@@ -132,8 +132,6 @@ fundamentales se recojan antes de la salida a prácticas en empresa.
 ## Decisiones que quedan abiertas para revisión docente
 
 1. Qué RA/CE y alcance exactos tendrá el hito individual 1.
-2. Ponderación de prácticas grupales, defensas, cuestionarios y dos hitos
-   individuales; no está fijada en esta fase.
 3. Si cada grupo tendrá 3 o 4 integrantes según asistencia y número definitivo.
 4. Número máximo de prácticas cooperativas evaluables por unidad.
 5. Si se aceptará una práctica hecha con cliente propio como evidencia adicional

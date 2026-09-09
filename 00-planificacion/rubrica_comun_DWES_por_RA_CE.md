@@ -4,8 +4,9 @@ Esta rúbrica transversal sirve como marco de evaluación para todas las entrega
 
 ## Aplicación a prácticas cooperativas 2026/2027
 
-Las prácticas de grupo se valoran separando explícitamente estas evidencias; la
-ponderación concreta de cada instrumento queda pendiente de aprobación docente:
+Las prácticas de grupo se valoran separando explícitamente estas evidencias. La
+ponderación operativa por unidad figura en
+`00-planificacion/CONFIGURACION_CALIFICADOR_MOODLE_2026_2027.md`:
 
 | Dimensión | Evidencia mínima | Aplicación |
 |---|---|---|

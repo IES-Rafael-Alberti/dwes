@@ -12,6 +12,11 @@ No ejecutar cambios directamente sobre los enunciados hasta completar el
 inventario indicado en la fase 1. No publicar GIFT, soluciones, rúbricas de uso
 docente ni listas de respuestas en MkDocs o GitHub Pages.
 
+La accesibilidad se aborda mediante el protocolo transversal de
+`PROTOCOLO_ACCESIBILIDAD_NEAE_DWES_2026_2027.md`: se mantienen RA/CE y
+ponderaciones, pero pueden adaptarse puesto, herramientas, pausas, tiempos,
+formato de respuesta y entregas fraccionadas. No se publica ningún diagnóstico.
+
 ## 2. Decisiones de diseño que debe aplicar la ejecución
 
 ### 2.1 Tipos de evidencia

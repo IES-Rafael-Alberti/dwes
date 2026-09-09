@@ -9,7 +9,7 @@ Curso 2026/2027 — IES Rafael Alberti.
 ```
 00-planificacion/          → Planificación, inventarios, prompts, decisiones
 00-recursos-comunes/       → Plantillas compartidas, chuletas, anexos
-00-unidad-0-previos/       → Java, MongoDB, PostgreSQL JSON
+ud00-previos/              → Java, MongoDB, PostgreSQL JSON
 ud01-introduccion-entorno-servidor/
 ud02-api-rest/
   ud02a-spring-boot/       → API REST con Spring Boot 4
@@ -24,6 +24,9 @@ evaluacion-global/         → Exámenes y rúbricas globales
 docs/                      → Publicación mkdocs → GitHub Pages
 hooks/                     → Hook Python para navegación automática
 ```
+
+La guía de presentación para el alumnado está en
+[`00-planificacion/presentacion-del-curso.md`](00-planificacion/presentacion-del-curso.md).
 
 ## Estructura interna de cada unidad
 

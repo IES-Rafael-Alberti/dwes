@@ -12,4 +12,5 @@
 
 La extensión se integra como slice de la práctica cooperativa UD1. Cada alumno
 debe poder localizar, explicar y ejecutar su test y su cambio. La defensa y la
-trazabilidad Git son evidencia individual; las ponderaciones quedan pendientes.
+trazabilidad Git son evidencia individual. La práctica completa pondera el 65 %
+de UD1; los cuestionarios Moodle individuales, el 35 % restante.

@@ -66,7 +66,15 @@ QUERY cubre el espacio entre GET y el uso ambiguo de POST para búsquedas comple
 - sus respuestas son cacheables, aunque la clave debe incorporar contenido y metadatos;
 - puede evitar colocar criterios sensibles o voluminosos en la URI, pero el contenido también debe protegerse y puede ser registrado.
 
-Que el método esté estandarizado no implica que todos los frameworks, proxies y clientes lo soporten ya. En UD1 se estudia su semántica; cualquier implementación posterior deberá verificar toda la cadena.
+Que el método esté estandarizado no implica que todos los frameworks, proxies y
+clientes lo soporten ya. En UD1 se estudia su semántica; cualquier implementación
+posterior deberá verificar toda la cadena. En particular, la cabecera de
+respuesta `Accept-Query` anuncia formatos de consulta mediante Structured Fields;
+un ejemplo válido es `Accept-Query: "application/json"`.
+
+Durante este curso `QUERY` se tratará mediante teoría y ejemplos. Solo se
+preparará una demostración práctica opcional si Spring Framework 7.1 se publica
+y la cadena completa funciona sin modificar la ruta evaluable del módulo.
 
 ## Estados que suelen confundirse
 

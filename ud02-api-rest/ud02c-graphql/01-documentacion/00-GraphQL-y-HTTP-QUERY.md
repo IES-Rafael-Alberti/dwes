@@ -72,14 +72,42 @@ consulta segura con cuerpo.
 | Permitir selección y composición flexible sobre un esquema | GraphQL |
 | Crear o ejecutar una operación con efectos | `POST` |
 
-## Límite actual
+## Estado de adopción en el curso
 
-`QUERY` es un estándar nuevo. Clientes, CORS, proxies, cachés, servidores y
-frameworks deben soportarlo durante todo el recorrido. Spring Framework 7.0,
-usado por Spring Boot 4.0, todavía no ofrece un valor declarativo
-`RequestMethod.QUERY`; el proyecto Spring está trabajando en ese soporte para
-una versión posterior. Por eso el ejemplo es conceptual y no se incorpora aún
-a Battleship.
+`QUERY` ya está definido por RFC 10008, pero clientes, CORS, proxies, cachés,
+servidores y frameworks deben soportarlo durante todo el recorrido. En la
+configuración actual del curso, Spring Boot `4.0.5` gestiona Spring Framework
+`7.0.6` y Tomcat `11.0.20`; esa combinación no ofrece todavía
+`RequestMethod.QUERY` ni soporte completo del contenedor para el cuerpo de una
+petición `QUERY`.
+
+Spring ha fusionado el soporte mínimo para Framework 7.1, previsto para la línea
+7.1 y todavía no usado por nuestros proyectos. La API prevista usa
+`@RequestMapping(method = RequestMethod.QUERY)` y `@RequestBody`; no se añade
+`@QueryMapping`, porque ese nombre ya pertenece al ecosistema GraphQL.
+
+Por tanto, el ejemplo de este bloque sigue siendo conceptual y no se incorpora
+aún a Battleship ni a las prácticas evaluables. No se debe actualizar Spring
+solo para probarlo ni implementar un filtro puente como solución general: si el
+contenedor no reconoce `QUERY`, la petición puede rechazarse antes de llegar a
+Spring MVC.
+
+La planificación del curso es mantener `QUERY` como contenido teórico con
+ejemplos de petición y respuesta. Si Spring Framework 7.1 se publica durante el
+curso y la combinación concreta de Spring Boot, contenedor, cliente y pruebas
+funciona de extremo a extremo, se podrá añadir una demostración aislada,
+opcional y no evaluable. No sustituirá la práctica principal ni obligará a
+actualizar sus dependencias.
+
+La cabecera `Accept-Query` es una cabecera de respuesta de descubrimiento. Su
+valor usa sintaxis de Structured Fields; por ejemplo, para anunciar JSON debe
+escribirse `Accept-Query: "application/json"`, no asumir que funciona como una
+cabecera libre de texto.
+
+Referencias de seguimiento: [notas de Spring Framework
+7.1](https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-7.1-Release-Notes),
+[PR de soporte](https://github.com/spring-projects/spring-framework/pull/34993) y
+[RFC 10008](https://www.rfc-editor.org/info/rfc10008/).
 
 ## Idea clave
 

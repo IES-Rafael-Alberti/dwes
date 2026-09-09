@@ -11,7 +11,7 @@ DWES_2026_2027_reorganizado/
 ├── 00-planificacion/              ← Prompts, inventarios, estructura, decisiones
 ├── 00-recursos-comunes/           ← Plantillas, chuletas, anexos transversales
 │   └── plantillas/                ← Declaración IA, rúbrica, RA/CE, README
-├── 00-unidad-0-previos/           ← Java, MongoDB, PostgreSQL JSON (previos)
+├── ud00-previos/                  ← Java, MongoDB, PostgreSQL JSON (previos)
 ├── ud01-introduccion-entorno-servidor/
 ├── ud02-api-rest/
 │   ├── ud02a-spring-boot/
@@ -67,7 +67,7 @@ udXX-nombre/
 | `Unidades/U4_PHP/` (sin Correccion/ ni repos alumnos) | `ud04-php/` | PHP básico a OOP-CRUD (org/tex/pdf), actividades, tareas, PHP necesario Laravel |
 | `Unidades/U5_Laravel/` (sin ProyectoCorreccion/) | `ud05-laravel/` | Apuntes Laravel, proyecto, sail (L10, L11, L12), backup 24/25 a 90-archivo |
 | `Unidades/U6/` | `ud06-aplicaciones-hibridas/01-teoria/` | Apunte aplicaciones híbridas |
-| `Unidades/Java/` (sin correcciones/) | `00-unidad-0-previos/` | Guión Java 17-21, GeoNotes (2 versiones), calc21, excepciones Java/Kotlin |
+| `Unidades/Java/` (sin correcciones/) | `ud00-previos/` | Guión Java 17-21, GeoNotes (2 versiones), calc21, excepciones Java/Kotlin |
 | `Unidades/Examenes/` | `evaluacion-global/` | Examen servidor + rúbrica |
 | `Unidades/U2a.../ChuletaGIT.md` | `00-recursos-comunes/` | Recurso transversal |
 | `Unidades/U2a.../JavaGenéricosEstrDat.md` | `00-recursos-comunes/` | Recurso transversal |

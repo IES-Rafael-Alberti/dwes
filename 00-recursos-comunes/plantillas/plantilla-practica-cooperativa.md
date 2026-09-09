@@ -49,6 +49,12 @@ Duración total: 5-10 minutos por grupo. Cada integrante responderá una pregunt
 directa sobre su slice y podrá recibir una pregunta cruzada sobre una decisión
 compartida. La defensa acredita comprensión, no diseño visual.
 
+Si un integrante tiene una adaptación de acceso, se aplicarán las medidas
+individuales acordadas: pausas, tiempo de procesamiento, herramientas de acceso
+y una forma de respuesta que no convierta la velocidad de tecleo o de ratón en
+un criterio no previsto. La responsabilidad técnica y la acreditación individual
+se mantienen.
+
 ## Entrega Moodle
 
 Todos los integrantes entregan el enlace al mismo repositorio y al issue de

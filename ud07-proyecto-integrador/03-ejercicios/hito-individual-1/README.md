@@ -39,5 +39,8 @@ pequeño dirigido.
 
 ## Estado de evaluación
 
-El RA/CE exacto, la rúbrica y la ponderación quedan pendientes de aprobación en
-la planificación común; este documento no fija porcentajes.
+El hito acredita individualmente RA1, RA5 y RA7 mediante los criterios comunes
+de arquitectura, modificación funcional, validación y pruebas. Se registra en
+Moodle como evidencia individual, excluida del cálculo de categorías y del total
+del curso: concreta la valoración por RA/CE y no añade una ponderación
+independiente a UD2a.

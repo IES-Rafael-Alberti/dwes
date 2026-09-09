@@ -25,7 +25,7 @@
 Los checkpoints se integran en una práctica cooperativa incremental. Cada alumno
 debe aportar un flujo completo con pruebas, documentarlo en README/issue y
 defenderlo brevemente. La rúbrica separa resultado del grupo y responsabilidad
-individual; las ponderaciones quedan pendientes de aprobación.
+individual.
 
 Para la ruta 2026/2027, el README y las pruebas MockMvc deben demostrar el
 contrato REST de los endpoints implementados: verbos, códigos, cabeceras,

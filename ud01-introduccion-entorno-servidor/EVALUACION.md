@@ -1,16 +1,19 @@
 # Evaluación de UD1
 
+Las adaptaciones de acceso y ritmo se aplican conforme al protocolo transversal
+docente. No modifican RA/CE ni ponderaciones.
+
 Para el curso 2026/2027, con un grupo de 30 alumnos, UD1 se evalúa mediante una práctica cooperativa pequeña y cuestionarios individuales. Los enunciados individuales actuales se conservan sin sobrescribir para recuperación, grupos pequeños o cursos futuros. Ninguna actividad aislada sustituye a las demás: observar HTTP, modificar código servidor y razonar conceptos son capacidades relacionadas, pero distintas.
 
 ## Ponderación
 
 | Instrumento | Peso | Evidencia principal |
 |---|---:|---|
-| Práctica cooperativa HTTP + Hello Server | Pendiente de aprobación | Mensajes HTTP, endpoint, entorno reproducible, TDD y seguridad básica |
-| Cuestionarios Moodle individuales | Pendiente de aprobación | Comprensión individual de RA1.a-g y semántica HTTP básica |
-| Hito individual 1, si se asigna a UD1 | Pendiente de decisión | Flujo servidor mínimo verificable sin depender del grupo |
+| Práctica cooperativa HTTP + Hello Server | 65 % | Mensajes HTTP, endpoint, entorno reproducible, TDD y seguridad básica |
+| Cuestionarios Moodle individuales | 35 % | Comprensión individual de RA1.a-g y semántica HTTP básica |
 
-Las ponderaciones de esta tabla son deliberadamente pendientes de aprobación; no se ha trasladado automáticamente el reparto del curso anterior.
+El hito individual 1 se realiza al final de UD2a y se registra como evidencia de
+acreditación individual, no como una tercera calificación de UD1.
 
 ## Modalidad 2026/2027
 
@@ -49,6 +52,8 @@ Cada integrante debe explicar su slice en la defensa breve. Si no se desarrolla 
 - No se entregan secretos, cookies, tokens, rutas personales ni capturas innecesarias.
 - Una prueba verde sin comprensión no demuestra por sí sola el criterio.
 - Las adaptaciones de acceso cambian el medio, no el resultado de aprendizaje evaluado.
+- En cuestionarios o tareas cronometradas se respetará el tiempo individual
+  acordado; el 50 % adicional es solo una referencia inicial revisable.
 
 ## Estado del cuestionario
 

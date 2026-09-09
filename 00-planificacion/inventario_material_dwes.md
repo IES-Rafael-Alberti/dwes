@@ -8,7 +8,7 @@
 - **U1 (Introducción)**: Reformada con recorrido Markdown RA1.a-g, Java 25/Spring Boot 4, Hello Server probado y evaluación reproducible.
 - **U2a (Spring Boot REST)**: Muy completa: apuntes, anexos, proyectos base (Battleship, GestionEventos, mini-spring-boot-tasks), seguridad JWT, testing, Postman/Insomnia.
 - **U4 (PHP)**: Progresión pedagógica clara: básico → avanzado → CRUD → OOP → OOP-CRUD. Formato org-mode + LaTeX de alta calidad.
-- **Java/Previos**: Guión de clase Java 17-21 para estudiantes de Kotlin excepcionalmente bueno (433 líneas, 6+ sesiones). Ideal para 00-unidad-0-previos.
+- **Java/Previos**: Guión de clase Java 17-21 para estudiantes de Kotlin excepcionalmente bueno (433 líneas, 6+ sesiones). Ideal para ud00-previos.
 
 **Partes dispersas, duplicadas o antiguas**:
 - **U5 (Laravel)**: Contiene una copia del curso 24/25 dentro (`laravel-24_25/`) que duplica toda la estructura. Proyectos en varias versiones de Laravel (10, 11, 12).
@@ -154,11 +154,11 @@
 | ---- | -------- | ---- | ------------- | ----------- | ------------ | --------------- | ------------- |
 | U6/UD6-AplicacionesHibridas.md | UD6-AplicacionesHibridas.md | Apunte | U6 | Concepto de aplicaciones híbridas | - | Vigente | Unidad muy pequeña |
 
-### Java / Previos (00-unidad-0-previos)
+### Java / Previos (ud00-previos)
 
 | Ruta | Elemento | Tipo | Bloque/Unidad | Descripción | Herramientas | Estado aparente | Observaciones |
 | ---- | -------- | ---- | ------------- | ----------- | ------------ | --------------- | ------------- |
-| Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md | Guión Java 17-25 | Guión de clase | Previos | 6+ sesiones Java moderno para estudiantes con base Kotlin | Java 17-25, Gradle, JUnit | Vigente | Material excelente para 00-unidad-0-previos |
+| Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md | Guión Java 17-25 | Guión de clase | Previos | 6+ sesiones Java moderno para estudiantes con base Kotlin | Java 17-25, Gradle, JUnit | Vigente | Material excelente para ud00-previos |
 | Java/GeonotesTarea.md | GeonotesTarea.md | Enunciado tarea | Previos | Tarea GeoNotes (proyecto Java) | Java 21 | Vigente | |
 | Java/calc-api.zip | calc-api.zip | Proyecto base | Previos | API calculadora Java | Java | Vigente | |
 | Java/calc21/ | calc21/ | Proyecto base | Previos | Calculadora Java 21 | Java 21 | Vigente | |
@@ -267,7 +267,7 @@ udXX-nombre-unidad/
 ### Decisiones a tomar antes de reorganizar
 
 - **Unificación de U2a/b/c**: ¿Una sola unidad "API REST" con subvariantes tecnológicas, o unidades separadas por tecnología?
-- **Ubicación de Java**: Ya tienes `00-unidad-0-previos/` con modelado MongoDB. Java encaja ahí como segundo previo (o como preparación específica para Spring Boot).
+- **Ubicación de Java**: Ya tienes `ud00-previos/` con modelado MongoDB. Java encaja ahí como segundo previo (o como preparación específica para Spring Boot).
 - **ProyectoConjunto**: ¿Va como unidad final separada o se integra en las unidades que lo alimentan?
 - **Examenes**: ¿A `00-planificacion/` como evaluación global, o distribuido por unidades?
 - **Spring Boot 4 + GraalVM**: ¿Entra en el curso 2026/2027 o se deja para más adelante?

@@ -13,9 +13,9 @@ EXCLUDE_FILES = {
     'mini-spring-boot-Guia.md', 'SESION-STATE.md', 'AGENTS.md',
 }
 EXCLUDE_PATHS = {
-    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md',
-    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_resueltos.md',
-    '00-unidad-0-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf',
+    'ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md',
+    'ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/retos/retos_calculadora_resueltos.md',
+    'ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf',
     'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/INSTRUCCIONES.md',
     'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/SEGUIMIENTO.md',
     'ud04-php/03-ejercicios/ActividadesCls/GestionTareas/GTask/PENDIENTE.md',
@@ -136,7 +136,7 @@ def on_config(config):
     nav = [{'Inicio': 'index.md'}]
 
     UNIT_NAMES = {
-        '00-unidad-0-previos': ('UD0 — Previos', 'unidades/ud00.md'),
+        'ud00-previos': ('UD0 — Previos', 'unidades/ud00.md'),
         'ud01-introduccion-entorno-servidor': ('UD1 — Introducción', 'unidades/ud01.md'),
         'ud02a-spring-boot': ('UD2a — API REST Spring Boot', 'unidades/ud02a.md'),
         'ud02b-dotnet': ('UD2b — API REST .NET', 'unidades/ud02b.md'),
