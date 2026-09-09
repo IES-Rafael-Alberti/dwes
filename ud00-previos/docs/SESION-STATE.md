@@ -13,7 +13,7 @@
 ## Estructura del proyecto
 
 ```
-00-unidad-0-previos/
+ud00-previos/
 └── docs/
     ├── README.md                          ← Guía docente, cronograma, evaluación
     │
@@ -94,11 +94,11 @@
 
 ```bash
 # Ver estructura completa
-find 00-unidad-0-previos/docs -type f | sort
+find ud00-previos/docs -type f | sort
 
 # Contar líneas totales
-wc -l 00-unidad-0-previos/docs/**/*.md 00-unidad-0-previos/docs/**/**/*.md 00-unidad-0-previos/docs/**/**/*.js
+wc -l ud00-previos/docs/**/*.md ud00-previos/docs/**/**/*.md ud00-previos/docs/**/**/*.js
 
 # Ejecutar un script de ejemplo
-mongosh < 00-unidad-0-previos/docs/diseno-mongo/scripts/demo-blog.js
+mongosh < ud00-previos/docs/diseno-mongo/scripts/demo-blog.js
 ```
