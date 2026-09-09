@@ -6,6 +6,8 @@ datos en MongoDB y comparación con PostgreSQL JSON/JSONB.
 
 ## Java y Kotlin
 
+- [Java para programadores Kotlin — documentación completa](01-documentacion/java-para-programadores-kotlin.md)
+- [PDF de Java para programadores Kotlin](01-documentacion/java-para-programadores-kotlin.pdf)
 - [Guion completo de Java 17-25 para alumnado de Kotlin](01-documentacion/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md)
 - [Presentación Java frente a Kotlin — excepciones](01-documentacion/java_vs_kotlin_excepciones_presentacion.pdf)
 - [Material ampliado Java frente a Kotlin — excepciones](01-documentacion/java_vs_kotlin_excepciones_extendido.pdf)
