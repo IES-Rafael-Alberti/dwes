@@ -39,6 +39,7 @@ ud00-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.xlsx
 # BUILD ARTIFACTS
 # ============================================
 site/
+graphify-out/
 target/
 build/
 dist/
@@ -113,6 +114,7 @@ Thumbs.db
 # LOGS / TEMP
 # ============================================
 *.log
+*.Rhistory
 tmp/
 temp/
 
