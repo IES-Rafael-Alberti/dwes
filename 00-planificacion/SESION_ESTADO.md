@@ -1,6 +1,6 @@
 # Estado del proyecto — DWES 2026/2027
 
-*Última actualización: 31 julio 2026*
+*Última actualización: 14 septiembre 2026*
 
 ---
 
@@ -260,7 +260,8 @@ la evidencia reproducible indicada a continuación.
 
 ## Pendientes inmediatos — próxima sesión
 
-- [ ] Continuar la revisión de UD00/previos y UD01.
-- [ ] Generar los PDF de UD00 y UD01 para conservarlos en Moodle cuando cada unidad quede cerrada.
+- [x] Revisar y validar la reorganización de UD00/previos y UD01; `mkdocs build --strict` y las pruebas de Hello Server pasan.
+- [x] Generar los PDF de UD00 y UD01 fuera del repositorio, en `../PDF-Moodle-DWES-2026-2027/`, para conservarlos en Moodle.
 - [ ] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
-- [ ] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
+- [x] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
+- [ ] Importar y previsualizar en Moodle los bancos piloto de UD1 y UD2a ahora que la instancia 2026/2027 está disponible.
