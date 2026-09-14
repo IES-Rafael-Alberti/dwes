@@ -258,12 +258,15 @@ la evidencia reproducible indicada a continuación.
 - [x] Ampliado el anexo Java de UD2 con `Optional`, DTOs con `record`, Streams, interfaces funcionales, `var`/`static`, text blocks y `formatted()`; `mkdocs build --strict` termina correctamente.
 - [x] Anexo Java incorporado al candidato de higiene y publicado tras verificar `mkdocs build --strict`.
 
-## Pendientes inmediatos — próxima sesión
+## Pendientes inmediatos — próxima sesión (15 septiembre 2026)
 
 - [x] Revisar y validar la reorganización de UD00/previos y UD01; `mkdocs build --strict` y las pruebas de Hello Server pasan.
 - [x] Generar los PDF de UD00 y UD01 fuera del repositorio, en `../PDF-Moodle-DWES-2026-2027/`, para conservarlos en Moodle.
-- [ ] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
+- [x] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
 - [x] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
 - [x] Decidir que los ejercicios y proyectos se publican gradualmente en Moodle, no en GitHub Pages, para conservar el control de calendario y revisión.
-- [ ] Diseñar e importar en Moodle los tres cuestionarios diagnósticos de UD00: Java, MongoDB y SQL; no forman parte de la calificación.
-- [ ] Importar y previsualizar en Moodle los bancos piloto de UD1 y UD2a ahora que la instancia 2026/2027 está disponible.
+- [ ] Acceder al curso Moodle 2026/2027 y subir los PDF de UD00 y UD01.
+- [ ] Importar en Moodle los tres cuestionarios diagnósticos de UD00: Java, MongoDB y SQL; configurarlos sin calificación.
+- [ ] Importar y previsualizar en Moodle los bancos piloto de UD1 y UD2a; revisar preguntas SU, SM, VF, EM y HC.
+- [ ] Registrar importaciones, incidencias y tipos soportados en `banco-gift-cobertura.md`.
+- [ ] Crear y probar el curso/calificador plantilla de Moodle sin usuarios.
