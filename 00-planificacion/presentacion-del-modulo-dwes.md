@@ -1,4 +1,4 @@
-# Presentación del curso: Desarrollo Web en Entorno Servidor
+# Presentación del módulo: Desarrollo Web en Entorno Servidor
 
 ## Qué vamos a aprender
 
@@ -91,11 +91,14 @@ Los hitos relativos del proyecto serán:
 
 El proyecto debe incluir un dominio no trivial, separación de responsabilidades, persistencia íntegra y reproducible mediante migraciones, validación en servidor, tratamiento de errores, pruebas automatizadas y documentación de arranque. La defensa es individual: cada autor debe poder localizar, explicar y modificar su aportación real.
 
-## Recuperación y asistencia
+## Recuperación
 
 La recuperación se centrará en los RA y CE no superados y podrá requerir prácticas, pruebas o defensas específicas. No será necesario repetir las evidencias ya acreditadas.
 
-La pérdida del derecho a evaluación continua se produce al no alcanzar el 80 % de asistencia. En ese caso se aplicará un Plan Personalizado de Evaluación con tareas equivalentes, defensa oral y prueba práctica sobre los RA y CE que corresponda.
+La asistencia, las normas generales del centro, el uso de móviles, la
+conservación del material y la pérdida del derecho a evaluación continua se
+explicarán en la presentación general del curso. Este documento se limita a
+DWES.
 
 ## Dónde está el material
 

@@ -14,7 +14,7 @@ La pregunta correcta no es "¿qué entidad existe?", sino **"¿qué necesito lee
 
 ## 2. Metodología de modelado (3 fases)
 
-MongoDB University propone esta metodología estructurada:
+La documentación oficial de MongoDB propone esta metodología estructurada:
 
 ```
 FASE 1: Definir la carga (workload)
@@ -31,7 +31,12 @@ FASE 2: Modelar las relaciones
 
 FASE 3: Aplicar patrones de diseño
 └── Transformaciones sobre el esquema (rendimiento, mantenimiento, simplificación)
+
+FASE 4: Crear índices
+└── Índices para las consultas y ordenaciones que realmente se ejecutan
 ```
+
+La referencia completa es [Designing Your Schema](https://www.mongodb.com/docs/manual/data-modeling/schema-design-process/).
 
 ### Simplicidad vs Rendimiento
 

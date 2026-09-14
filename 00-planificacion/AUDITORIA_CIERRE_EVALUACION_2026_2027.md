@@ -4,9 +4,9 @@ Fecha de comprobacion: 2026-09-06.
 
 ## Resultado
 
-El rediseño queda **apto en sus evidencias locales**. No puede cerrarse la
-validacion operativa de los cuestionarios hasta que Moodle Centros Cadiz
-habilite la instancia 2026/2027.
+El rediseño queda **apto en sus evidencias locales**. Moodle Centros Cadiz ya
+está disponible para iniciar la validación operativa de los cuestionarios;
+todavía no consta una importación ni previsualización realizada.
 
 ## Comprobaciones superadas
 
@@ -28,7 +28,7 @@ nuevas.
 
 | Bloqueo | Evidencia | Accion cuando se desbloquee |
 |---|---|---|
-| Moodle 2026/2027 | La portada oficial de Moodle Centros Cadiz indica: "Moodle Centros 26-27 - PROXIMAMENTE" y que la instancia estara disponible en unos dias. | Esperar a que la portada deje de mostrar el aviso; no usar la instancia 2025/2026 para esta validacion. |
+| Moodle 2026/2027 | La instancia de Moodle Centros Cadiz ya está disponible. | Acceder al curso 2026/2027; no usar la instancia 2025/2026 para esta validación. |
 | Validacion GIFT en Moodle | No hay una importacion ni previsualizacion real registrada. | Importar primero los bancos piloto UD1 semana 01 y UD2a semana 03; previsualizar una pregunta de cada tipo y registrar incidencias en `banco-gift-cobertura.md`. |
 | Configuracion operativa de Moodle | Resuelta el 2026-09-06 en `CONFIGURACION_CALIFICADOR_MOODLE_2026_2027.md`. | Crear el curso plantilla cuando abra Moodle 2026/2027 y comprobar una restauracion sin usuarios. |
 | Operaciones GitHub | No hay organizacion ni repositorio plantilla autorizados. | Ejecutar primero `plan` con datos reales y despues `create --apply`, tras confirmar organizacion, plantilla y permisos. |
@@ -36,7 +36,7 @@ nuevas.
 
 ## Protocolo Moodle pendiente
 
-1. Acceder a `https://educacionadistancia.juntadeandalucia.es/centros/cadiz/` cuando la instancia 2026/2027 este disponible.
+1. Acceder a `https://educacionadistancia.juntadeandalucia.es/centros/cadiz/` y entrar en la instancia 2026/2027.
 2. Crear un curso o cuestionario temporal de ensayo sin alumnado.
 3. Importar `ud01-2026-semana-01-http.gift` y `ud02a-2026-semana-03-spring-tdd.gift`.
 4. Previsualizar al menos una pregunta SU, SM, VF, EM y HC; revisar puntuacion, escapes, bloques de codigo y retroalimentacion.

@@ -15,6 +15,43 @@ Cuando se solicita una página dinámica:
 
 La respuesta puede contener HTML completo, JSON, una imagen, un archivo o ningún contenido. HTTP no obliga a construir una API REST.
 
+## HTTP es el contrato de la conversación
+
+HTTP es el protocolo que estructura esa conversación entre cliente y servidor.
+No es solo la URL ni el contenido que vemos en pantalla: cada intercambio tiene
+una petición y una respuesta, con metadatos que describen cómo interpretar lo
+que se envía y lo que se recibe.
+
+Una petición HTTP mínima puede verse así:
+
+```http
+GET /api/hello HTTP/1.1
+Host: localhost:8080
+Accept: application/json
+
+```
+
+El servidor responde con un estado, campos descriptivos y una representación:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"message":"Hola desde el servidor"}
+```
+
+La primera línea de la petición indica el método, el destino y la versión; las
+cabeceras aportan información adicional; la línea en blanco separa las
+cabeceras del contenido opcional. En la respuesta, `200 OK` indica el resultado
+y `Content-Type` permite interpretar el contenido. El navegador oculta buena
+parte de este intercambio al mostrar la página, por eso conviene observarlo
+directamente con HTTPie y con la pestaña **Red** de las herramientas de
+desarrollo.
+
+En HTTP/2 y HTTP/3 la representación de los mensajes cambia, pero este contrato
+lógico se mantiene. La aplicación sigue teniendo que distinguir petición,
+respuesta, estado, cabeceras y contenido.
+
 ## Qué se ejecuta en cada lado
 
 | Cliente | Servidor |
@@ -58,5 +95,10 @@ Para una petición observada en las herramientas del navegador, identifica:
 2. Qué decisión solo podía tomar el servidor.
 3. Qué parte de la respuesta interpreta el navegador.
 4. Qué validación sería inseguro delegar exclusivamente al cliente.
+
+Repite la observación contra el ejemplo [Hello Server](../02-ejemplos/hello-server/README.md)
+y compara `/`, `/api/hello` y `/health`. No describas solo lo que aparece en la
+pantalla: relaciona cada representación con su `Content-Type`, estado y código
+servidor.
 
 Esta evidencia trabaja RA1.a y RA1.b.

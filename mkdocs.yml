@@ -18,7 +18,7 @@ exclude_docs: |
   **/README_Docente.md
   **/AGENTS.md
   ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/lexer_parser_flow.pdf
-  ud00-previos/docs/SESION-STATE.md
+  ud00-previos/99-profesor/SESION-STATE.md
   ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.md
   ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_resueltos.html
   ud00-previos/03-ejercicios/02-calculadora/recursos/retos_calculadora_con_respuestas.pdf

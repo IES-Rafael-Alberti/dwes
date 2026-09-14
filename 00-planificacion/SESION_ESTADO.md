@@ -257,3 +257,10 @@ la evidencia reproducible indicada a continuación.
 - [x] Las dos revisiones independientes aprobaron el candidato de higiene: exclusiones de publicación, retirada del índice de material privado y ausencia de secretos o soluciones en el sitio generado.
 - [x] Ampliado el anexo Java de UD2 con `Optional`, DTOs con `record`, Streams, interfaces funcionales, `var`/`static`, text blocks y `formatted()`; `mkdocs build --strict` termina correctamente.
 - [x] Anexo Java incorporado al candidato de higiene y publicado tras verificar `mkdocs build --strict`.
+
+## Pendientes inmediatos — próxima sesión
+
+- [ ] Continuar la revisión de UD00/previos y UD01.
+- [ ] Generar los PDF de UD00 y UD01 para conservarlos en Moodle cuando cada unidad quede cerrada.
+- [ ] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
+- [ ] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).

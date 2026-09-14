@@ -206,5 +206,5 @@ debe declararse realizada antes de esa prueba.
 - **GitHub**: script local con `gh` preparado en modo simulación; no se han creado
   repositorios remotos ni asignado colaboradores sin una organización aprobada.
 - **Pendiente**: ejecutar el piloto real de UD1 e importar y previsualizar los
-  bancos GIFT en Moodle. Las ponderaciones operativas se cerraron en
+  bancos GIFT en Moodle, ahora que la instancia 2026/2027 está disponible. Las ponderaciones operativas se cerraron en
   `CONFIGURACION_CALIFICADOR_MOODLE_2026_2027.md`.

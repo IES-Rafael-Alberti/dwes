@@ -1,36 +1,31 @@
-# DWES — Materiales de base de datos
+# DWES — Documentación de bases de datos
 
 Bloque inicial de diseño de bases de datos NoSQL y uso avanzado de PostgreSQL JSON/JSONB.
 Destinado a alumnos de Desarrollo Web en Entorno Servidor (2º DAW/ASIR).
 
-## Estructura
+## Estructura interna
 
 ```
-docs/
-├── diseno-mongo/           # Curso MongoDB: 5 sesiones + trabajo grupal
+01-documentacion/
+├── diseno-mongo/           # Documentación de diseño MongoDB
 │   ├── README.md
 │   ├── 01-modelado-acceso.md
 │   ├── 02-validacion-indices.md
 │   ├── 03-seguridad-operativa.md
 │   ├── 04-migraciones-versionado.md
 │   ├── 05-antipatrones.md
-│   ├── ejercicios/
-│   │   ├── 01-caso-blog.md
-│   │   ├── 02-caso-ecommerce.md
-│   │   └── 03-caso-refactor.md
-│   └── diseno-grupal/
-│       ├── enunciado.md
-│       └── plantilla-design-doc.md
+│   └── 00-proceso-diseno.md
 │
-└── postgres-json/          # Curso PostgreSQL JSONB: 3 sesiones
+└── postgres-json/          # Documentación PostgreSQL JSONB
     ├── README.md
     ├── 01-jsonb-vs-relacional.md
     ├── 02-operaciones-avanzadas.md
     ├── 03-comparativa.md
-    └── ejercicios/
-        ├── 01-modelo-hibrido.md
-        └── 02-benchmark.md
 ```
+
+Los scripts demostrativos están en `02-ejemplos/` y los enunciados evaluables
+en `03-ejercicios/`. El proyecto grupal está en `04-proyectos/` y las
+soluciones docentes en `99-profesor/`.
 
 ## Cronograma recomendado (3-4 semanas)
 

@@ -25,8 +25,8 @@ docs/                      → Publicación mkdocs → GitHub Pages
 hooks/                     → Hook Python para navegación automática
 ```
 
-La guía de presentación para el alumnado está en
-[`00-planificacion/presentacion-del-curso.md`](00-planificacion/presentacion-del-curso.md).
+La presentación específica del módulo para el alumnado está en
+[`00-planificacion/presentacion-del-modulo-dwes.md`](00-planificacion/presentacion-del-modulo-dwes.md).
 
 ## Estructura interna de cada unidad
 
