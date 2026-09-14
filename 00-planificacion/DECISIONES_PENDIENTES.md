@@ -139,7 +139,9 @@ Del inventario:
 ## 11. Publicación de ejercicios y proyectos
 
 - La `01-documentacion/` y `02-ejemplos/` se publican en GitHub Pages vía mkdocs.
-- **Pendiente**: Decidir si los README.md de `03-ejercicios/` y `04-proyectos/` también se publican (sin soluciones, claro). La mayoría de centros publican los enunciados para que los alumnos los consulten.
+- **Decisión**: Los README.md, enunciados y starters de `03-ejercicios/` y `04-proyectos/` no se publican en GitHub Pages por ahora, aunque no contengan soluciones.
+- **Motivo**: Moodle permite publicar las tareas de forma gradual, cuando corresponda en la secuencia didáctica, y mantener margen para corregirlas, adaptarlas o sustituirlas antes de hacerlas visibles.
+- **Canal de publicación**: Moodle es el canal de entrega al alumnado para ejercicios y proyectos; GitHub Pages queda reservado a documentación, ejemplos e índices.
 - Los cuestionarios GIFT (`05-cuestionarios/`) NO se publican (son privados del profesor/Moodle).
 
 ## 12. Rúbrica común del módulo (✅ RESUELTA EN V1)
@@ -155,13 +157,13 @@ Del inventario:
 
 ## 14. Repositorio Git y publicación GitHub Pages (PARCIALMENTE RESUELTA)
 
-- **Estado**: El repositorio y la infraestructura MkDocs/GitHub Pages ya existen. Solo permanece abierta la frontera exacta de publicación descrita en la decisión 11.
+- **Estado**: El repositorio y la infraestructura MkDocs/GitHub Pages ya existen. La frontera de publicación de la decisión 11 queda resuelta: documentación y ejemplos en Pages; tareas y proyectos en Moodle.
 - **Decisión operativa sobre material docente — ✅ CERRADA**: `99-profesor/` permanece dentro de cada unidad para facilitar su uso en clase. Git lo ignora, MkDocs lo excluye y el respaldo se realiza en una unidad externa. No se creará un repositorio privado ni se usarán ramas como frontera de lectura.
 - **Público** (GitHub Pages vía MkDocs): `01-documentacion/`, `02-ejemplos/` y los índices de unidad.
 - **Privado/no publicado**: `99-profesor/`, GIFT, soluciones, correcciones y material de evaluación docente.
-- **Duda transversal restante**: decidir si los enunciados y starters de `03-ejercicios/` y `04-proyectos/` se incorporan a Pages. Antes de hacerlo se comprobará que no contengan soluciones.
+- **Duda transversal restante**: ninguna sobre la publicación de ejercicios y proyectos; se mantiene la decisión de reservarlos para Moodle.
 - **Publicación integrada**: La documentación de DWES se publicará en GitHub Pages junto con la de PIA y SBD (misma org, mismo site o sites separados). Decidir si un repo único con subdominios o repos separados.
-- **Acción pendiente**: cerrar únicamente la política de publicación de enunciados y starters. La ubicación y el respaldo de `99-profesor/` ya no son decisiones pendientes.
+- **Acción pendiente**: aplicar la publicación gradual en Moodle cuando cada actividad esté lista. La ubicación y el respaldo de `99-profesor/` ya no son decisiones pendientes.
 
 ## 15. Reforma de UD3 MVC (✅ NÚCLEO CERRADO)
 

@@ -264,4 +264,5 @@ la evidencia reproducible indicada a continuación.
 - [x] Generar los PDF de UD00 y UD01 fuera del repositorio, en `../PDF-Moodle-DWES-2026-2027/`, para conservarlos en Moodle.
 - [ ] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
 - [x] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
+- [x] Decidir que los ejercicios y proyectos se publican gradualmente en Moodle, no en GitHub Pages, para conservar el control de calendario y revisión.
 - [ ] Importar y previsualizar en Moodle los bancos piloto de UD1 y UD2a ahora que la instancia 2026/2027 está disponible.
