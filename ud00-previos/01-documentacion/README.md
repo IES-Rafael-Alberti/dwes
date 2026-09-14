@@ -54,16 +54,21 @@ Cada sesión sigue la misma estructura:
 4. **Día de dudas** — 1-2 sesiones de resolución colectiva
 
 Los ejercicios autónomos se **entregan por escrito** (documento markdown o script SQL)
-y se evalúan con la rúbrica incluida en cada enunciado.
+y se revisan con la rúbrica incluida en cada enunciado para orientar el refuerzo.
 
-## Evaluación
+## Diagnóstico y seguimiento
 
-| Componente | Peso | Descripción |
-|------------|------|-------------|
-| Ejercicios MongoDB (3) | 30% | Blog, e-commerce, refactor — individuales |
-| Trabajo grupal MongoDB | 30% | Proyecto en grupo de 3-4 con design doc y defensa |
-| Ejercicios PostgreSQL (2) | 20% | Modelo híbrido + benchmark |
-| Participación en dudas | 20% | Presentación de soluciones, preguntas, discusión |
+UD00 es un bloque de preparación y no tiene una calificación independiente.
+Antes de comenzar se realizarán en Moodle tres cuestionarios diagnósticos
+separados: Java, MongoDB y SQL. Servirán para decidir dónde reforzar el
+recorrido, no para ordenar ni penalizar al alumnado.
+
+La evaluación calificable del módulo comienza en las unidades previstas para
+ello. Los ejercicios y proyectos de este bloque se publicarán gradualmente en
+Moodle cuando corresponda.
+
+La especificación del diagnóstico está en
+`00-planificacion/DIAGNOSTICO_UD00_2026_2027.md`.
 
 ## Requisitos técnicos
 
