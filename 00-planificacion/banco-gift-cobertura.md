@@ -12,6 +12,10 @@ pendientes**; no se debe considerar validado el banco hasta ejecutar esa prueba.
 Los ficheros `.gift` están excluidos por `**/*.gift` en `.gitignore` y no forman
 parte de MkDocs ni de GitHub Pages. Esta matriz no contiene respuestas.
 
+Además de los bancos de la fase 4, se han preparado tres bancos diagnósticos
+privados de UD00, con 12 preguntas cada uno. No forman parte de las 272
+preguntas evaluativas nuevas ni del calificador del módulo.
+
 ## Convenciones
 
 - Cada cuestionario contiene 16 preguntas para facilitar intentos de 15-20
@@ -57,6 +61,14 @@ parte de MkDocs ni de GitHub Pages. Esta matriz no contiene respuestas.
 | `ud03-mvc-thymeleaf-seguridad.gift` | 12 | Conservar; complementar con los dos bancos UD3 nuevos |
 | `ud06_ra9.gift` | 14 | Conservar como banco privado; comprobar importación y cobertura |
 | `ud04/99-profesor/cuestionarios/php-basico.gift` | 30 | Conservar como material docente previo; no mezclar automáticamente |
+
+## Bancos diagnósticos de UD00
+
+| Banco | Área | Preguntas | Uso |
+|---|---|---:|---|
+| `ud00-diagnostico-java.gift` | Java | 12 | Diagnóstico inicial, sin calificación |
+| `ud00-diagnostico-mongodb.gift` | MongoDB | 12 | Diagnóstico inicial, sin calificación |
+| `ud00-diagnostico-sql.gift` | SQL | 12 | Diagnóstico inicial, sin calificación |
 
 ## Cobertura temática transversal
 
