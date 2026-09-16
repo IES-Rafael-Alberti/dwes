@@ -73,6 +73,7 @@ exclude_docs: |
   *.docx
   *.rmd
   *.Rhistory
+  ud00-previos/01-documentacion/Java/Java300algo.pdf
   *.pem
   *.p12
   *.gift

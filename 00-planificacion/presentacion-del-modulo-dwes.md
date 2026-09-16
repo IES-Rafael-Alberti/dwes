@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Presentación del módulo: Desarrollo Web en Entorno Servidor
 
 ## Qué vamos a aprender

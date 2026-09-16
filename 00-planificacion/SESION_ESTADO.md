@@ -261,7 +261,9 @@ la evidencia reproducible indicada a continuación.
 ## Pendientes inmediatos — próxima sesión (15 septiembre 2026)
 
 - [x] Revisar y validar la reorganización de UD00/previos y UD01; `mkdocs build --strict` y las pruebas de Hello Server pasan.
-- [x] Generar los PDF de UD00 y UD01 fuera del repositorio, en `../PDF-Moodle-DWES-2026-2027/`, para conservarlos en Moodle.
+- [x] Generar los PDF de UD00 y UD01 dentro de la carpeta `moodle/` de cada
+  unidad, fuera del control de versiones pero dentro de DWES, para conservarlos
+  en Moodle.
 - [x] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
 - [x] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
 - [x] Decidir que los ejercicios y proyectos se publican gradualmente en Moodle, no en GitHub Pages, para conservar el control de calendario y revisión.
@@ -270,3 +272,51 @@ la evidencia reproducible indicada a continuación.
 - [ ] Importar y previsualizar en Moodle los bancos piloto de UD1 y UD2a; revisar preguntas SU, SM, VF, EM y HC.
 - [ ] Registrar importaciones, incidencias y tipos soportados en `banco-gift-cobertura.md`.
 - [ ] Crear y probar el curso/calificador plantilla de Moodle sin usuarios.
+
+## Estado Java UD00 — laboratorios Java 25
+
+- [x] Seleccionados y adaptados ejercicios del libro *Aprende Java con
+  Ejercicios* (2019), sin copiar capítulos ni soluciones comerciales.
+- [x] Excluidos del recorrido UD00 Java NetBeans, JSP, configuraciones antiguas
+  de JDK y el acceso web JDBC/MySQL como recorrido principal.
+- [x] Creado el laboratorio Gradle multi-proyecto en
+  `ud00-previos/03-ejercicios/03-java25-labs/`, preparado para abrir en
+  IntelliJ desde la carpeta raíz.
+- [x] Creados starters y tests de J25-01, J25-03, J25-04, J25-05, J25-06 y
+  J25-08.
+- [x] Preparado J25-07 como ampliación de la Calculadora Calc25 con historial.
+- [x] Preparadas las soluciones privadas y sus tests en
+  `ud00-previos/99-profesor/soluciones-java25/`.
+- [x] Las soluciones completas pasan con Java 25; los starters fallan
+  intencionadamente hasta que el alumnado implemente el reto.
+- [x] `mkdocs build --strict` y `git diff --check` pasan después de integrar el
+  material.
+- [ ] Revisar dificultad y selección tras analizar el diagnóstico Java de UD00.
+- [ ] Crear en Moodle cada actividad con el flujo `Reto -> Pistas -> Solución`.
+- [ ] Configurar restricciones por finalización/fecha si están habilitadas; si
+  no, publicar las pistas y soluciones manualmente al terminar el tiempo.
+- [ ] Comprobar con vista de estudiante que los starters se descargan y las
+  soluciones no aparecen antes de tiempo.
+- [ ] Decidir qué retos se trabajan en clase y cuáles quedan como práctica
+  autónoma.
+- [x] Descartar el Taller de Moodle como opción principal para la coevaluación:
+  tiene demasiado setup y complejidad de gestión para estos retos.
+- [ ] Diseñar una coevaluación propia mínima para los retos o prácticas Java,
+  sin fases especiales de Moodle, con checklist breve, parejas/asignaciones
+  sencillas y registro controlable por el docente.
+- [ ] Prever el reparto automático de entregas: generar una tabla
+  `alumno -> entrega asignada` después del cierre, mediante asignación circular
+  sin auto-revisión; comunicar a cada alumno únicamente su enlace/identificador
+  por mensaje privado o feedback individual y recoger después el checklist en
+  una tarea Moodle normal.
+- [x] Fijar que toda UD00, incluida la nivelación Java, no es evaluable ni
+  tendrá nota independiente: lo aprendido se demostrará en Java a partir de
+  UD02, dentro de las actividades que sí correspondan.
+- [ ] Decidir cómo reconocer o compensar el trabajo de nivelación Java de UD00
+  sin convertirlo en una nota encubierta ni evaluar contenidos que corresponden
+  a Programación de primero. Comprobar la opción Moodle de `extra credit`,
+  sabiendo que afecta al calificador, y priorizar si procede finalización,
+  reconocimiento formativo o participación sin nota. Como vía preferente,
+  tener en cuenta el trabajo bien hecho al comenzar Spring Boot y en la primera
+  actividad Java evaluable, dentro de sus criterios propios y sin crear una
+  calificación independiente en UD00.

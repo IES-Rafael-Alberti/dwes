@@ -1,0 +1,3 @@
+rootProject.name = 'java25-labs'
+
+include 'J25-01', 'J25-03', 'J25-04', 'J25-05', 'J25-06', 'J25-08'

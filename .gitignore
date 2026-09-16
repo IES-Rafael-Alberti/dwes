@@ -40,6 +40,8 @@ ud00-previos/03-ejercicios/02-calculadora/recursos/rubrica_equipos.xlsx
 # ============================================
 site/
 graphify-out/
+**/moodle/
+ud00-previos/01-documentacion/Java/*.pdf
 target/
 build/
 dist/
@@ -47,6 +49,7 @@ dist/
 *.jar
 !/ud00-previos/03-ejercicios/01-geonotes/recursos/geonotes-teaching-java25/gradle/wrapper/gradle-wrapper.jar
 !/ud00-previos/03-ejercicios/02-calculadora/recursos/calc25/gradle/wrapper/gradle-wrapper.jar
+!/ud00-previos/03-ejercicios/03-java25-labs/gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.class

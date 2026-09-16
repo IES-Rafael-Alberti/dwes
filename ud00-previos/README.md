@@ -6,11 +6,12 @@ básico, diseño de datos en MongoDB y comparación con PostgreSQL JSON/JSONB.
 
 ## Java y Kotlin
 
-- [Java para programadores Kotlin — documentación completa](01-documentacion/java-para-programadores-kotlin.md)
-- [PDF de Java para programadores Kotlin](01-documentacion/java-para-programadores-kotlin.pdf)
-- [Guion completo de Java 17-25 para alumnado de Kotlin](01-documentacion/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md)
-- [Presentación Java frente a Kotlin — excepciones](01-documentacion/java_vs_kotlin_excepciones_presentacion.pdf)
-- [Material ampliado Java frente a Kotlin — excepciones](01-documentacion/java_vs_kotlin_excepciones_extendido.pdf)
+- [Java para programadores Kotlin — documentación completa](01-documentacion/Java/java-para-programadores-kotlin.md)
+- [PDF de Java para programadores Kotlin](01-documentacion/Java/java-para-programadores-kotlin.pdf)
+- [Guion completo de Java 17-25 para alumnado de Kotlin](01-documentacion/Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md)
+- [Selección de ejercicios Java 25](01-documentacion/Java/seleccion-ejercicios-java25.md)
+- [Presentación Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_presentacion.pdf)
+- [Material ampliado Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_extendido.pdf)
 - [Proyecto guiado GeoNotes](03-ejercicios/01-geonotes/README.md)
 
 ## MongoDB básico
