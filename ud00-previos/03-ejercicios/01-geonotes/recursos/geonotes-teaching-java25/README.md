@@ -9,6 +9,23 @@ Incluye Gradle Wrapper para facilitar la ejecución sin instalar Gradle.
 - Demuestra características de Java 11→25: records, sealed, text blocks, switch moderno, pattern matching y record patterns.
 - Exportación de ejemplo a JSON usando Text Blocks.
 
+## Recorrido docente
+
+Trabaja en este orden, sin intentar completar todo de una vez:
+
+1. Ejecuta `examples` y localiza el modelo `Note`, los records geográficos y el
+   servicio que conserva las notas.
+2. Añade o modifica una nota y comprueba la validación de coordenadas y texto.
+3. Implementa una consulta rectangular que conserve el orden y descarte notas
+   fuera del área; empieza con un bucle legible.
+4. Compara después la solución con Streams y `record patterns`, explicando qué
+   gana y qué pierde cada versión.
+5. Revisa el exportador JSON y añade una prueba para un caso límite.
+
+El objetivo es leer un proyecto Java pequeño, modificar una pieza aislada,
+ejecutar tests y explicar la decisión. No es una aplicación web ni una entrega
+evaluada de forma independiente en UD00.
+
 ## Pila técnica
 - Lenguaje: Java 25 (toolchain de Gradle)
 - Build: Gradle con plugins `java` y `application`
@@ -49,6 +66,10 @@ Incluye Gradle Wrapper para facilitar la ejecución sin instalar Gradle.
 ## Pruebas
 - Incluye pruebas unitarias para `GeoPoint`, `Note`, `Match`, `Timeline` y la exportación JSON.
 - Se ejecutan con: `./gradlew test`.
+
+Antes de modificar el proyecto, ejecuta la suite completa. Después de cada
+cambio, repite al menos las pruebas del dominio afectado y termina con
+`./gradlew test`.
 
 ## Estructura del proyecto (resumen)
 - `build.gradle`: configuración de Gradle (Java 25, plugin application, tarea `examples`).

@@ -266,10 +266,10 @@ la evidencia reproducible indicada a continuación.
 - [x] Generado el PDF actualizado de `java-para-programadores-kotlin.md` en `../PDF-Moodle-DWES-2026-2027/java-para-programadores-kotlin.pdf` (27 páginas).
 - [x] Revisar y alinear la guía docente, la selección de laboratorios y la secuencia de impartición.
 - [x] Resolver el hueco J25-02: se descarta incorporarlo; el recorrido real conserva los retos disponibles y coherentes con la hoja de asignación.
-- [ ] Decidir los microejercicios para las novedades de Java 25.
-- [ ] Reforzar la sección de Streams con una progresión práctica orientada a su uso posterior en Spring Boot: `filter`, `map`, `flatMap`, `sorted`, `collect`/`toList`, `groupingBy`, `reduce`, `Optional` y criterios de legibilidad.
-- [ ] Ampliar los README de los labs, especialmente GeoTag/GeoNotes y Calc25, con instrucciones más concretas sobre las tareas que debe realizar el alumnado; los actuales son demasiado escuetos.
-- [ ] Revisar la dificultad y el flujo de publicación en Moodle.
+- [x] Creados tres microejercicios opcionales para las novedades permanentes de Java 25 (JEP 511, 512 y 513), sin convertirlas en contenido evaluable.
+- [x] Reforzada la sección de Streams con una progresión práctica orientada a Spring Boot: `filter`, `map`, `flatMap`, `sorted`, `collect`/`toList`, `groupingBy`, `reduce`, `Optional` y criterios de legibilidad.
+- [x] Ampliados los README de Calc25 y GeoNotes con tareas concretas, orden de trabajo, tests y límites del recorrido.
+- [x] Revisada la dificultad tras el diagnóstico Java: notas entre 6,75 y 10; se mantiene el nivel y no se rebaja la secuencia.
 
 ## Pendientes inmediatos — próxima sesión (15 septiembre 2026)
 

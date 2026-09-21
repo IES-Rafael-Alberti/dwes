@@ -1218,7 +1218,11 @@ Referencias de consulta:
 Java Streams no son streams de bytes: son una abstracción para procesar
 secuencias de datos de forma declarativa.
 
-Para procesamiento de datos, Java Streams (la API de `java.util.stream`) permite operaciones como filtrar, transformar y recopilar colecciones de datos:
+Para procesamiento de datos, Java Streams (la API de `java.util.stream`) permite
+filtrar, transformar, ordenar, agrupar y resumir colecciones. Esta progresión
+aparece continuamente en servicios Spring Boot cuando se convierten entidades
+en DTOs, se aplican filtros de presentación o se preparan resultados para una
+respuesta HTTP:
 
 ``` java
 import java.util.stream.*;
@@ -1310,6 +1314,85 @@ List<String> resultado = nombres.stream()
     .sorted()
     .toList();
 ```
+
+### Progresión mínima
+
+Partimos de un modelo pequeño:
+
+``` java
+import java.util.*;
+
+record Student(String name, String course, boolean active, int credits) {}
+
+List<Student> students = List.of(
+    new Student("Ana", "DAW", true, 6),
+    new Student("Pedro", "DAM", false, 6),
+    new Student("Lucía", "DAW", true, 4)
+);
+```
+
+Las operaciones se pueden leer como una tubería:
+
+``` java
+// filter conserva elementos; map transforma; sorted ordena.
+List<String> activeNames = students.stream()
+    .filter(Student::active)
+    .map(Student::name)
+    .sorted()
+    .toList();
+
+// flatMap aplana colecciones anidadas.
+List<List<String>> tagGroups = List.of(
+    List.of("java", "web"),
+    List.of("web", "api")
+);
+List<String> allTags = tagGroups.stream()
+    .flatMap(List::stream)
+    .distinct()
+    .sorted()
+    .toList();
+
+// groupingBy prepara una respuesta agrupada o un informe.
+Map<String, List<Student>> byCourse = students.stream()
+    .collect(Collectors.groupingBy(Student::course));
+
+// reduce combina valores; para números también existen sum() y average().
+int totalCredits = students.stream()
+    .map(Student::credits)
+    .reduce(0, Integer::sum);
+
+Optional<Student> firstActive = students.stream()
+    .filter(Student::active)
+    .findFirst();
+```
+
+El ejemplo de `notes` supone un método `tags()` que devuelve una colección de
+etiquetas; no es una API especial de Java. En una aplicación Spring Boot, una
+transformación habitual tendría esta forma:
+
+``` java
+return bookRepository.findAll().stream()
+    .filter(Book::isPublished)
+    .map(BookResponse::from)
+    .sorted(Comparator.comparing(BookResponse::title))
+    .toList();
+```
+
+### Criterios de legibilidad y rendimiento
+
+- Usa un `for` cuando haya varias ramas, efectos secundarios o el bucle sea más
+  fácil de leer; Streams no son una obligación.
+- No hagas llamadas de red, escritura de archivos ni cambios de estado dentro
+  de un `map` o `filter`.
+- Filtra y proyecta en la base de datos cuando el repositorio pueda hacerlo; no
+  cargues miles de filas para descartarlas después en memoria.
+- `toList()` devuelve una lista no modificable; usa una colección mutable solo
+  si el contrato realmente necesita modificarla.
+- No uses `parallelStream()` como optimización automática en una aplicación
+  web; primero mide y entiende los límites de concurrencia.
+- `Optional` expresa un resultado que puede faltar, especialmente en
+  `findFirst`, `findById` y servicios; no lo uses como atributo universal de
+  entidades ni como argumento de todos los métodos.
 
 Un Java Stream no es un stream de bytes: es una secuencia perezosa de operaciones sobre datos. Para una fuente que solo se recorre una vez puede ser más claro usar un `for`. No encadenes Streams solo para imitar Kotlin: usa la herramienta que mejor se adapte a cada caso.
 
