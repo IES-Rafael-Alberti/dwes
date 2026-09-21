@@ -15,6 +15,14 @@ java --version
 
 Ambos comandos deben informar de Java 25. No es necesario instalar Gradle globalmente cuando el proyecto incluye el wrapper.
 
+## Ejemplos ejecutables del guion
+
+Los fragmentos de este guion explican una idea; los ejemplos pequeños que se
+pueden compilar y ejecutar están organizados en
+[`02-ejemplos/java/README.md`](../../02-ejemplos/java/README.md). Allí se
+separan polimorfismo, records, `sealed`/`switch`, Streams y ficheros. Los retos
+con tests y los proyectos Calc25/GeoNotes permanecen en `03-ejercicios/`.
+
 ---
 
 ## 🚀 Contexto de la Industria: Java en Spring Boot 3 vs Spring Boot 4
@@ -88,6 +96,11 @@ gradle init --type java-application --dsl groovy --test-framework junit --projec
    - `src/main/java/com/example/geonotes/Main.java`
    - `src/main/java/com/example/geonotes/model/` (modelos)
    - `src/main/java/com/example/geonotes/core/` (lógica)
+
+> El nombre `com.example.geonotes` se usa aquí para explicar la arquitectura
+> desde cero. El starter docente actual de GeoNotes usa
+> `com.example.geonotesteaching`; al trabajar sobre el ZIP hay que seguir la
+> estructura real del proyecto.
 
 **Tarea**
 - Leer el código base y compilar/ejecutar con `./gradlew run`.

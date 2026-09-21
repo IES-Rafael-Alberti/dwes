@@ -270,6 +270,8 @@ la evidencia reproducible indicada a continuación.
 - [x] Reforzada la sección de Streams con una progresión práctica orientada a Spring Boot: `filter`, `map`, `flatMap`, `sorted`, `collect`/`toList`, `groupingBy`, `reduce`, `Optional` y criterios de legibilidad.
 - [x] Ampliados los README de Calc25 y GeoNotes con tareas concretas, orden de trabajo, tests y límites del recorrido.
 - [x] Revisada la dificultad tras el diagnóstico Java: notas entre 6,75 y 10; se mantiene el nivel y no se rebaja la secuencia.
+- [x] Regenerados los PDF de apoyo Java y los tres ZIP de Moodle desde las fuentes actuales; los ZIP se validaron con `unzip -t`.
+- [x] Reorganizados los ejemplos Java ejecutables en `ud00-previos/02-ejemplos/java/` y enlazados desde el guion y la página pública de UD00; los cinco ejemplos compilan y ejecutan.
 
 ## Pendientes inmediatos — próxima sesión (15 septiembre 2026)
 

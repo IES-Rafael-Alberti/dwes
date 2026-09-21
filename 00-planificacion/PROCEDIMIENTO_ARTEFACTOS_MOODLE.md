@@ -32,6 +32,21 @@ Los nombres actuales son:
 - `ud00-previos/moodle/Java/calc25-starter.zip`
 - `ud00-previos/moodle/Java/geonotes-java25-starter.zip`
 
+Para evitar incluir compilaciones locales, una regeneración segura usa solo los
+archivos versionados del proyecto:
+
+```bash
+git -C ud00-previos/03-ejercicios/03-java25-labs ls-files \
+  | zip -q /tmp/java25-labs-starters.zip -@
+git -C ud00-previos/03-ejercicios/02-calculadora/recursos/calc25 ls-files \
+  | zip -q /tmp/calc25-starter.zip -@
+git -C ud00-previos/03-ejercicios/01-geonotes/recursos/geonotes-teaching-java25 ls-files \
+  | zip -q /tmp/geonotes-java25-starter.zip -@
+```
+
+Después se copian los tres ZIP a `ud00-previos/moodle/Java/` y se comprueban
+con `unzip -t`.
+
 ## PDF
 
 Los PDF se generan desde la documentación Markdown o desde la fuente de la
@@ -39,9 +54,23 @@ unidad mediante el flujo habitual de conversión del curso. No se editan a mano
 ni se toman como fuente: si cambia el Markdown, se vuelven a generar y se
 reemplaza el PDF de la carpeta `moodle/` de esa unidad.
 
+Los PDF Java actuales son:
+
+- `ud00-previos/moodle/PDF/java-para-programadores-kotlin.pdf`
+- `ud00-previos/moodle/PDF/microejercicios-java25.pdf`
+- `ud00-previos/moodle/PDF/seleccion-ejercicios-java25.pdf`
+
 ## Regla de mantenimiento
 
 Al cerrar una revisión, conservar únicamente los artefactos definitivos dentro
 de `DWES/<unidad>/moodle/`. Los intermedios deben ir a `/tmp/opencode` u otra
 ubicación temporal y eliminarse después. Nunca crear carpetas de salida de
 DWES al nivel de `Modulos/`.
+
+## Calificador
+
+El calificador plantilla no es un PDF, ZIP ni CSV que pueda generarse desde
+este repositorio. La configuración reproducible está en
+`CONFIGURACION_CALIFICADOR_MOODLE_2026_2027.md`; el curso sin alumnado debe
+crearse en Moodle, comprobarse con una cuenta de prueba y respaldarse desde la
+propia instalación como `.mbz`.

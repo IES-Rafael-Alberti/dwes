@@ -1,4 +1,4 @@
-# Ejemplo de polimorfismo
+# Polimorfismo
 
 Ejemplo mínimo para observar una clase abstracta y dos implementaciones
 concretas. `Main` trabaja con referencias de tipo `Figura`, pero cada objeto
