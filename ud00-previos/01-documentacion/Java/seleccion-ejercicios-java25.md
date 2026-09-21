@@ -23,30 +23,31 @@ como práctica autónoma. Consultar una solución después del límite no es un
 fracaso: hay que comparar el diseño, ejecutar los tests y anotar qué se ha
 aprendido o cambiado.
 
-## Recorrido mínimo en clase
+## Recorrido de retos cortos
 
 | ID | Ejercicio | Base aprovechada | Java 25 | Tiempo |
 |---|---|---|---|---:|
-| J25-01 | Validar entradas y calcular estadísticas | Variables, condicionales, bucles y arrays | `var` solo en variables locales; tests JUnit | 20 min |
-| J25-02 | Normalizar texto y contar frecuencias | Strings, mapas y bucles | `Map`, `computeIfAbsent`, `toList()` | 25 min |
-| J25-03 | Modelar un valor con `record` | POO, constructores y validación | `record` y constructor compacto | 25 min |
-| J25-04 | Filtrar y ordenar una colección | ArrayList, ordenación y ejercicios de colecciones | Streams, `Comparator` y `toList()` | 30 min |
-| J25-05 | Jerarquía de resultados | Interfaces, herencia y excepciones | `sealed`, `switch` con patrones y guardas | 35 min |
+| J25-01 | Estadísticas seguras | Validación, bucles, listas y tests | `record` para el resultado | 20 min |
+| J25-03 | Record de temperatura | POO, validación y métodos derivados | `record` y constructor compacto | 25 min |
+| J25-04 | Últimos títulos | Colecciones, ordenación y contratos | Streams, `Comparator` y `toList()` | 30 min |
+| J25-06 | Fichero de notas | Rutas, texto, errores y persistencia local | `Path`, `Files` y UTF-8 | 45 min |
+| J25-05 | Resultados sellados | Jerarquías, estados y excepciones | `sealed`, `record` y `switch` con patrones | 35 min |
+| J25-08 | Consulta geográfica de GeoNotes | Records, filtrado y dominio existente | `record patterns` y Streams | 60 min |
 
-J25-01 y J25-03 son la ruta mínima para quien necesite nivelación. J25-04 y
-J25-05 son la transición hacia el estilo que se usará en Spring Boot.
+J25-01 y J25-03 son la entrada mínima para quien necesite nivelación. J25-04
+y J25-06 introducen colecciones y ficheros antes de pasar a J25-05 y J25-08,
+que acercan el trabajo al estilo que se usará en Spring Boot.
 
-## Práctica autónoma
+## Ampliaciones autónomas
 
-| ID | Ejercicio | Producto | Tiempo orientativo |
+| ID | Ampliación | Producto | Tiempo orientativo |
 |---|---|---|---:|
-| J25-06 | Leer y escribir notas en un fichero | NIO.2, validación y errores | 45 min |
-| J25-07 | Extender la calculadora | Comando nuevo, excepción propia y regresión | 45-60 min |
-| J25-08 | Añadir una consulta a GeoNotes | Streams, `record patterns` y tests | 60 min |
-J25-07 reutiliza la calculadora existente. J25-08 reutiliza GeoNotes. J25-09
-J25-07 reutiliza la calculadora existente. J25-08 reutiliza GeoNotes. No se
-introducen todavía APIs web ni Spring Boot: UD00 prepara el lenguaje y las
-herramientas; el backend se aborda en las unidades correspondientes.
+| J25-07 | Extender la calculadora | Comando `history`, `record` y regresión | 45-60 min |
+
+J25-07 reutiliza la calculadora existente y se propone después del laboratorio
+de retos cortos. No se introducen todavía APIs web ni Spring Boot: UD00 prepara
+el lenguaje y las herramientas; el backend se aborda en las unidades
+correspondientes.
 
 ## Orden de modernización
 
