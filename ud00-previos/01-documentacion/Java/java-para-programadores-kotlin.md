@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Java para programadores Kotlin
 
 En este documento vamos a realizar una introducción rápida a Java para programadores que ya saben Kotlin. Veremos las principales diferencias entre ambos lenguajes y cómo pasar de uno a otro.
@@ -959,7 +964,13 @@ En Java, el modificador `@Override` es opcional pero recomendado; en Kotlin, `ov
 
 ### Entrada
 
-En Java, puedes leer datos de entrada del usuario a través del teclado utilizando el objeto `Scanner`. El objeto `Scanner` se encuentra en el paquete `java.util`, por lo que necesitarás importarlo:
+Para programas de terminal, Java ofrece `Scanner`, que permite leer tokens o
+líneas desde `System.in`. Es útil para reconocer código antiguo o hacer una
+pequeña herramienta local, pero no es el modelo de entrada de una aplicación
+web: en un servidor, Spring y el contenedor HTTP reciben la petición y
+convierten su contenido en parámetros, JSON, formularios o archivos.
+
+El objeto `Scanner` se encuentra en el paquete `java.util`:
 
 ``` java
 import java.util.Scanner;
@@ -1000,7 +1011,15 @@ fun main() {
 
 La función `readlnOrNull()` devuelve `null` si no hay datos disponibles. `toIntOrNull()` convierte la cadena a entero o devuelve `null` si no es un número válido, lo cual es más seguro que `toInt()` que lanza una excepción si la cadena no es numérica.
 
-Hay otras funciones como `readln()` (lanza excepción si no hay entrada) y en versiones anteriores existía `readLine()` y `readInt()`, que ya no son la forma recomendada.
+Hay otras funciones como `readln()` (lanza excepción si no hay entrada) y en
+versiones anteriores existía `readLine()` y `readInt()`, que ya no son la forma
+recomendada.
+
+> **Nota de transición:** no hace falta memorizar todas las variantes de
+> `Scanner`. Para este módulo basta con reconocer `nextInt()`, `nextDouble()`,
+> `next()` y `nextLine()`, saber que mezclarlas puede dejar un salto de línea
+> pendiente, y entender que `Scanner` es principalmente una herramienta de
+> terminal o de código heredado.
 
 ### Salida
 
@@ -1114,104 +1133,90 @@ La sintaxis es más concisa pero el resultado es equivalente.
 
 ## Archivos y directorios
 
-En ambos Java y Kotlin se puede trabajar con archivos utilizando las clases y métodos de las bibliotecas estándar.
+En una aplicación web sí es más probable trabajar con archivos: recibir una
+subida, guardar una imagen o un CSV, leer una plantilla, generar una descarga o
+examinar un recurso estático. En UD00 solo necesitamos la base de la biblioteca
+estándar; la integración HTTP de `MultipartFile` y las respuestas de descarga
+se estudian cuando se vea Spring MVC.
 
-Java proporciona varias clases en el paquete `java.io` y `java.nio.file` para trabajar con archivos. La clase `File` permite trabajar con información sobre un archivo o directorio, mientras que las clases `FileReader` y `FileWriter` permiten leer y escribir.
+Java proporciona las APIs históricas de `java.io` y la API moderna de
+`java.nio.file`. Para código nuevo, la pareja recomendada es `Path` + `Files`.
+`File`, `FileReader` y `FileWriter` conviene reconocerlos porque aparecen en
+proyectos antiguos y en documentación externa, pero no son el primer recurso
+que se debe enseñar.
 
-Ejemplo en Java que lee un archivo:
+### Texto pequeño: la forma directa
 
-``` java
-import java.io.*;
-
-public class LeerArchivo {
-    public static void main(String[] args) {
-        try {
-            File archivo = new File("archivo.txt");
-            FileReader lector = new FileReader(archivo);
-            BufferedReader buffer = new BufferedReader(lector);
-
-            String linea;
-            while ((linea = buffer.readLine()) != null) {
-                System.out.println(linea);
-            }
-            buffer.close();
-            lector.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-En Kotlin, la forma más cómoda es usando las extensiones de la clase `File`:
-
-``` kotlin
-import java.io.*
-
-fun main() {
-    val archivo = File("archivo.txt")
-    archivo.useLines { lines -> lines.forEach { println(it) } }
-}
-```
-
-O también se puede usar `readText` y `writeText` para leer y escribir archivos completos:
-
-``` kotlin
-val texto = File("archivo.txt").readText()
-File("archivo.txt").writeText("Nuevo texto")
-```
-
-Para código Java moderno, `java.nio.file.Path` y `Files` son preferibles a construir toda la API con `java.io.File`:
+Para archivos pequeños de texto, `readString` y `writeString` evitan envolver
+manualmente un lector y muestran mejor la intención:
 
 ``` java
-import java.nio.file.*;
-import java.io.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-Path path = Path.of("students.txt");
-try (BufferedReader reader = Files.newBufferedReader(path)) {
-    for (String line; (line = reader.readLine()) != null;) {
-        System.out.println(line);
-    }
+Path path = Path.of("archivo.txt");
+
+try {
+    Files.writeString(path, "Primera línea\nSegunda línea\n", StandardCharsets.UTF_8);
+    String contenido = Files.readString(path, StandardCharsets.UTF_8);
+    System.out.println(contenido);
 } catch (IOException exception) {
-    System.out.println("Error: " + exception.getMessage());
+    System.out.println("No se pudo leer o escribir: " + exception.getMessage());
 }
 ```
 
-El `try-with-resources` cierra automáticamente los recursos. El equivalente habitual en Kotlin es `use`:
+`Files.readAllLines(path, charset)` devuelve una `List<String>` cuando se
+necesitan las líneas como datos. Estas operaciones cargan el contenido en
+memoria; no son apropiadas para archivos grandes.
 
-``` kotlin
-Path.of("students.txt").bufferedReader().useLines { lines ->
-    lines.forEach(::println)
-}
-```
+### Archivos grandes y recursos
 
-## Streams
-
-Java Streams no son streams de bytes: son una abstracción para procesar secuencias de datos de forma declarativa. Java proporciona una serie de clases para trabajar con streams de bytes en el paquete `java.io`.
-
-Por ejemplo, para leer bytes de un archivo:
+Cuando interesa procesar línea a línea, se puede usar `Files.lines`. El
+`try-with-resources` cierra el stream aunque falle el procesamiento:
 
 ``` java
-import java.io.*;
-
-try (FileInputStream fis = new FileInputStream("archivo.txt")) {
-    int contenido;
-    while ((contenido = fis.read()) != -1) {
-        System.out.print((char) contenido);
-    }
-} catch (IOException e) {
-    e.printStackTrace();
+try (var lines = Files.lines(Path.of("students.txt"), StandardCharsets.UTF_8)) {
+    lines.filter(line -> !line.isBlank())
+         .forEach(System.out::println);
+} catch (IOException exception) {
+    System.out.println("No se pudo abrir el archivo: " + exception.getMessage());
 }
 ```
 
-En Kotlin, se pueden usar las clases de streams de Java:
+Para archivos binarios pequeños existe `Files.readAllBytes`; para archivos
+grandes o copias se usan `InputStream`/`OutputStream` con
+`Files.newInputStream`/`Files.newOutputStream`. La idea importante es distinguir
+texto, que necesita una codificación como UTF-8, de bytes, que no deben
+convertirse a `String` sin una razón.
 
-``` kotlin
-val inputStream = File("archivo.txt").inputStream()
-inputStream.use {
-    it.bufferedReader().forEachLine { println(it) }
-}
-```
+### Operaciones y relación con la web
+
+Además de leer y escribir, las operaciones que más probablemente aparecerán
+son `Files.exists`, `createDirectories`, `copy`, `move`, `deleteIfExists` y
+`list`. Para archivos binarios pequeños existe `Files.readAllBytes`; para
+archivos grandes se usan streams de bytes. No se deben convertir bytes a
+`String` sin conocer el formato y la codificación.
+
+En Spring MVC, un upload suele llegar como `MultipartFile`. El controlador o
+servicio valida tamaño, tipo y nombre, y guarda el contenido usando `Path` y
+`Files`; nunca se debe concatenar directamente el nombre enviado por el
+cliente con una ruta. Una descarga puede devolver un `Resource` o bytes con su
+tipo MIME. La integración HTTP se verá más adelante: aquí basta con reconocer
+la relación.
+
+Referencias de consulta:
+
+- [`Files` en Java SE 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html)
+- [`Path` en Java SE 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html)
+- [`Scanner` en Java SE 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html)
+- [Multipart en Spring MVC](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet/multipart.html)
+
+## Java Streams
+
+Java Streams no son streams de bytes: son una abstracción para procesar
+secuencias de datos de forma declarativa.
 
 Para procesamiento de datos, Java Streams (la API de `java.util.stream`) permite operaciones como filtrar, transformar y recopilar colecciones de datos:
 
@@ -1415,6 +1420,94 @@ fun addAnimal(target: MutableList<in Animal>) {
 ```
 
 Kotlin también permite proyecciones en el uso. La idea fundamental es la misma: no existe en Java una `List<String>` que sea subtipo de `List<Object>` porque permitiría insertar un objeto no String.
+
+## Records de Java
+
+Un `record` es una forma concisa de declarar una clase cuyo propósito principal es transportar datos. Conceptualmente se parece a una `data class` de Kotlin: el estado que se declara en la cabecera forma parte de la identidad del objeto y Java genera automáticamente operaciones habituales sobre ese estado.
+
+### Sintaxis mínima y acceso a los componentes
+
+La declaración mínima es:
+
+```java
+public record Student(String name, int age) {}
+```
+
+Se instancia con `new`, como cualquier objeto Java, y sus componentes se consultan con métodos que tienen exactamente el nombre del componente, sin prefijos `get` o `is`:
+
+```java
+Student student = new Student("Ada", 30);
+System.out.println(student.name());
+System.out.println(student.age());
+```
+
+No hay métodos `getName()` ni `is...()` generados. En Kotlin, la idea equivalente sería:
+
+```kotlin
+data class Student(val name: String, val age: Int)
+
+val student = Student("Ada", 30)
+println(student.name)
+println(student.age)
+```
+
+Java genera para el record los accesores de los componentes, además de `equals`, `hashCode` y `toString` basados en esos componentes. Dos records del mismo tipo y con los mismos valores son iguales según `equals`, y se pueden usar como claves de mapas o elementos de conjuntos siempre que los componentes respeten también sus contratos de igualdad y hash.
+
+### Constructor canónico y validación
+
+El constructor que recibe todos los componentes se llama **constructor canónico**. Puede escribirse explícitamente para transformar o validar los argumentos. La forma compacta omite la lista de parámetros y permite validar antes de que se asignen automáticamente a los componentes:
+
+```java
+public record Student(String name, int age) {
+    public Student {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+        if (age < 0) {
+            throw new IllegalArgumentException("La edad no puede ser negativa");
+        }
+    }
+}
+```
+
+También se pueden añadir métodos propios y otros constructores, pero un constructor alternativo debe delegar en el canónico con `this(...)`:
+
+```java
+public record Point(int x, int y) {
+    public Point() {
+        this(0, 0);
+    }
+
+    public boolean isOrigin() {
+        return x == 0 && y == 0;
+    }
+}
+```
+
+### Límites y uso con interfaces
+
+Los componentes de un record son finales: no se pueden reasignar después de construir el objeto y no existen setters. Esto hace que el record sea adecuado para valores, DTOs y resultados, pero no sustituye a toda clase mutable con ciclo de vida, identidad cambiante o invariantes que deban modificarse mediante operaciones. La referencia a un componente también es final, pero el objeto referido puede seguir siendo mutable; por ejemplo, una `List` almacenada en un record puede modificarse si no se protege o copia.
+
+Un record puede implementar interfaces, aunque no puede extender otra clase (todos los records extienden implícitamente `java.lang.Record`):
+
+```java
+public record Temperature(double celsius) implements Comparable<Temperature> {
+    @Override
+    public int compareTo(Temperature other) {
+        return Double.compare(celsius, other.celsius);
+    }
+}
+```
+
+Los records son una característica permanente desde **Java 16**. Por tanto, son Java moderno anterior a Java 25 y no deben presentarse como una novedad de Java 25.
+
+### Checklist de aprendizaje
+
+- [ ] Declarar un `record` con dos componentes y crear una instancia con `new`.
+- [ ] Acceder a sus datos con `componente()`, sin escribir getters ni setters.
+- [ ] Comprobar `equals`, `hashCode` y `toString` con dos instancias equivalentes.
+- [ ] Añadir un constructor compacto que rechace un valor inválido.
+- [ ] Decidir si un modelo necesita estado mutable o si un record expresa mejor un valor.
 
 # Java 25: qué es nuevo y qué enseñar
 

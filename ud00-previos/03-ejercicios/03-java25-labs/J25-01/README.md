@@ -1,11 +1,11 @@
-# J25-01 - Estadisticas seguras
+# J25-01 - Estadísticas seguras
 
-Implementa `Statistics.summarize` para una lista de numeros.
+Implementa `Statistics.summarize` para una lista de números.
 
-- Rechaza `null`, listas vacias y valores no finitos.
-- Devuelve cantidad, minimo, maximo y media.
+- Rechaza `null`, listas vacías y valores no finitos.
+- Devuelve cantidad, mínimo, máximo y media.
 - No redondees el resultado dentro del dominio.
-- Escribe primero el algoritmo con un bucle; despues puedes comparar con
+- Escribe primero el algoritmo con un bucle; después puedes comparar con
   Streams.
 
 Ejecuta los tests de `src/test/java/StatisticsTest.java`.

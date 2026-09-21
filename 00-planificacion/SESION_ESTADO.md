@@ -258,12 +258,23 @@ la evidencia reproducible indicada a continuación.
 - [x] Ampliado el anexo Java de UD2 con `Optional`, DTOs con `record`, Streams, interfaces funcionales, `var`/`static`, text blocks y `formatted()`; `mkdocs build --strict` termina correctamente.
 - [x] Anexo Java incorporado al candidato de higiene y publicado tras verificar `mkdocs build --strict`.
 
+## Fase 20 — Revisión de la guía Java y novedades de Java 25 (17 septiembre 2026)
+
+- [x] Revisada la guía `java-para-programadores-kotlin.md`.
+- [x] Añadida una explicación explícita y pedagógica de los records de Java, diferenciándolos de las novedades de Java 25.
+- [x] Confirmado que las novedades permanentes de Java 25 están documentadas mediante JEP 511, JEP 512 y JEP 513, y que JEP 507 corresponde a una característica preview.
+- [x] Generado el PDF actualizado de `java-para-programadores-kotlin.md` en `../PDF-Moodle-DWES-2026-2027/java-para-programadores-kotlin.pdf` (27 páginas).
+- [x] Revisar y alinear la guía docente, la selección de laboratorios y la secuencia de impartición.
+- [x] Resolver el hueco J25-02: se descarta incorporarlo; el recorrido real conserva los retos disponibles y coherentes con la hoja de asignación.
+- [ ] Decidir los microejercicios para las novedades de Java 25.
+- [ ] Reforzar la sección de Streams con una progresión práctica orientada a su uso posterior en Spring Boot: `filter`, `map`, `flatMap`, `sorted`, `collect`/`toList`, `groupingBy`, `reduce`, `Optional` y criterios de legibilidad.
+- [ ] Ampliar los README de los labs, especialmente GeoTag/GeoNotes y Calc25, con instrucciones más concretas sobre las tareas que debe realizar el alumnado; los actuales son demasiado escuetos.
+- [ ] Revisar la dificultad y el flujo de publicación en Moodle.
+
 ## Pendientes inmediatos — próxima sesión (15 septiembre 2026)
 
 - [x] Revisar y validar la reorganización de UD00/previos y UD01; `mkdocs build --strict` y las pruebas de Hello Server pasan.
-- [x] Generar los PDF de UD00 y UD01 dentro de la carpeta `moodle/` de cada
-  unidad, fuera del control de versiones pero dentro de DWES, para conservarlos
-  en Moodle.
+- [x] Generar los PDF de UD00 y UD01 fuera del repositorio, en `../PDF-Moodle-DWES-2026-2027/`, para conservarlos en Moodle.
 - [x] No versionar esos PDF en Git; archivarlos al final del curso por si hubiera reclamaciones.
 - [x] Mantener diferenciadas la presentación general de 2.º DAW (`Documentos/Presentacion_2DAW_2026_2027.md`) y la presentación específica de DWES (`00-planificacion/presentacion-del-modulo-dwes.md`).
 - [x] Decidir que los ejercicios y proyectos se publican gradualmente en Moodle, no en GitHub Pages, para conservar el control de calendario y revisión.
