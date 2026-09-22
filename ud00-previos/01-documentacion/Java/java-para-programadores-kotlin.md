@@ -1620,7 +1620,7 @@ public record Temperature(double celsius) implements Comparable<Temperature> {
 }
 ```
 
-Los records son una característica permanente desde **Java 16**. Por tanto, son Java moderno anterior a Java 25 y no deben presentarse como una novedad de Java 25.
+Los records son una característica permanente desde **Java 16**. Forman parte de Java moderno y se pueden utilizar con Java 25, pero no son una novedad introducida por Java 25.
 
 ### Checklist de aprendizaje
 
@@ -1646,6 +1646,17 @@ Estas características forman parte de Java 25. La sintaxis tradicional sigue si
 
 Java evoluciona conservando la compatibilidad con versiones anteriores. Por eso es frecuente encontrar proyectos que todavía usan Java 8, junto a otros que emplean Java 17, 21 o 25. Conocer estas características ayuda tanto a leer código reciente como a reconocer por qué no compila al trabajar con un JDK antiguo.
 
+No se trata de sustituir todas las construcciones clásicas por sintaxis nueva. Java moderno aporta formas más seguras o expresivas para problemas concretos. El criterio sigue siendo el mismo: elegir la opción que haga más claro el modelo y el contrato del código.
+
+| Versión | Cambios que aparecen con frecuencia |
+|---|---|
+| Java 8 | Lambdas, Streams, `Optional`, nueva API de fechas |
+| Java 10 | `var` para variables locales |
+| Java 14-17 | `switch` como expresión, text blocks, records, patrones con `instanceof`, sealed types |
+| Java 21 | Patrones de records y en `switch`, virtual threads, colecciones secuenciadas |
+
+Un proyecto compilado con Java 8 no puede usar directamente sintaxis de Java 17 o 21 solo porque el equipo tenga instalado un JDK reciente: también importa la versión configurada por Maven, Gradle, el servidor de integración y el entorno de producción.
+
 ### `var` para variables locales (Java 10)
 
 `var` pide al compilador que infiera el tipo local a partir de la expresión de la derecha. No convierte Java en un lenguaje de tipado dinámico: el tipo queda fijado en compilación y no puede cambiar después. Solo se puede usar en variables locales con inicializador, no en atributos, parámetros ni valores de retorno.
@@ -1657,6 +1668,15 @@ var total = 0;                         // int
 ```
 
 Úsalo cuando el tipo sea evidente y mejora la lectura. Si oculta un tipo importante, como una interfaz o un genérico complejo, es preferible escribirlo.
+
+Por ejemplo, estas dos declaraciones no comunican exactamente lo mismo:
+
+```java
+var users = new ArrayList<User>(); // El tipo inferido es ArrayList<User>.
+List<User> users = new ArrayList<>(); // El contrato visible es List<User>.
+```
+
+La segunda deja claro que el resto del método solo necesita las operaciones de `List`; cambiar la implementación a `LinkedList` no obliga a cambiar el tipo de la variable. `var` ahorra repetición, pero no debe ocultar una decisión de diseño.
 
 ### `switch` como expresión (Java 14)
 
@@ -1674,6 +1694,26 @@ String label = switch (status) {
 };
 ```
 
+La forma clásica sigue siendo válida, pero es más fácil cometer un error por olvidar un `break`:
+
+```java
+String label;
+switch (status) {
+    case 200:
+    case 201:
+        label = "correcto";
+        break;
+    case 400:
+    case 404:
+        label = "error del cliente";
+        break;
+    default:
+        label = "otro estado";
+}
+```
+
+Una expresión `switch` debe producir un valor en todos los caminos. Con un `enum` o una jerarquía sellada, Java puede incluso detectar que faltan alternativas. No es necesario convertir cada `switch` existente: resulta especialmente útil cuando el objetivo es calcular y asignar un valor.
+
 ### Text blocks para texto multilínea (Java 15)
 
 Un *text block* se delimita con `"""` y permite escribir texto multilínea sin concatenar cadenas ni escapar cada salto de línea. Es útil para JSON, HTML, SQL o mensajes extensos.
@@ -1689,6 +1729,19 @@ String json = """
 
 La sangría de cierre determina qué sangría común se elimina. El resultado sigue siendo un `String` normal.
 
+Los text blocks no interpretan JSON, SQL ni HTML; solo facilitan escribir el texto. Las variables siguen insertándose de forma explícita, por ejemplo con `formatted`:
+
+```java
+String userJson = """
+    {
+      "id": %d,
+      "name": "%s"
+    }
+    """.formatted(42, "Ada");
+```
+
+En una aplicación web conviene distinguir comodidad de seguridad: construir una consulta SQL interpolando datos de entrada sigue siendo inseguro aunque se escriba con un text block. Para SQL se usan parámetros; para JSON se suele usar un serializador como Jackson.
+
 ### Pattern matching con `instanceof` (Java 16)
 
 El `instanceof` clásico necesitaba una comprobación y un *cast* separados. Con *pattern matching*, Java declara una variable ya tipada cuando la comprobación es verdadera:
@@ -1701,15 +1754,44 @@ if (value instanceof String text && !text.isBlank()) {
 
 No sirve para averiguar qué animal contiene una colección genérica: los límites genéricos ya indican qué operaciones son seguras. Se usa cuando realmente se recibe un valor cuyo subtipo concreto se desconoce.
 
+La variable del patrón solo existe donde Java sabe que la comprobación ha tenido éxito. Por eso se puede combinar de forma segura con `&&`:
+
+```java
+if (value instanceof String text && text.length() >= 3) {
+    System.out.println(text.substring(0, 3));
+}
+```
+
+En cambio, no estaría disponible a la derecha de `||`, porque esa parte puede evaluarse cuando `value` no es un `String`. Tampoco hay que usar patrones para sustituir el polimorfismo: si todos los subtipos pueden responder a `makeNoise()`, es preferible declarar ese método en `Animal` y llamarlo sin preguntar de qué subtipo se trata.
+
 ### Records y jerarquías `sealed` (Java 16 y 17)
 
-Los `record` reducen el código repetitivo de tipos que representan datos inmutables; se explican con detalle en la sección [Records de Java](#records-de-java). Una jerarquía `sealed` limita explícitamente sus subtipos permitidos. Juntas, ambas características modelan bien resultados cerrados, eventos o estados:
+Los `record` reducen el código repetitivo de tipos que representan datos inmutables; se explican con detalle en la sección [Records de Java](#records-de-java). Una jerarquía `sealed` limita explícitamente sus subtipos directos permitidos. Juntas, ambas características modelan bien resultados cerrados, eventos o estados:
 
 ```java
 sealed interface Result permits Success, Failure {}
 record Success(String value) implements Result {}
 record Failure(String message) implements Result {}
 ```
+
+Sin `sealed`, cualquier clase podría implementar `Result` en el mismo paquete o desde otra biblioteca. Con `sealed`, el compilador conoce el conjunto inicial de alternativas. Cada subtipo directo debe declarar cómo continúa la jerarquía:
+
+```java
+sealed interface Payment permits CardPayment, TransferPayment, DeferredPayment {}
+
+final class CardPayment implements Payment {}
+record TransferPayment(String iban) implements Payment {}
+non-sealed class DeferredPayment implements Payment {}
+```
+
+- `final` cierra esa rama: nadie puede extender `CardPayment`.
+- Un `record` también es final implícitamente.
+- `sealed` permitiría continuar declarando de forma explícita sus subtipos.
+- `non-sealed` vuelve a abrir esa rama para extensiones libres.
+
+Por tanto, `sealed` no significa "inmutable" ni "solo se pueden crear pocos objetos". Restringe **tipos**, no instancias. Es útil cuando las alternativas pertenecen al propio dominio y se conocen de antemano: un resultado correcto o fallido, los tipos de adjunto de una aplicación o los estados de un pedido. No conviene sellar una interfaz que se pretende ampliar mediante plugins o bibliotecas externas.
+
+En Java, los tipos permitidos deben estar en el mismo módulo con nombre o, si no se usan módulos, en el mismo paquete que el tipo sellado. Es una restricción del lenguaje que ayuda a mantener la jerarquía controlada.
 
 ### Patrones de records y `switch` con patrones (Java 21)
 
@@ -1726,6 +1808,52 @@ String describe(Result result) {
 
 Es la alternativa Java moderna a muchos `if` encadenados con `instanceof` y recuerda al `when` exhaustivo de Kotlin.
 
+Un patrón de record no crea ni copia objetos: comprueba el tipo y extrae sus componentes. La forma clásica necesita declarar una variable y llamar a sus accesores; la forma moderna hace ambas cosas en el patrón:
+
+```java
+record Point(int x, int y) {}
+
+// Forma clásica.
+if (value instanceof Point point) {
+    int x = point.x();
+    int y = point.y();
+    System.out.println(x + ", " + y);
+}
+
+// Patrón de record: comprueba Point y extrae x e y.
+if (value instanceof Point(int x, int y)) {
+    System.out.println(x + ", " + y);
+}
+```
+
+También se pueden anidar patrones. En el siguiente caso, la condición solo se cumple si el valor es un `Order`, su cliente es un `Customer` y el nombre no está vacío:
+
+```java
+record Customer(String name) {}
+record Order(Customer customer, int totalCents) {}
+
+if (value instanceof Order(Customer(String name), int totalCents)
+        && totalCents > 0) {
+    System.out.println(name + ": " + totalCents + " centimos");
+}
+```
+
+Los patrones hacen más concisa la descomposición de valores, pero no deben ocultar lógica compleja. Si un `case` necesita muchas validaciones o efectos secundarios, un método con nombre suele ser más legible.
+
+En un `switch` con patrones el orden importa: un caso general antes de uno específico haría que el específico fuera inalcanzable. Las guardas con `when` permiten refinar un caso:
+
+```java
+String describe(Result result) {
+    return switch (result) {
+        case Success(String value) when value.isBlank() -> "OK sin contenido";
+        case Success(String value) -> "OK: " + value;
+        case Failure(String message) -> "Error: " + message;
+    };
+}
+```
+
+Al cubrir todos los subtipos de una jerarquía sellada no hace falta `default`; si más adelante se añade un subtipo permitido, los `switch` afectados obligarán a decidir cómo tratarlo. Ese fallo de compilación es una ayuda, no una molestia.
+
 ### Virtual threads (Java 21)
 
 Los hilos virtuales son hilos ligeros gestionados por la JVM. Facilitan atender muchas tareas que pasan tiempo esperando entrada/salida, como llamadas HTTP o acceso a base de datos, usando un estilo de código bloqueante sencillo.
@@ -1738,6 +1866,22 @@ Thread.ofVirtual().start(() -> {
 ```
 
 No hacen más rápida una tarea que consume CPU ni eliminan la necesidad de controlar errores, cancelación, límites o recursos compartidos. Son una herramienta para concurrencia de E/S, no una sustitución automática de cualquier hilo o de las coroutines de Kotlin.
+
+Los hilos de plataforma tradicionales son recursos relativamente caros del sistema operativo. Por eso era habitual un pool pequeño: unas pocas decenas de hilos atendían muchas peticiones, pero una petición bloqueada ocupaba un hilo del pool. Los hilos virtuales permiten crear una tarea por operación bloqueante con un coste mucho menor; la JVM las programa sobre un número reducido de hilos de plataforma.
+
+Para varias tareas independientes se puede usar un ejecutor de hilos virtuales. El ejemplo usa una función ficticia `download`; en una aplicación real podría ser una llamada HTTP, una consulta bloqueante o la lectura de un fichero:
+
+```java
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    Future<String> first = executor.submit(() -> download("https://example.com/a"));
+    Future<String> second = executor.submit(() -> download("https://example.com/b"));
+
+    System.out.println(first.get());
+    System.out.println(second.get());
+}
+```
+
+El código debe seguir gestionar `InterruptedException`, `ExecutionException`, tiempos de espera y fallos de red. Un hilo virtual no convierte un diseño bloqueante sin límites en uno correcto: abrir miles de consultas simultáneas puede agotar la base de datos aunque los hilos sean baratos. En Spring Boot se estudian como una opción de configuración y arquitectura, no como una razón para crear hilos manualmente en cada controlador.
 
 ### Colecciones secuenciadas (Java 21)
 
@@ -1752,9 +1896,29 @@ List<String> reverseSteps = steps.reversed();
 
 Los métodos `getFirst()` y `getLast()` lanzan una excepción si la colección está vacía; no sustituyen a comprobar ese caso cuando sea posible.
 
+Antes de Java 21, para obtener el primer o último elemento había que usar operaciones propias de cada familia de colecciones: `list.get(0)`, `list.get(list.size() - 1)`, `deque.getFirst()` o `linkedHashMap.entrySet().iterator().next()`. Las interfaces secuenciadas proporcionan un vocabulario común para una colección, un conjunto o un mapa que conservan orden de encuentro.
+
+`reversed()` devuelve una **vista**, no una copia. En una colección mutable, las modificaciones hechas mediante esa vista se reflejan en la colección original y viceversa. Si se necesita una copia independiente, hay que crearla explícitamente:
+
+```java
+List<String> steps = new ArrayList<>(List.of("validar", "guardar", "responder"));
+List<String> reverseView = steps.reversed();
+List<String> independentCopy = new ArrayList<>(reverseView);
+```
+
+Las colecciones creadas con `List.of` son inmutables: se pueden recorrer al revés, pero no modificar. Esta distinción entre orden, vista y mutabilidad es más importante que memorizar los tres métodos nuevos.
+
 ### Ruta de aprendizaje
 
-No necesitas usar todas estas características a la vez. Empieza por reconocerlas al leer código, practica `var`, `switch` con flechas y text blocks en programas pequeños, y después incorpora records, patrones y colecciones secuenciadas en los ejercicios. Los virtual threads y los patrones más avanzados requieren primero dominar el modelo de objetos, colecciones y control de flujo.
+No necesitas usar todas estas características a la vez. Empieza por reconocerlas al leer código, practica `var`, `switch` con flechas y text blocks en programas pequeños, y después incorpora records, `sealed`, patrones y colecciones secuenciadas en los ejercicios. Los virtual threads y los patrones más avanzados requieren primero dominar el modelo de objetos, colecciones y control de flujo.
+
+Como comprobación, deberías poder responder estas preguntas:
+
+1. ¿Por qué `var` no equivale a tipado dinámico?
+2. ¿Cuándo un `switch` con flechas expresa mejor la intención que un `if` o un `switch` clásico?
+3. ¿Qué restringe `sealed`: los tipos que pueden existir o el número de objetos creados?
+4. ¿Qué extrae un patrón de record y qué ocurre si el valor no coincide?
+5. ¿Por qué los virtual threads no eliminan los límites de una base de datos o de una API remota?
 
 ## Preview de Java 25
 
