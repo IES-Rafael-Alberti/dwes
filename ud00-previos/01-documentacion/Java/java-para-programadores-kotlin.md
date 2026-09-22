@@ -1881,7 +1881,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 }
 ```
 
-El código debe seguir gestionar `InterruptedException`, `ExecutionException`, tiempos de espera y fallos de red. Un hilo virtual no convierte un diseño bloqueante sin límites en uno correcto: abrir miles de consultas simultáneas puede agotar la base de datos aunque los hilos sean baratos. En Spring Boot se estudian como una opción de configuración y arquitectura, no como una razón para crear hilos manualmente en cada controlador.
+El código debe seguir gestionando `InterruptedException`, `ExecutionException`, tiempos de espera y fallos de red. Un hilo virtual no convierte un diseño bloqueante sin límites en uno correcto: abrir miles de consultas simultáneas puede agotar la base de datos aunque los hilos sean baratos. En Spring Boot se estudian como una opción de configuración y arquitectura, no como una razón para crear hilos manualmente en cada controlador.
 
 ### Colecciones secuenciadas (Java 21)
 
