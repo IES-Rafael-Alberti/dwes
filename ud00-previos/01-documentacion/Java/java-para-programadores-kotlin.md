@@ -1922,6 +1922,27 @@ Como comprobación, deberías poder responder estas preguntas:
 4. ¿Qué extrae un patrón de record y qué ocurre si el valor no coincide?
 5. ¿Por qué los virtual threads no eliminan los límites de una base de datos o de una API remota?
 
+## Puente hacia Spring Boot: prioridades de Java
+
+Spring Boot no exige dominar todas las novedades de Java antes de empezar. Sí reutiliza constantemente algunas bases del lenguaje y de la biblioteca estándar. Esta es la prioridad recomendada para llegar a la unidad de Spring Boot con una base útil:
+
+| Prioridad | Elemento de Java | Para qué reaparece en Spring Boot |
+|---|---|---|
+| 1 | Clases, interfaces, constructores, visibilidad y composición | Controladores, servicios, repositorios, DTO y dependencias inyectadas son objetos con responsabilidades distintas. |
+| 2 | Anotaciones | `@RestController`, `@Service`, `@GetMapping`, `@Valid` o `@Transactional` añaden metadatos al código; no sustituyen a entender qué hace el método anotado. |
+| 3 | Tipos genéricos y colecciones | `List<ProductoDto>`, `Optional<Usuario>`, `ResponseEntity<PedidoDto>`, `Page<ProductoDto>` y repositorios tipados expresan contratos y evitan conversiones inseguras. |
+| 4 | Excepciones y validación de argumentos | Los errores de dominio, los datos inválidos y su transformación en respuestas HTTP requieren distinguir errores recuperables, validación y excepciones no controladas. |
+| 5 | `record`, inmutabilidad y `java.time` | Los DTO suelen ser records; `LocalDate`, `LocalDateTime`, `Instant` y `Duration` representan fechas y tiempos sin los problemas de `Date`. |
+| 6 | Lambdas, referencias a métodos, Streams y `Optional` | Aparecen al transformar colecciones, filtrar resultados y expresar operaciones de servicio, sin convertir cada método en una cadena de Streams. |
+| 7 | `switch` moderno, `sealed` y patrones | Ayudan a modelar resultados, estados y variantes cerradas cuando el dominio realmente tiene alternativas conocidas. |
+| 8 | Text blocks | Facilitan leer JSON, SQL, HTML o cuerpos de prueba multilínea; para producción se siguen usando serializadores y consultas parametrizadas. |
+| 9 | Virtual threads | Son una opción de concurrencia para operaciones de E/S en Java 21+. Spring Boot 4 puede habilitarlos mediante `spring.threads.virtual.enabled`; no se crean hilos manualmente desde los controladores. |
+| 10 | `var` y colecciones secuenciadas | Mejoran legibilidad en casos concretos, pero no cambian el diseño de una aplicación web. |
+
+Las prioridades 1 a 5 son la base para empezar con seguridad. Las prioridades 6 a 8 se consolidan durante las primeras prácticas. Las dos últimas conviene conocerlas y usarlas con intención, pero no son requisito para construir una primera API REST.
+
+Antes de comenzar Spring Boot, deberías poder crear un `record` de petición o respuesta, recorrer y transformar una `List<Producto>`, devolver un `Optional` de forma razonada, capturar una excepción con información útil y distinguir una fecha local de un instante absoluto. El framework añadirá anotaciones, inyección de dependencias y configuración sobre esas mismas bases de Java.
+
 ## Preview de Java 25
 
 JEP 507, **Primitive Types in Patterns, instanceof, and switch**, es preview en Java 25. Para usarlo hay que compilar y ejecutar con `--enable-preview` y la versión correspondiente del JDK. Los ejemplos de esta guía no dependen de él.
