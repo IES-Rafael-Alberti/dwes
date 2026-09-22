@@ -1476,33 +1476,69 @@ class Caja<T>(private val contenido: T) {
 }
 ```
 
-Una diferencia importante es la **variancia**. En Java se usan wildcards:
+### Por qué `List<Dog>` no es `List<Animal>`
 
-``` java
+Supongamos que `Dog` extiende `Animal`. Aunque un `Dog` es un `Animal`, en Java una `List<Dog>` **no** es una `List<Animal>`. Los tipos genéricos ordinarios son invariantes: no heredan automáticamente la relación de sus tipos internos.
+
+Si Java permitiera esta asignación, se podría añadir un `Cat` a una lista que solo debe contener perros:
+
+```java
+List<Dog> dogs = new ArrayList<>();
+// List<Animal> animals = dogs; // No es válido
+// animals.add(new Cat());       // Haría inválida la lista de perros
+```
+
+La **varianza** describe precisamente cómo se conserva, o no, esa relación de subtipos al envolverlos en un genérico. Java expresa la varianza donde se usa el tipo mediante *wildcards* o **comodines**. Un tipo con comodín es una **proyección**: ofrece una vista restringida de un tipo genérico. Por ejemplo, `List<? extends Animal>` no revela qué subtipo concreto contiene la lista, pero garantiza que sus elementos se pueden tratar como `Animal`.
+
+### Comodines en Java
+
+El comodín `?` significa "un tipo que no conozco". Por ejemplo, `List<?>` acepta una lista de cualquier tipo (`List<String>`, `List<Dog>`, etc.). Como no sabemos qué tipo concreto contiene, solo es seguro leer sus elementos como `Object` y no añadir elementos concretos.
+
+Un comodín puede tener un límite superior o inferior:
+
+```java
+// Una lista de Animal o de cualquier subtipo, como Dog.
 static void printAll(List<? extends Animal> source) {
-    source.forEach(animal -> animal.makeNoise());
+    for (Animal animal : source) {
+        animal.makeNoise();
+    }
+    // source.add(new Dog("Rex")); // No es seguro: podría ser List<Cat>.
 }
 
+// Una lista de Animal o de cualquier supertipo, como Object.
 static void addAnimal(List<? super Animal> target) {
     target.add(new Dog("Rex"));
+    // Animal animal = target.get(0); // No es seguro: al leer solo conocemos Object.
 }
 ```
 
-La regla práctica PECS es **Producer Extends, Consumer Super**: si solo lees de una colección usa `? extends`, si solo escribes usa `? super`.
+- `? extends Animal` permite **leer** elementos como `Animal`. La lista puede ser de `Animal`, `Dog`, `Cat` u otro subtipo, por lo que no se puede añadir un animal concreto con seguridad.
+- `? super Animal` permite **añadir** un `Animal` o cualquiera de sus subtipos. La lista puede ser de `Animal`, `Object` u otro supertipo, por lo que al leer solo se obtiene con seguridad un `Object`.
 
-En Kotlin se usan las palabras clave `out` (`extends`) e `in` (`super`):
+La regla PECS significa **Producer Extends, Consumer Super**. Se lee desde el punto de vista del método: si un parámetro produce valores que el método va a leer, usa `extends`; si el método le entrega valores para que los reciba, usa `super`. No significa que una colección real solo pueda leerse o escribirse: describe qué operaciones son seguras a través de ese parámetro. Si un método debe leer y escribir el mismo tipo concreto, normalmente conviene usar `List<T>` sin comodín.
 
-``` kotlin
-fun printAll(source: List<out Animal>) {
+### Equivalencia en Kotlin
+
+Kotlin declara parte de esta varianza en la propia clase. Su interfaz de solo lectura `List` ya se declara como `List<out E>`: por eso una `List<Dog>` puede usarse donde se espera una `List<Animal>`.
+
+```kotlin
+fun printAll(source: List<Animal>) {
     source.forEach { it.makeNoise() }
 }
 
+val dogs: List<Dog> = listOf(Dog("Rex"))
+printAll(dogs) // Válido: List es covariante (out).
+```
+
+`MutableList`, en cambio, es invariante porque permite añadir y obtener elementos. Cuando hace falta restringir cómo se usa un tipo genérico en un parámetro concreto, Kotlin también permite una **proyección de tipo**, equivalente a la proyección con comodín de Java: `out Animal` impide añadir `Animal` y permite leerlos; `in Animal` permite añadirlos y al leer solo garantiza `Any?`.
+
+```kotlin
 fun addAnimal(target: MutableList<in Animal>) {
     target.add(Dog("Rex"))
 }
 ```
 
-Kotlin también permite proyecciones en el uso. La idea fundamental es la misma: no existe en Java una `List<String>` que sea subtipo de `List<Object>` porque permitiría insertar un objeto no String.
+En resumen, `? extends Animal` de Java es una proyección equivalente a `out Animal` de Kotlin, y `? super Animal` a `in Animal`. La diferencia importante es dónde se declara la regla: Java la expresa con un comodín al usar el tipo; Kotlin puede declararla en el propio tipo (`List<out E>`) o, cuando es necesario, proyectarla en un uso concreto.
 
 ## Records de Java
 
