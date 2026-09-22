@@ -1930,16 +1930,6 @@ JEP 507, **Primitive Types in Patterns, instanceof, and switch**, es preview en 
 
 Los records, las sealed classes, el pattern matching básico, los virtual threads, los text blocks y las expresiones `switch` no aparecieron en Java 25. Proceden de versiones anteriores, pero siguen siendo características actuales y utilizables con Java 25.
 
-# Java web: alcance de esta guía
-
-Esta comparación se centra en el lenguaje y las APIs esenciales de la JVM. Servlets, JSP, Jakarta Persistence, JTA, JMS, Spring MVC y Spring Boot se estudian en los materiales de desarrollo web, con sus versiones, dependencias y ejemplos ejecutables.
-
-En particular:
-
-  - Jakarta EE es el nombre actual de la plataforma; no debe confundirse con el antiguo Java EE.
-  - `jakarta.persistence.*` no es el mismo paquete que el antiguo `javax.persistence.*`.
-  - Exposed es una biblioteca Kotlin de SQL/DAO, no una implementación de JPA.
-
 # Actividades propuestas
 
 ## Actividad 1: traducir el modelo
