@@ -19,6 +19,7 @@ java -cp out Main
 | [04-streams](04-streams/README.md) | `filter`, `map`, `groupingBy` y `Optional` |
 | [05-ficheros](05-ficheros/README.md) | `Path`, `Files`, UTF-8 y errores |
 | [06-genericos](06-genericos/README.md) | Invariancia, comodines y PECS |
+| [07-java-moderno](07-java-moderno/README.md) | Java 10-21: `var`, patrones, `sealed`, virtual threads y colecciones |
 
 Los microejercicios de las novedades propias de Java 25 están separados en
 `01-documentacion/Java/microejercicios-java25.md`: son actividades guiadas, no

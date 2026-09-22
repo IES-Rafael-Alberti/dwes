@@ -1908,6 +1908,8 @@ List<String> independentCopy = new ArrayList<>(reverseView);
 
 Las colecciones creadas con `List.of` son inmutables: se pueden recorrer al revés, pero no modificar. Esta distinción entre orden, vista y mutabilidad es más importante que memorizar los tres métodos nuevos.
 
+El proyecto [07-java-moderno](../../02-ejemplos/java/07-java-moderno/README.md) reúne estas características en clases pequeñas llamadas desde un único `Main`. Está pensado para abrirlo en IntelliJ, detenerse en cada bloque y observar su salida antes de continuar.
+
 ### Ruta de aprendizaje
 
 No necesitas usar todas estas características a la vez. Empieza por reconocerlas al leer código, practica `var`, `switch` con flechas y text blocks en programas pequeños, y después incorpora records, `sealed`, patrones y colecciones secuenciadas en los ejercicios. Los virtual threads y los patrones más avanzados requieren primero dominar el modelo de objetos, colecciones y control de flujo.
