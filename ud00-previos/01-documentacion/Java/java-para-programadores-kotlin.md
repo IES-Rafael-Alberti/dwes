@@ -1630,21 +1630,21 @@ Los records son una característica permanente desde **Java 16**. Por tanto, son
 - [ ] Añadir un constructor compacto que rechace un valor inválido.
 - [ ] Decidir si un modelo necesita estado mutable o si un record expresa mejor un valor.
 
-# Java 25: qué es nuevo y qué enseñar
+# Java 25: novedades y contexto
 
 ## Características permanentes de Java 25
 
 Java 25 incluye varias características que ya son permanentes (no preview):
 
-  - **Module import declarations (JEP 511):** permite importar todos los tipos exportados por un módulo con una sola declaración. Es útil en ejemplos docentes, pero no sustituye a entender paquetes e imports normales.
-  - **Compact source files and instance main methods (JEP 512):** simplifica pequeños programas docentes. Java 25 proporciona la clase `IO` en `java.lang` para entrada/salida textual de estos fuentes compactos.
-  - **Flexible constructor bodies (JEP 513):** permite determinadas sentencias antes de la invocación explícita a `super` en constructores. Es una mejora avanzada y no una razón para reescribir constructores sencillos.
+  - **Module import declarations (JEP 511):** permite importar todos los tipos exportados por un módulo con una sola declaración. No sustituye a comprender los paquetes y los imports normales.
+  - **Compact source files and instance main methods (JEP 512):** simplifica programas pequeños. Java 25 proporciona la clase `IO` en `java.lang` para entrada y salida textual en estos fuentes compactos.
+  - **Flexible constructor bodies (JEP 513):** permite determinadas sentencias antes de la invocación explícita a `super` en constructores. Es una posibilidad avanzada; los constructores sencillos siguen usando la estructura habitual.
 
-Estas características son de Java 25, pero no todas deben entrar en la primera práctica. La sintaxis tradicional sigue siendo válida y suele ser más transferible entre versiones y herramientas.
+Estas características forman parte de Java 25. La sintaxis tradicional sigue siendo válida y es la que encontrarás con más frecuencia en código existente, bibliotecas y herramientas.
 
-## Características modernas anteriores que sí conviene conocer
+## Características modernas anteriores presentes en Java 25
 
-Además de las novedades de Java 25, conviene conocer estas características que ya forman parte del Java moderno:
+Java 25 también incluye características de versiones anteriores que encontrarás habitualmente en proyectos actuales:
 
   - `var` local, desde Java 10.
   - expresiones `switch` con flechas, desde Java 14.
@@ -1658,20 +1658,19 @@ Además de las novedades de Java 25, conviene conocer estas características que
 
 JEP 507, **Primitive Types in Patterns, instanceof, and switch**, es preview en Java 25. Para usarlo hay que compilar y ejecutar con `--enable-preview` y la versión correspondiente del JDK. Los ejemplos de esta guía no dependen de él.
 
-## Lo que no se debe presentar como Java 25
+## Características anteriores que siguen vigentes
 
-No son novedades de Java 25: records, sealed classes, pattern matching básico, virtual threads, text blocks ni expresiones `switch`. Son características de versiones anteriores que siguen siendo importantes en Java 25.
+Los records, las sealed classes, el pattern matching básico, los virtual threads, los text blocks y las expresiones `switch` no aparecieron en Java 25. Proceden de versiones anteriores, pero siguen siendo características actuales y utilizables con Java 25.
 
-# Java web: frontera de esta guía
+# Java web: alcance de esta guía
 
-Esta comparación termina en el lenguaje y las APIs esenciales de la JVM. Servlets, JSP, Jakarta Persistence, JTA, JMS, Spring MVC y Spring Boot deben explicarse en documentos de desarrollo web separados, donde se puedan fijar versiones, dependencias y ejemplos ejecutables.
+Esta comparación se centra en el lenguaje y las APIs esenciales de la JVM. Servlets, JSP, Jakarta Persistence, JTA, JMS, Spring MVC y Spring Boot se estudian en los materiales de desarrollo web, con sus versiones, dependencias y ejemplos ejecutables.
 
 En particular:
 
-  - Jakarta EE no debe describirse como "Java EE" actual.
+  - Jakarta EE es el nombre actual de la plataforma; no debe confundirse con el antiguo Java EE.
   - `jakarta.persistence.*` no es el mismo paquete que el antiguo `javax.persistence.*`.
   - Exposed es una biblioteca Kotlin de SQL/DAO, no una implementación de JPA.
-  - Una sección con headings vacíos o código incompleto no aporta una ruta de aprendizaje; es preferible enlazar al material de la unidad web.
 
 # Actividades propuestas
 
