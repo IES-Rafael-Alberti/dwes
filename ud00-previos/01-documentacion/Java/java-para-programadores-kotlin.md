@@ -1642,17 +1642,119 @@ Java 25 incluye varias características que ya son permanentes (no preview):
 
 Estas características forman parte de Java 25. La sintaxis tradicional sigue siendo válida y es la que encontrarás con más frecuencia en código existente, bibliotecas y herramientas.
 
-## Características modernas anteriores presentes en Java 25
+## Java moderno: características anteriores presentes en Java 25
 
-Java 25 también incluye características de versiones anteriores que encontrarás habitualmente en proyectos actuales:
+Java evoluciona conservando la compatibilidad con versiones anteriores. Por eso es frecuente encontrar proyectos que todavía usan Java 8, junto a otros que emplean Java 17, 21 o 25. Conocer estas características ayuda tanto a leer código reciente como a reconocer por qué no compila al trabajar con un JDK antiguo.
 
-  - `var` local, desde Java 10.
-  - expresiones `switch` con flechas, desde Java 14.
-  - text blocks (`"""`), desde Java 15.
-  - pattern matching con `instanceof`, records y sealed classes, desde Java 16/17.
-  - record patterns y pattern matching con `switch`, permanentes desde Java 21.
-  - virtual threads, permanentes desde Java 21.
-  - colecciones secuenciadas (`getFirst`, `getLast`, `reversed`), desde Java 21.
+### `var` para variables locales (Java 10)
+
+`var` pide al compilador que infiera el tipo local a partir de la expresión de la derecha. No convierte Java en un lenguaje de tipado dinámico: el tipo queda fijado en compilación y no puede cambiar después. Solo se puede usar en variables locales con inicializador, no en atributos, parámetros ni valores de retorno.
+
+```java
+var names = List.of("Ada", "Linus"); // List<String>
+var total = 0;                         // int
+// var value;                          // No compila: no hay tipo que inferir.
+```
+
+Úsalo cuando el tipo sea evidente y mejora la lectura. Si oculta un tipo importante, como una interfaz o un genérico complejo, es preferible escribirlo.
+
+### `switch` como expresión (Java 14)
+
+Un `switch` moderno puede devolver un valor. Las flechas evitan el *fall-through* de los `case` clásicos y cada alternativa produce un resultado con `->`. Cuando un bloque necesita varias sentencias, `yield` indica el valor de la expresión.
+
+```java
+int status = 404;
+String label = switch (status) {
+    case 200, 201 -> "correcto";
+    case 400, 404 -> "error del cliente";
+    default -> {
+        System.err.println(status);
+        yield "otro estado";
+    }
+};
+```
+
+### Text blocks para texto multilínea (Java 15)
+
+Un *text block* se delimita con `"""` y permite escribir texto multilínea sin concatenar cadenas ni escapar cada salto de línea. Es útil para JSON, HTML, SQL o mensajes extensos.
+
+```java
+String json = """
+    {
+      "name": "Ada",
+      "active": true
+    }
+    """;
+```
+
+La sangría de cierre determina qué sangría común se elimina. El resultado sigue siendo un `String` normal.
+
+### Pattern matching con `instanceof` (Java 16)
+
+El `instanceof` clásico necesitaba una comprobación y un *cast* separados. Con *pattern matching*, Java declara una variable ya tipada cuando la comprobación es verdadera:
+
+```java
+if (value instanceof String text && !text.isBlank()) {
+    System.out.println(text.toUpperCase());
+}
+```
+
+No sirve para averiguar qué animal contiene una colección genérica: los límites genéricos ya indican qué operaciones son seguras. Se usa cuando realmente se recibe un valor cuyo subtipo concreto se desconoce.
+
+### Records y jerarquías `sealed` (Java 16 y 17)
+
+Los `record` reducen el código repetitivo de tipos que representan datos inmutables; se explican con detalle en la sección [Records de Java](#records-de-java). Una jerarquía `sealed` limita explícitamente sus subtipos permitidos. Juntas, ambas características modelan bien resultados cerrados, eventos o estados:
+
+```java
+sealed interface Result permits Success, Failure {}
+record Success(String value) implements Result {}
+record Failure(String message) implements Result {}
+```
+
+### Patrones de records y `switch` con patrones (Java 21)
+
+Java 21 permite descomponer un record directamente en un patrón y usar tipos en un `switch`. Cuando la jerarquía es `sealed`, el compilador puede comprobar que se han tratado todos los casos:
+
+```java
+String describe(Result result) {
+    return switch (result) {
+        case Success(String value) -> "OK: " + value;
+        case Failure(String message) -> "Error: " + message;
+    };
+}
+```
+
+Es la alternativa Java moderna a muchos `if` encadenados con `instanceof` y recuerda al `when` exhaustivo de Kotlin.
+
+### Virtual threads (Java 21)
+
+Los hilos virtuales son hilos ligeros gestionados por la JVM. Facilitan atender muchas tareas que pasan tiempo esperando entrada/salida, como llamadas HTTP o acceso a base de datos, usando un estilo de código bloqueante sencillo.
+
+```java
+Thread.ofVirtual().start(() -> {
+    // Aqui iria una llamada HTTP, una consulta o cualquier otra espera de E/S.
+    System.out.println("Tarea de E/S terminada");
+});
+```
+
+No hacen más rápida una tarea que consume CPU ni eliminan la necesidad de controlar errores, cancelación, límites o recursos compartidos. Son una herramienta para concurrencia de E/S, no una sustitución automática de cualquier hilo o de las coroutines de Kotlin.
+
+### Colecciones secuenciadas (Java 21)
+
+Las interfaces `SequencedCollection`, `SequencedSet` y `SequencedMap` unifican operaciones sobre colecciones con orden de encuentro. En una `List` puedes obtener los extremos y una vista inversa de forma explícita:
+
+```java
+List<String> steps = List.of("validar", "guardar", "responder");
+String first = steps.getFirst();
+String last = steps.getLast();
+List<String> reverseSteps = steps.reversed();
+```
+
+Los métodos `getFirst()` y `getLast()` lanzan una excepción si la colección está vacía; no sustituyen a comprobar ese caso cuando sea posible.
+
+### Ruta de aprendizaje
+
+No necesitas usar todas estas características a la vez. Empieza por reconocerlas al leer código, practica `var`, `switch` con flechas y text blocks en programas pequeños, y después incorpora records, patrones y colecciones secuenciadas en los ejercicios. Los virtual threads y los patrones más avanzados requieren primero dominar el modelo de objetos, colecciones y control de flujo.
 
 ## Preview de Java 25
 
