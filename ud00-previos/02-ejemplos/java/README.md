@@ -18,6 +18,7 @@ java -cp out Main
 | [03-sealed-switch](03-sealed-switch/README.md) | `sealed`, records y `switch` exhaustivo |
 | [04-streams](04-streams/README.md) | `filter`, `map`, `groupingBy` y `Optional` |
 | [05-ficheros](05-ficheros/README.md) | `Path`, `Files`, UTF-8 y errores |
+| [06-genericos](06-genericos/README.md) | Invariancia, comodines y PECS |
 
 Los microejercicios de las novedades propias de Java 25 están separados en
 `01-documentacion/Java/microejercicios-java25.md`: son actividades guiadas, no

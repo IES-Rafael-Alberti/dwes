@@ -1540,6 +1540,8 @@ fun addAnimal(target: MutableList<in Animal>) {
 
 En resumen, `? extends Animal` de Java es una proyección equivalente a `out Animal` de Kotlin, y `? super Animal` a `in Animal`. La diferencia importante es dónde se declara la regla: Java la expresa con un comodín al usar el tipo; Kotlin puede declararla en el propio tipo (`List<out E>`) o, cuando es necesario, proyectarla en un uso concreto.
 
+El ejemplo ejecutable [06-genericos](../../02-ejemplos/java/06-genericos/README.md) muestra una lista de perros y otra de gatos que se pueden leer como animales, una lista que recibe animales y una copia entre ambas. No utiliza `instanceof`: el límite `extends Animal` ya permite trabajar con cada elemento como `Animal`, y `super Animal` recibe directamente animales y subtipos, sin envolverlos en `Object`.
+
 ## Records de Java
 
 Un `record` es una forma concisa de declarar una clase cuyo propósito principal es transportar datos. Conceptualmente se parece a una `data class` de Kotlin: el estado que se declara en la cabecera forma parte de la identidad del objeto y Java genera automáticamente operaciones habituales sobre ese estado.
