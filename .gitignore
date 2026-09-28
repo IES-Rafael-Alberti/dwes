@@ -42,6 +42,7 @@ site/
 graphify-out/
 **/moodle/
 ud00-previos/01-documentacion/Java/*.pdf
+ud01-introduccion-entorno-servidor/01-documentacion/*.pdf
 target/
 build/
 dist/

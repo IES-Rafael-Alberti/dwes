@@ -6,7 +6,7 @@ from pathlib import Path
 EXCLUDE_DIRS = {
     '90-archivo', '90-historico', '99-profesor', '_profesor', 'Presentaciones', 'soluciones', '__pycache__',
     'vendor', 'node_modules', '.git', '.idea', '.settings', 'build', 'target', 'bin',
-    'Seguridad',
+    'Seguridad', 'moodle', 'Moodle',
 }
 EXCLUDE_FILES = {
     'README_Docente.md', 'README_Ingesta.md', 'referencia_meltano.md',

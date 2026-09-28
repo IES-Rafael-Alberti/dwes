@@ -32,6 +32,8 @@ Esta unidad trabaja RA1: seleccionar arquitecturas y tecnologías de programaci�
 
 1. [Cliente, servidor y contenido dinámico](01-documentacion/01-cliente-servidor-y-contenido-dinamico.md).
 2. [Mecanismos de ejecución en servidor](01-documentacion/02-mecanismos-ejecucion-servidor.md).
+   [Demo Nginx + fcgiwrap + Python CGI](02-ejemplos/cgi-fastcgi-python/README.md) y
+   [tarea breve de observación y cambio](03-ejercicios/04-explorar-cgi-fastcgi/README.md).
 3. [Servidores web, proxies y contenedores](01-documentacion/03-infraestructura-web.md).
 4. [Tecnologías, frameworks e integración](01-documentacion/04-tecnologias-e-integracion.md).
 5. [Versiones y estructura de los mensajes HTTP](01-documentacion/05-versiones-y-mensajes-http.md).
@@ -44,15 +46,14 @@ Esta unidad trabaja RA1: seleccionar arquitecturas y tecnologías de programaci�
 12. [Hello Server con HTML, JSON, `/health` y pruebas](02-ejemplos/hello-server/README.md).
 13. [Laboratorio de análisis HTTP](03-ejercicios/01-analisis-http/README.md).
 
-La documentación canónica se publica en `01-documentacion/` siguiendo este orden. Los Rmd, PDF y planes de sesión heredados permanecen fuera de la navegación mientras se consolida su contenido válido.
+La documentación de cada apartado está enlazada en el recorrido anterior.
 
 ## Evaluación
 
-La [evaluación de UD1](EVALUACION.md) combina:
+La [evaluación de UD1](EVALUACION.md) en 2026/2027 combina:
 
-- laboratorio HTTP con trazas sanitizadas: 40 %;
-- extensión TDD reproducible de Hello Server: 30 %;
-- cuestionario Moodle RA1.a-g: 30 %.
+- [práctica cooperativa HTTP y Hello Server](03-ejercicios/03-practica-cooperativa-2026/README.md): 65 %;
+- cuestionarios Moodle individuales sobre RA1.a-g: 35 %.
 
 ## Seguridad
 
@@ -66,7 +67,3 @@ La primera unidad introduce hábitos que se mantienen durante todo el módulo:
 ## Frontera con UD2
 
 UD1 usa endpoints mínimos para observar HTTP e integración HTML/JSON. CRUD, diseño REST, validación de entrada, OpenAPI, autenticación, autorización y Battleship pertenecen a UD2.
-
-## Estado de reforma
-
-El diagnóstico, backlog y evidencias de cierre se mantienen en [INVENTARIO_REFORMA.md](INVENTARIO_REFORMA.md). UD1 no se declarará cerrada hasta completar y verificar ese inventario.

@@ -1,0 +1,6 @@
+out/
+
+# Programas de prueba local de esta edición; las soluciones de referencia
+# permanecen en ../../99-profesor/soluciones-gincana-java25/.
+Reto0[1-6]/
+notas.txt

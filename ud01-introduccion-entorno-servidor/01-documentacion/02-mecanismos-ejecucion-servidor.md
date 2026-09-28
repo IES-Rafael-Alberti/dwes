@@ -22,6 +22,14 @@ Las piezas pueden vivir en el mismo proceso, en procesos separados o incluso en 
 
 PHP suele desplegarse detrás de un servidor web mediante PHP-FPM/FastCGI. Una aplicación Spring Boot suele mantener un proceso Java persistente con un servidor HTTP embebido. Ninguno de esos modelos es universalmente mejor: responden a ecosistemas y necesidades diferentes.
 
+Para observar una combinación distinta, la [demo Nginx + fcgiwrap + Python CGI](../02-ejemplos/cgi-fastcgi-python/README.md)
+permite seguir una petición de navegador a servidor web, de ahí por FastCGI a
+`fcgiwrap` y finalmente a un **script CGI nuevo por petición**. La
+[tarea breve](../03-ejercicios/04-explorar-cgi-fastcgi/README.md) pide modificar
+una respuesta y explicar el recorrido. Que haya un tramo FastCGI no implica
+que el script Python permanezca vivo entre peticiones, como sí lo hace un
+trabajador PHP-FPM.
+
 ## Concurrencia y estado
 
 Un proceso persistente atiende muchas peticiones durante su vida. Esto mejora el rendimiento, pero obliga a pensar en:

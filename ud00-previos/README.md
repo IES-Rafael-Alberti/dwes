@@ -11,6 +11,8 @@ básico, diseño de datos en MongoDB y comparación con PostgreSQL JSON/JSONB.
 - [Guion completo de Java 17-25 para alumnado de Kotlin](01-documentacion/Java/guion_de_clase_java_hasta_25_para_estudiantes_de_kotlin.md)
 - [Selección de ejercicios Java 25](01-documentacion/Java/seleccion-ejercicios-java25.md)
 - [Ejemplos ejecutables del guion](02-ejemplos/java/README.md)
+- [FAQ para repasar Java tras la gincana](01-documentacion/Java/faq-repaso-gincana-java25.md)
+- [Ejemplo integrador: Java moderno y peticiones de ejemplo](02-ejemplos/java/08-integracion-java-moderno/README.md)
 - [Presentación Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_presentacion.pdf)
 - [Material ampliado Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_extendido.pdf)
 - [Proyecto guiado GeoNotes](03-ejercicios/01-geonotes/README.md)

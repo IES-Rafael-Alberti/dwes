@@ -1,0 +1,17 @@
+services:
+  nginx:
+    image: nginx:1.28-alpine
+    ports:
+      - "127.0.0.1:8081:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./web:/usr/share/nginx/html:ro
+    depends_on:
+      - cgi
+
+  cgi:
+    build: ./cgi
+    command: ["fcgiwrap", "-f", "-s", "tcp:0.0.0.0:9000"]
+    user: "65534:65534"
+    volumes:
+      - ./cgi/scripts:/app:ro

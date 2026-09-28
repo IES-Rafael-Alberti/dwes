@@ -1,0 +1,7 @@
+metodo;ruta;estado;duracion_ms
+GET;/;200;15
+GET;/api/hello;200;120
+GET;/no-existe;404;4
+POST;/tareas;201;45
+GET;/health;200;2
+POST;/api/errores;503;27
