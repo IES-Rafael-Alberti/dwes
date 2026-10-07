@@ -4,6 +4,13 @@ Los ZIP y PDF de Moodle no se versionan. Las fuentes editables sí permanecen
 en el repositorio y los artefactos definitivos se conservan dentro de la
 carpeta `moodle/` de la unidad correspondiente.
 
+Para las unidades revisadas: `moodle/PDF/` contiene documentos de lectura,
+`moodle/ZIP/` los proyectos editables y `moodle/README.md` indica qué recurso
+subir, su fuente y cuándo publicarlo. No se crean paquetes de unidades
+pendientes de revisión. Los PDF de apoyo se mantienen además en
+`01-documentacion/`; los ZIP se preparan a partir de las fuentes en
+`02-ejemplos/` o `03-ejercicios/`.
+
 ## Ubicación
 
 - UD00: `ud00-previos/moodle/`
@@ -28,9 +35,11 @@ subirlos.
 
 Los nombres actuales son:
 
-- `ud00-previos/moodle/Java/java25-labs-starters.zip`
-- `ud00-previos/moodle/Java/calc25-starter.zip`
-- `ud00-previos/moodle/Java/geonotes-java25-starter.zip`
+- `ud00-previos/moodle/ZIP/java25-labs-starters.zip`
+- `ud00-previos/moodle/ZIP/calc25-starter.zip`
+- `ud00-previos/moodle/ZIP/geonotes-java25-starter.zip`
+- `ud00-previos/moodle/ZIP/gincana-java25.zip` (selección pública explícita;
+  nunca crear este ZIP incluyendo las carpetas locales `Reto01/`-`Reto06/`).
 
 Para evitar incluir compilaciones locales, una regeneración segura usa solo los
 archivos versionados del proyecto:
@@ -44,7 +53,7 @@ git -C ud00-previos/03-ejercicios/01-geonotes/recursos/geonotes-teaching-java25 
   | zip -q /tmp/geonotes-java25-starter.zip -@
 ```
 
-Después se copian los tres ZIP a `ud00-previos/moodle/Java/` y se comprueban
+Después se copian los ZIP a `ud00-previos/moodle/ZIP/` y se comprueban
 con `unzip -t`.
 
 ## PDF
@@ -57,8 +66,12 @@ reemplaza el PDF de la carpeta `moodle/` de esa unidad.
 Los PDF Java actuales son:
 
 - `ud00-previos/moodle/PDF/java-para-programadores-kotlin.pdf`
-- `ud00-previos/moodle/PDF/microejercicios-java25.pdf`
-- `ud00-previos/moodle/PDF/seleccion-ejercicios-java25.pdf`
+- `ud00-previos/moodle/PDF/faq-repaso-gincana-java25.pdf`
+- `ud00-previos/moodle/PDF/08-integracion-java-moderno.pdf`
+
+El PDF global actualizado de UD01 y los PDF breves para la primera sesión se
+encuentran en `ud01-introduccion-entorno-servidor/moodle/PDF/`. La guía de
+sesión del profesor permanece en `99-profesor/`, también si se genera en PDF.
 
 ## Regla de mantenimiento
 
