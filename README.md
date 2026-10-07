@@ -20,7 +20,7 @@ ud04-php/                  → PHP básico a OOP CRUD
 ud05-laravel/              → Laravel 12
 ud06-aplicaciones-hibridas/
 ud07-proyecto-integrador/  → Proyecto integrador de DWES; otros módulos solo coordinan calendario y ritmo, sin evaluación compartida
-evaluacion-global/         → Exámenes y rúbricas globales
+90-archivo/                → Archivo histórico local, no publicado (evaluación global 2025/26)
 docs/                      → Publicación mkdocs → GitHub Pages
 hooks/                     → Hook Python para navegación automática
 ```
