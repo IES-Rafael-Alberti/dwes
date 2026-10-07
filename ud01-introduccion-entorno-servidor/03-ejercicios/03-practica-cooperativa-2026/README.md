@@ -7,8 +7,10 @@ endpoint, prueba TDD, entorno reproducible y una medida de seguridad.
 
 ## Organización
 
-Grupos de 3-4 alumnos, con un repositorio creado desde el template docente. El
-reparto recomendado es:
+Grupos de 3-4 alumnos, con un repositorio privado por equipo creado desde la
+[plantilla oficial de Hello Server para UD1](https://github.com/IES-Rafael-Alberti/dwes-template-ud1-http-hello-server).
+El profesorado prepara el repositorio de equipo y añade a sus integrantes como
+colaboradores. El reparto recomendado es:
 
 | Slice | Resultado mínimo |
 |---|---|
