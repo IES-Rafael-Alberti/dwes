@@ -15,7 +15,7 @@ la representación, si la hay.
 - `Content-Length` describe el tamaño cuando se conoce.
 - `Location` puede indicar otra URI.
 
-*Base: [08 — «Cabeceras esenciales»](../08-cabeceras-http-contenido-y-cache.md).*
+*Base: [08 — «Cabeceras esenciales»](../corta/08-cabeceras-http-contenido-y-cache.md).*
 
 ## Lo que acepto frente a lo que envío · 4 min
 
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 Que una ruta se llame `/api` no determina el formato de su respuesta.
 
-*Base: [08 — «Cabeceras esenciales»](../08-cabeceras-http-contenido-y-cache.md).*
+*Base: [08 — «Cabeceras esenciales»](../corta/08-cabeceras-http-contenido-y-cache.md).*
 
 ## Caché: ¿puedo reutilizar lo que ya tengo? · 4 min
 
@@ -42,7 +42,7 @@ Que una ruta se llame `/api` no determina el formato de su respuesta.
 **No presupongas que Hello Server implementa `ETag`: aquí estudiamos el
 mecanismo, no una respuesta garantizada por este ejemplo.**
 
-*Base: [08 — «Caché y validación condicional»](../08-cabeceras-http-contenido-y-cache.md).*
+*Base: [08 — «Caché y validación condicional»](../corta/08-cabeceras-http-contenido-y-cache.md).*
 
 ## Comparar HTML y JSON · 5 min
 
@@ -56,7 +56,7 @@ http --body GET http://localhost:8080/api/hello
 Relaciona cada `Content-Type` con el cuerpo observado. Contrasta en el
 navegador con **F12 → Red → Encabezados / Respuesta**.
 
-*Base: [08 — «Exploración con HTTPie y navegador»](../08-cabeceras-http-contenido-y-cache.md).*
+*Base: [08 — «Exploración con HTTPie y navegador»](../corta/08-cabeceras-http-contenido-y-cache.md).*
 
 ## Al compartir una traza · 3 min
 
@@ -64,8 +64,8 @@ navegador con **F12 → Red → Encabezados / Respuesta**.
 credenciales. Si compartes una salida, conserva el **nombre** de la cabecera
 y reemplaza su valor por `<REDACTED>`.
 
-*Base: [08 — «Cabeceras esenciales»](../08-cabeceras-http-contenido-y-cache.md)
-y [seguridad HTTP](../../06-seguridad/README.md).*
+*Base: [08 — «Authorization» y cookies](../08-cabeceras-http-contenido-y-cache.md)
+y [seguridad HTTP](../09b-seguridad-http.md).*
 
 ## Salida · 2 min
 

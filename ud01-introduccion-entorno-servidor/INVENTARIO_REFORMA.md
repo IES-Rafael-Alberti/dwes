@@ -12,7 +12,7 @@ UD1 está **cerrada para impartición desde el 23 de julio de 2026**. Cumple la 
 - La guía de instalación usa Java 17/21 y versiones indeterminadas, frente al baseline Java 25 y Spring Boot 4.
 - El plan de la sesión 3 menciona un proyecto, scripts, endpoints, Swagger, login y Docker que no existen en UD1.
 - No hay ejemplo ejecutable ni pruebas pese a la metodología TDD del módulo.
-- `06-seguridad/` está vacío, aunque UD1 debe cubrir HTTPS/TLS, cookies y cabeceras de seguridad.
+- La guía individual de seguridad HTTP está consolidada en `01-documentacion/09b-seguridad-http.md`; `06-seguridad/` queda reservado para otros materiales de seguridad específicos si se necesitan.
 - El ejercicio HTTP tiene valor didáctico, pero no es reproducible ni protege adecuadamente las trazas sensibles.
 - La política de IA del ejercicio contradice la decisión de no usar IA en las primeras unidades.
 - La publicación copiaba fuentes `.Rmd` y PDF desincronizados porque la exclusión `*.rmd` no coincide con la extensión real `.Rmd` en sistemas sensibles a mayúsculas.

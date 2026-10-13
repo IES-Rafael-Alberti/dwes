@@ -1,8 +1,10 @@
 # Tarea breve: de Nginx al script Python
 
-Práctica formativa de UD01 (30-40 minutos), tras estudiar
+Práctica de UD01 (30-40 minutos), tras estudiar
 [cómo llega HTTP al código servidor](../../01-documentacion/02-mecanismos-ejecucion-servidor.md).
-No añade una nota independiente ni modifica la evaluación de la unidad.
+Para 2026/2027 se incorpora como evidencia evaluable dentro del bloque práctico
+de UD1. Su peso interno queda pendiente de la distribución definitiva de ese
+bloque.
 
 ## 1. Observar (10 minutos)
 
@@ -37,6 +39,6 @@ En un breve `entrega.md` (máximo una página), incluye:
 4. Qué componente permanece activo entre peticiones y cuál se ejecuta de
    nuevo; comparación en dos frases con Hello Server.
 
-Si el profesor pide entrega en Moodle, adjunta `entrega.md` y `saludo.py`
-modificado; **no** exportes la imagen ni entregues carpetas de Docker. Se
-valora la explicación del recorrido más que escribir muchas líneas.
+Para la versión evaluable de 2026/2027, adjunta en Moodle `entrega.md` y
+`saludo.py` modificado; **no** exportes la imagen ni entregues carpetas de
+Docker. Se valora la explicación del recorrido más que escribir muchas líneas.

@@ -3,13 +3,13 @@
 Las adaptaciones de acceso y ritmo se aplican conforme al protocolo transversal
 docente. No modifican RA/CE ni ponderaciones.
 
-Para el curso 2026/2027, con un grupo de 30 alumnos, UD1 se evalúa mediante una práctica cooperativa pequeña y cuestionarios individuales. Los enunciados individuales actuales se conservan sin sobrescribir para recuperación, grupos pequeños o cursos futuros. Ninguna actividad aislada sustituye a las demás: observar HTTP, modificar código servidor y razonar conceptos son capacidades relacionadas, pero distintas.
+Para el curso 2026/2027, UD1 se evalúa mediante un bloque práctico y cuestionarios individuales. Los enunciados individuales actuales se conservan sin sobrescribir para recuperación, grupos pequeños o cursos futuros. Ninguna actividad aislada sustituye a las demás: observar HTTP, modificar código servidor y razonar conceptos son capacidades relacionadas, pero distintas.
 
 ## Ponderación
 
 | Instrumento | Peso | Evidencia principal |
 |---|---:|---|
-| Práctica cooperativa HTTP + Hello Server | 65 % | Mensajes HTTP, endpoint, entorno reproducible, TDD y seguridad básica |
+| Bloque práctico UD1 (práctica cooperativa, mini tarea HTTPie y CGI/FastCGI) | 65 % | Mensajes HTTP, cliente-servidor, endpoint, entorno reproducible, TDD, seguridad básica y mecanismos de ejecución |
 | Cuestionarios Moodle individuales | 35 % | Comprensión individual de RA1.a-g y semántica HTTP básica |
 
 El hito individual 1 se realiza al final de UD2a y se registra como evidencia de
@@ -17,10 +17,20 @@ acreditación individual, no como una tercera calificación de UD1.
 
 ## Modalidad 2026/2027
 
-El enunciado operativo está en
+El enunciado operativo de la práctica cooperativa está en
 [`03-ejercicios/03-practica-cooperativa-2026/README.md`](03-ejercicios/03-practica-cooperativa-2026/README.md).
+Además, la mini tarea HTTPie/navegador y Explorar CGI/FastCGI se consideran
+evidencias evaluables dentro del bloque práctico. Reparto provisional del 65 %:
 
-El laboratorio y la extensión se tratarán como una única práctica cooperativa de 3-4 alumnos. El grupo entregará un informe común y un repositorio con:
+| Evidencia práctica | Peso provisional en UD1 |
+|---|---:|
+| Práctica cooperativa HTTP + Hello Server | 55 % |
+| Mini tarea HTTPie y navegador | 5 % |
+| Explorar CGI/FastCGI | 5 % |
+
+Este reparto se revisará cuando estén definidas todas las prácticas de la unidad.
+
+La práctica cooperativa agrupa el laboratorio y la extensión Hello Server en un trabajo de 3-4 alumnos. El grupo entregará un informe común y un repositorio con:
 
 - una traza HTTP analizada;
 - un endpoint ejecutable;

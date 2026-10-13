@@ -16,7 +16,7 @@ El código de respuesta resume **el resultado de procesar la petición**.
 
 El estado no sustituye al resto de cabeceras ni al cuerpo.
 
-*Base: [07 — Estados HTTP](../07-estados-http.md).*
+*Base: [07 — resumen de estados](../corta/07-estados-http.md).*
 
 ## Éxito no significa siempre «200 con cuerpo» · 4 min
 
@@ -29,7 +29,7 @@ El estado no sustituye al resto de cabeceras ni al cuerpo.
 
 **206 no es sinónimo de paginar una lista.**
 
-*Base: [07 — Tabla de estados](../07-estados-http.md).*
+*Base: [07 — tabla del resumen](../corta/07-estados-http.md).*
 
 ## No mezclar «no modificado» y «no encontrado» · 3 min
 
@@ -51,7 +51,7 @@ Otros ejemplos: `409` conflicto, `415` formato no admitido, `422` contenido
 no procesable y `500` fallo interno. No exponer secretos ni trazas internas
 en los errores.
 
-*Base: [07 — Tabla y errores](../07-estados-http.md).*
+*Base: [07 — «Códigos frecuentes»](../07-estados-http.md).*
 
 ## Comparar dos respuestas reales · 5 min
 
@@ -63,7 +63,7 @@ http --verbose GET http://localhost:8080/no-existe
 **Señala por separado:** estado, cabeceras y cuerpo. Describe lo observado en
 Hello Server; no atribuyas a todos los servidores el mismo formato de error.
 
-*Base: [07 — «Exploración local»](../07-estados-http.md).*
+*Base: [07 — «Exploración local»](../corta/07-estados-http.md).*
 
 ## Salida · 2 min
 

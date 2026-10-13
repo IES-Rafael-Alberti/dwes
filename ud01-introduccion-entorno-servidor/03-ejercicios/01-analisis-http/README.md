@@ -119,7 +119,7 @@ Explica:
 
 ## Seguridad de la entrega
 
-Aplica la [guía de seguridad HTTP](../../06-seguridad/README.md):
+Aplica la [guía de seguridad HTTP](../../01-documentacion/09b-seguridad-http.md):
 
 - redacta cookies, tokens y `Authorization` como `<REDACTED>`;
 - no incluyas rutas personales, variables de entorno ni pestañas ajenas;
