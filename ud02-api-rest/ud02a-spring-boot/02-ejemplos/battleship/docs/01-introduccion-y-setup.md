@@ -27,7 +27,11 @@ Usamos [start.spring.io](https://start.spring.io) en clase con estos parámetros
 | Group | `com.example` |
 | Artifact | `battleship` |
 | Java | 25 |
-| Dependencies | `Spring Web MVC`, `Spring Data JPA`, `H2 Database`, `Validation`, `Flyway Migration`, `Lombok`, `SpringDoc OpenAPI (webmvc-ui 3.0.3)` |
+| Dependencies | `Spring Web MVC` |
+
+El resto de dependencias (JPA, H2, Validation, Flyway, Lombok y SpringDoc) se
+añadirán más adelante, cuando cada sesión las necesite. Así podrás ver cómo se
+incorporan dependencias a un proyecto ya iniciado.
 
 ### 2. El `pom.xml`
 
@@ -112,8 +116,10 @@ Explicar:
 
 ### 5. Primera ejecución
 
+Usa el Maven Wrapper para reproducir la versión de Maven fijada por el proyecto:
+
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 Verificar:
@@ -124,6 +130,18 @@ Verificar:
 
 Detener con `Ctrl+C`.
 
+> **Maven Wrapper.** Spring Initializr genera `mvnw`, `mvnw.cmd` y la carpeta
+> `.mvn/wrapper` por defecto, así que al crear el proyecto ya lo tienes. Los
+> plugins de Java de IntelliJ y VS Code también lo usan automáticamente. Si un
+> proyecto no lo incluyera, puedes generarlo desde su raíz con:
+>
+> ```bash
+> mvn wrapper:wrapper
+> ```
+>
+> (necesita un Maven instalado en el equipo una única vez). Después, ejecuta
+> siempre `./mvnw` para arrancar, probar o empaquetar el proyecto.
+
 ## Lo que vimos hoy
 
 | Concepto | Dónde se ve |
@@ -131,7 +149,7 @@ Detener con `Ctrl+C`.
 | Spring Initializr | Creación del proyecto |
 | `@SpringBootApplication` | Clase principal, arranque |
 | `application.yml` | Config de base de datos H2, JPA |
-| Spring Boot Maven plugin | `mvn spring-boot:run` |
+| Spring Boot Maven plugin (Wrapper) | `./mvnw spring-boot:run` |
 | Estructura de proyecto | Paquetes, recursos, tests |
 
 ## Tarea — Book Catalog, Entrega 1
@@ -151,4 +169,4 @@ public class BookController {
 }
 ```
 
-Ver `../../03-ejercicios/02-book-catalog/README.md` para los detalles completos. Esta entrega es voluntaria pero muy recomendada — practica lo mismo que acabamos de ver pero sin presión.
+Ver `../../03-ejercicios/02-book-catalog/README.md` para los detalles completos. Es la **entrega 1 de la práctica cooperativa Book Catalog**, que forma parte de la evaluación de UD2a; practica lo mismo que acabamos de ver.

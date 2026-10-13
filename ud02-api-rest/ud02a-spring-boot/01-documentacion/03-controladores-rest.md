@@ -145,7 +145,7 @@ public class TaskController {
 #### 4. Probar la API
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 Endpoints:
@@ -305,4 +305,3 @@ En las próximas unidades desarrollaremos un **proyecto completo (Battleship API
 Este proyecto servirá como eje central del módulo, integrando todo lo aprendido en Spring Boot hasta la persistencia y seguridad.
 
 ---
-

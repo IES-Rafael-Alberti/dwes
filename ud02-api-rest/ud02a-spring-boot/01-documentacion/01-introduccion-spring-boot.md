@@ -1,5 +1,5 @@
 
-# Capítulo 2 bis — Introducción a Spring Boot
+# Unidad 2 a — Introducción a Spring Boot
 
 ## 1. ¿Qué es Spring Boot?
 
@@ -181,7 +181,7 @@ logging:
 Arranca con:
 
 ```bash
-SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
 ```
 
 ---
@@ -394,7 +394,7 @@ public class GlobalExceptionHandler {
 * Levanta en dev:
 
 ```bash
-SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
 ```
 
 * Swagger UI:

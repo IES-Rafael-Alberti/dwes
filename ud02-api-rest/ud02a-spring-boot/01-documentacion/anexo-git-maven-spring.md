@@ -77,27 +77,45 @@ git checkout ejercicios/alumno-01
 git rebase v4-extras
 ```
 
+## Maven Wrapper
+
+Los proyectos generados con Spring Initializr incluyen `mvnw`, `mvnw.cmd` y
+`.mvn/wrapper`, de modo que no hace falta instalar Maven globalmente. Desde la
+raíz del proyecto usa `./mvnw` en Linux/macOS o `mvnw.cmd` en Windows; el wrapper
+descarga y ejecuta la versión de Maven fijada por el proyecto.
+
+Si un proyecto Maven existente no tiene wrapper, un equipo que ya tenga Maven
+instalado puede generarlo desde la raíz con:
+
+```bash
+mvn wrapper:wrapper
+```
+
+Después comparte los archivos generados (`mvnw`, `mvnw.cmd` y `.mvn/wrapper/`)
+con el repositorio. IntelliJ IDEA y las extensiones Java de VS Code suelen
+detectar y usar el wrapper automáticamente.
+
 ## Maven (perfiles de tests)
 
 ```bash
 # todos
-mvn -q -Pall-tests test
+./mvnw -q -Pall-tests test
 # básicos
-mvn -q -Ptests-basic test
+./mvnw -q -Ptests-basic test
 # addons (DataJpa + 400)
-mvn -q -Ptests-addons test
+./mvnw -q -Ptests-addons test
 # extras (data.sql + 404)
-mvn -q -Ptests-extras test
+./mvnw -q -Ptests-extras test
 # paging + cache
-mvn -q -Ptests-paging-cache test
+./mvnw -q -Ptests-paging-cache test
 # final (pageable headers, búsqueda, PUT, HEAD)
-mvn -q -Ptests-final test
+./mvnw -q -Ptests-final test
 ```
 
 ## Arrancar la app
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 # o desde IntelliJ: requests.http (play ▶️ en cada bloque)
 ```
 

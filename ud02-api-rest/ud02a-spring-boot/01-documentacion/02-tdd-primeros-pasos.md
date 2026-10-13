@@ -1,7 +1,6 @@
 ---
-title: "Untitled"
+title: "Tests para la mini API Tasks: TDD y MockMvc"
 author: "José MSA"
-date: "2025-10-22"
 output: pdf_document
 ---
 
@@ -12,7 +11,7 @@ output: pdf_document
 **Objetivo:** aprender a probar una API REST en Spring Boot de forma incremental: desde “arranca el contexto” hasta pruebas web con **MockMvc** y una **prueba de integración** con servidor real.
 
 **Stack de pruebas (Maven):** `spring-boot-starter-test` (JUnit 5, AssertJ/Hamcrest, MockMvc, Jackson test).
-**Comandos:** `mvn -q -Dtest=* test` o simplemente `mvn test`.
+**Comandos:** `./mvnw -q -Dtest='*' test` o simplemente `./mvnw test`.
 
 ---
 
@@ -81,7 +80,7 @@ package com.example.tasks.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 

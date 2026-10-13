@@ -1,7 +1,6 @@
 ---
-title: "Untitled"
+title: "Tests de errores y respuestas HTTP coherentes"
 author: "José MSA"
-date: "2025-10-22"
 output: pdf_document
 ---
 
@@ -94,7 +93,7 @@ package com.example.tasks.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -169,4 +168,3 @@ void tasks_shouldReturn405_whenMethodNotAllowed() throws Exception {
 
 
 ---
-
