@@ -7,7 +7,6 @@ Curso 2026/2027 — IES Rafael Alberti.
 ## Estructura
 
 ```
-00-planificacion/          → Planificación, inventarios, prompts, decisiones
 00-recursos-comunes/       → Plantillas compartidas, chuletas, anexos
 ud00-previos/              → Java, MongoDB, PostgreSQL JSON
 ud01-introduccion-entorno-servidor/
@@ -24,9 +23,6 @@ ud07-proyecto-integrador/  → Proyecto integrador de DWES; otros módulos solo 
 docs/                      → Publicación mkdocs → GitHub Pages
 hooks/                     → Hook Python para navegación automática
 ```
-
-La presentación específica del módulo para el alumnado está en
-[`00-planificacion/presentacion-del-modulo-dwes.md`](00-planificacion/presentacion-del-modulo-dwes.md).
 
 ## Estructura interna de cada unidad
 
@@ -46,7 +42,7 @@ udXX-nombre/
 ## Metodología
 
 - **TDD** desde el día 1
-- **SDD** (spec-driven development) a partir de UD3-4
+- **SDD** (spec-driven development) a partir de UD3-4: contrato primero (OpenAPI versionado), no orquestación de agentes de IA
 - **Seguridad** transversal con carpeta en cada unidad
 - **IA**: 0 uso → supervisada → crítica. Declaración obligatoria
 
