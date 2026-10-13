@@ -22,6 +22,7 @@
 **/99-profesor/
 **/90-archivo/
 **/*.gift
+/00-planificacion/
 
 **/AGENTS.md
 ud00-previos/docs/SESION-STATE.md
@@ -44,6 +45,7 @@ graphify-out/
 ud00-previos/01-documentacion/Java/*.pdf
 ud01-introduccion-entorno-servidor/01-documentacion/*.pdf
 ud01-introduccion-entorno-servidor/01-documentacion/transparencias/*.pdf
+ud01-introduccion-entorno-servidor/01-documentacion/corta/*.pdf
 target/
 build/
 dist/
