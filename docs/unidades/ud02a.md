@@ -30,3 +30,9 @@ propia rúbrica.
 
 .NET y GraphQL se conservan como referencias opcionales. No son una segunda
 ruta obligatoria ni sustituyen Spring Boot/Battleship.
+
+## Trabajo con agentes de IA
+
+No es evaluable, pero a partir de esta unidad conviene apoyarse en la
+[guía de desarrollo asistido por agentes de IA](../guias/desarrollo-con-agentes-ia.md):
+un solo agente, spec corta y verificación con pruebas propias antes de aceptar nada.

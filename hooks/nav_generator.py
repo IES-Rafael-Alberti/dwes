@@ -38,6 +38,7 @@ SECTION_KEYS = list(SECTION_ORDER.keys())
 
 
 FILE_TITLE_OVERRIDES = {
+    'guias/desarrollo-con-agentes-ia.md': 'Desarrollo asistido por agentes de IA',
 }
 
 
@@ -165,6 +166,12 @@ def on_config(config):
         children = scan_unit(unit_symlink, docs_dir, index_path)
         if children:
             nav.append({unit_title: children})
+
+    guias = docs_dir / 'guias'
+    if guias.is_dir():
+        entries = scan_files(guias, docs_dir)
+        if entries:
+            nav.append({'Guías': entries})
 
     plantillas = docs_dir / 'plantillas'
     if plantillas.is_dir():

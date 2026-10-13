@@ -20,12 +20,13 @@ Material didáctico del módulo **Desarrollo Web en Entorno Servidor (DWES)** �
 ## Metodología
 
 - **TDD** desde la primera práctica: test rojo → implementar → test verde.
-- **SDD** (spec-driven development) a partir de las unidades intermedias.
+- **SDD** (spec-driven development) a partir de las unidades intermedias: especificación y contrato primero (OpenAPI versionado), no orquestación de agentes de IA.
 - **Seguridad** transversal con carpeta específica en cada unidad.
 - **IA** progresiva: 0 uso → supervisada → crítica con declaración obligatoria.
 
 ## Material transversal
 
+- [Desarrollo asistido por agentes de IA](guias/desarrollo-con-agentes-ia.md)
 - [Declaración de uso de IA](plantillas/plantilla-declaracion-uso-ia.md)
 - [Plantilla de rúbrica](plantillas/plantilla-rubrica-ejercicio.md)
 - [Plantilla RA/CE](plantillas/plantilla-ra-ce.md)
