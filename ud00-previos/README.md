@@ -13,8 +13,7 @@ básico, diseño de datos en MongoDB y comparación con PostgreSQL JSON/JSONB.
 - [Ejemplos ejecutables del guion](02-ejemplos/java/README.md)
 - [FAQ para repasar Java tras la gincana](01-documentacion/Java/faq-repaso-gincana-java25.md)
 - [Ejemplo integrador: Java moderno y peticiones de ejemplo](02-ejemplos/java/08-integracion-java-moderno/README.md)
-- [Presentación Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_presentacion.pdf)
-- [Material ampliado Java frente a Kotlin — excepciones](01-documentacion/Java/java_vs_kotlin_excepciones_extendido.pdf)
+- [Excepciones en Java y Kotlin](01-documentacion/Java/java-para-programadores-kotlin.md#excepciones)
 - [Proyecto guiado GeoNotes](03-ejercicios/01-geonotes/README.md)
 
 ## MongoDB básico
