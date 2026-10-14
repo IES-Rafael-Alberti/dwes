@@ -37,4 +37,4 @@ enunciado correspondiente.
 
 - [UD2b .NET](ud02b-dotnet/) y `ud02c-graphql/` se conservan como material de consulta opcional.
 - La implementación de referencia es Battleship; no hay una segunda ruta obligatoria.
-- Las decisiones internas de reforma viven en [INVENTARIO_REFORMA.md](INVENTARIO_REFORMA.md), no forman parte del itinerario del alumnado.
+- Las decisiones internas de reforma se conservan en `00-planificacion/reforma-en-vivo/ud02-api-rest.md`, fuera del itinerario del alumnado.

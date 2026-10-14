@@ -13,6 +13,7 @@ Orden de estudio recomendado (TDD-first):
 | 07 | `07-funcionamiento-spring-boot.md` | Flujo interno de una petición HTTP |
 | 08 | `08-battleship-caso-practico.md` | Caso práctico: Battleship API (guion de clase) |
 | 09 | `09-migracion-sb3-sb4.md` | Migración SB3 → SB4: cambios, checklist, referencia |
+| 10 | `10-proyecciones-jpa.md` | Proyecciones JPA con un caso de lista paginada de Gestión de Eventos |
 
 ### Anexos
 

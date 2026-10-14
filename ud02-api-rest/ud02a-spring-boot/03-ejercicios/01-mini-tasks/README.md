@@ -1,82 +1,83 @@
-# Ejercicio 01 — Mini Spring Boot Tasks (Kit de Aprendizaje con Git)
+# Ejercicio 01 — Mini Spring Boot Tasks
 
 ## Objetivo
 
-Familiarizarse de forma guiada y progresiva con el diseño y refactorización de APIs REST en Spring Boot, utilizando la historia de Git como hilo conductor (commits y tags pedagógicas).
+Desarrollar en grupo una API REST pequeña con Spring Boot y JPA, seguir su
+historial Git y dejar todo el trabajo y las evidencias de esta entrega dentro de
+un único repositorio de grupo.
 
-## Contenidos y Recursos
+## Repositorio de grupo
 
-Este ejercicio cuenta con dos recursos en `recursos/`:
-- `mini-spring-boot-tasks-completo/`: El proyecto final con todas las etapas ya integradas y perfiles de test listos.
-- `mini-spring-boot-tasks-git-lesson/`: Un kit con un script (`setup-history.sh`) para recrear un repositorio local paso a paso.
+Con 27 alumnos, la clase se organizará en **seis grupos de cuatro y uno de tres**.
+El profesorado comunicará la composición de los equipos. Cada grupo usará el
+[repositorio plantilla Mini Spring Boot Tasks](https://github.com/IES-Rafael-Alberti/dwes-template-ud2a-mini-spring-boot-tasks):
 
-## Tareas
+1. Una persona del grupo hace **Fork** del repositorio en su cuenta de GitHub.
+   Usa **Fork**, no «Use this template», para conservar commits y etiquetas.
+2. Añade al resto del grupo como colaboradores y clona el fork del grupo.
+3. Trabaja en la rama `main`, que parte de la versión `v4`; las etiquetas `v1`,
+   `v2`, `v3`, `v4` y `v4-extras` permiten consultar la evolución.
+4. Cada integrante realiza y sube sus commits con su propia cuenta. No compartáis
+   credenciales.
 
-### 1. Recrear el histórico pedagógico (Git Lesson)
+No ejecutes `setup-history.sh`: el historial está ya en el repositorio que has
+forkeado. El proyecto se trabaja desde su raíz; no hay un repositorio Git
+anidado.
 
-Abre tu terminal, entra en la carpeta `recursos/mini-spring-boot-tasks-git-lesson` y ejecuta el script de arranque:
+## Trabajo del grupo
+
+Antes de programar, explora los commits y las etiquetas para explicar la
+evolución:
 
 ```bash
-bash setup-history.sh
+git log --oneline --decorate --graph --all
+git tag --list
 ```
 
-Esto creará una subcarpeta `project/` con un repositorio Git listo. Navega por las diferentes versiones e inspecciona cómo evoluciona la arquitectura:
+Sobre `main`, implementa una **funcionalidad vertical pequeña** (*slice*): un
+cambio funcional completo de extremo a extremo, no una capa aislada. Por ejemplo,
+un endpoint para filtrar tareas debe conectar petición HTTP, controlador,
+servicio, repositorio y respuesta, con una prueba que compruebe el comportamiento.
 
-1. **Tag `v1`**: Un controlador básico en memoria.
-2. **Tag `v2`**: Introducción de `ResponseEntity` para un control fino de las respuestas.
-3. **Tag `v3`**: Integración de base de datos H2 con JPA + Repositorio y manejo de errores con `ApiExceptionHandler`.
-4. **Tag `v4`**: Introducción de la capa de servicios (`TaskService`) para encapsular la lógica de negocio y uso de DTOs (`CreateTaskDTO`, `UpdateTaskDTO`).
-5. **Tag `v4-extras`**: Paginación, caché (ETag/Cache-Control), parámetros de búsqueda y métodos HEAD.
+El slice adicional debe incluir una operación acotada de consulta o modificación
+con controlador, servicio, repositorio JPA, DTO cuando corresponda y prueba
+automatizada. Devuelve respuestas HTTP coherentes e incluye el caso de recurso
+inexistente. No se pide todavía una migración versionada ni OpenAPI.
 
-### 2. Ejecutar, explicar y completar cada etapa
+Ejecuta las pruebas con:
 
-Utiliza Maven para verificar las etapas:
-- Corre el servidor en local: `mvn spring-boot:run`
-- Utiliza el archivo `requests.http` provisto en IntelliJ o VS Code para probar las llamadas de forma manual.
-- Lanza los tests asociados a cada fase utilizando los perfiles Maven del `pom.xml`:
-  ```bash
-  mvn -q -Ptests-basic test
-  mvn -q -Ptests-extras test
-  ```
+```bash
+mvn test
+```
 
-### 3. Ampliación evaluable: persistencia y API básica
+## Evidencias dentro del repositorio
 
-Sobre la versión `v4`, cada grupo completa un slice pequeño y acotado: una
-operación de consulta o modificación de tareas con controlador, servicio,
-repositorio JPA, DTO de entrada o salida y prueba automatizada. Debe conservar
-la separación por capas y devolver una respuesta HTTP coherente, incluido el
-caso de recurso inexistente.
+Completa y sube estos ficheros junto con el código y los tests:
 
-Además, documenta en `aprendizaje.md` cómo se configura la conexión H2, qué
-responsabilidad tiene la entidad y el repositorio, y por qué la operación se
-ejecuta en la capa de servicio. No se pide todavía una migración versionada ni
-un contrato OpenAPI: esos incrementos se incorporan en las prácticas siguientes.
+- `aprendizaje.md`: cambios entre versiones, decisiones y responsabilidades de
+  las capas.
+- `equipo.md`: integrantes, usuarios GitHub y contribuciones.
+- `declaracion-uso-ia.md`: cumplimentada tanto si se utilizó IA como si no.
+- Historial de commits y pruebas reproducibles del slice.
 
-## Entregables
-
-- Documento `aprendizaje.md` donde expliques en tus propias palabras qué mejoras se introducen en la arquitectura al pasar de `v1` → `v2`, `v2` → `v3` y `v3` → `v4`.
-- Captura de pantalla de la ejecución exitosa de los tests (`mvn test -Pall-tests`).
-- Declaración de uso de IA cumplimentada (ver plantilla en `00-recursos-comunes/plantillas/`).
-- Commit del slice adicional y su prueba verde.
-
-## Política de IA
-
-| Aspecto | |
-|---------|-|
-| Uso de IA permitido | Sí, como asistente para explicar errores de compilación o comprender la lógica de los tests unitarios. |
-| Declaración obligatoria | Sí. |
-| Herramientas permitidas | ChatGPT, Claude, Gemini, GitHub Copilot. |
-| Qué NO está permitido | El código ya está implementado; no está permitido limitarse a copiar el código de las tags sin realizar las reflexiones arquitectónicas requeridas. |
+Entrega en la tarea de Moodle **solo la URL del fork del grupo**. Moodle sirve
+para localizarlo; no se entregan capturas ni documentos evaluables por separado.
 
 ## Evaluación
 
-Ver `rubrica.md` y `ra-ce.md` en este directorio.
+La práctica representa el **15 % de UD2a**. Los criterios y la relación con RA/CE
+están disponibles también dentro del repositorio plantilla, en `rubrica.md` y
+`ra-ce.md`. Se valoran el historial y la contribución de cada integrante, la
+separación por capas, las pruebas del slice y la declaración de uso de IA.
+
+## Política de IA
+
+Se permite utilizar IA como asistente para comprender errores o tests, pero no
+limitarse a copiar etapas del historial. Registra el uso material en
+`declaracion-uso-ia.md`; cada integrante debe comprender sus cambios y commits.
 
 ## Relación con Battleship
 
-Este ejercicio complementa las sesiones 1 a 6 de Battleship: arranque con H2,
-TDD, controladores, capas, DTOs, errores y test slicing. Consulta el
-[recorrido canónico de Battleship](../../02-ejemplos/battleship/docs/README.md)
-antes de analizar las etapas. Battleship es el proyecto conductor; aquí se
-practica hasta ese punto en un contexto más pequeño. No se entrega Battleship
-ni se exigen todavía JWT, migraciones versionadas u OpenAPI.
+Mini Tasks aplica en un contexto pequeño los contenidos de las primeras sesiones
+de Battleship: H2/JPA, controladores, capas, DTOs y pruebas. Battleship sigue
+siendo el proyecto conductor y no se entrega como parte de esta práctica.

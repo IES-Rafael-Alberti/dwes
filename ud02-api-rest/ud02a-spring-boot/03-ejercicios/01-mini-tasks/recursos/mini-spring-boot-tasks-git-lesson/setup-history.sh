@@ -28,13 +28,15 @@ copy_snapshot () {
   local from="$1"
   local to="$2"
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --delete "${from}/" "${to}/"
+    rsync -a --delete --exclude='.git/' "${from}/" "${to}/"
   else
     # Fallback portable
-    shopt -s dotglob
-    rm -rf "${to:?}/"*
+    shopt -s dotglob nullglob
+    for item in "${to}/"*; do
+      [[ "$item" == "${to}/.git" ]] || rm -rf -- "$item"
+    done
     cp -a "${from}/." "${to}/"
-    shopt -u dotglob
+    shopt -u dotglob nullglob
   fi
 }
 

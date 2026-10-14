@@ -108,17 +108,17 @@ Los alumnos avanzan en paralelo con su proyecto (book-catalog, mini-tasks, gesti
 
 | # | Code-along (Battleship) | Práctica cooperativa | Tiempo estimado |
 |---|------------------------|------------------|-----------------|
-| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Book-catalog entrega 1 | 2h |
+| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el fork de grupo | 2h |
 | 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |
 | 03 | Controladores REST, endpoints básicos (`03-controladores-rest.md`) | Mini-tasks v2 | 3h |
-| 04 | Capa de servicios, DTOs, lógica de negocio (`04-capa-servicios-dtos.md`) | Book-catalog entrega 4 | 2h |
-| 04b | Reglas de negocio: soft delete, estados, máquina de estados (`04b-reglas-de-negocio.md`) | Book-catalog reglas de negocio | 3h |
-| 05 | Manejo de errores, @ControllerAdvice (`05-manejo-errores.md`) | Book-catalog entregas 5 y 6 | 2h |
+| 04 | Capa de servicios, DTOs, lógica de negocio (`04-capa-servicios-dtos.md`) | Mini Tasks: servicio y slice vertical | 2h |
+| 04b | Reglas de negocio: soft delete, estados, máquina de estados (`04b-reglas-de-negocio.md`) | Mini Tasks: cerrar el comportamiento del slice | 3h |
+| 05 | Manejo de errores, @ControllerAdvice (`05-manejo-errores.md`) | Mini Tasks: respuesta del caso de error | 2h |
 | 06 | Test slicing, @WebMvcTest, @DataJpaTest (`06-test-slicing.md`) | Mini-tasks tests | 2h |
-| 07 | Seguridad JWT, RBAC, CORS, rate limiting (`07-seguridad-jwt.md`) | Gestion-eventos seguridad | 3h |
-| 08 | Perfiles, paginación, OpenAPI, actuator, logging (`08-produccion-perfiles.md`) | Despliegue completo | 3h |
-| 09 | Docker, Tomcat tuning, alternativas (`09-docker-tomcat.md`) | Dockerizar proyecto | 2h |
-| 10 | [Trazabilidad SDD del contrato](10-sdd-openapi.md) | Auditoría y recorrido docente | Lectura |
+| 07 | Seguridad JWT, RBAC, CORS, rate limiting (`07-seguridad-jwt.md`) | Book Catalog: entregas 1–3 | 3h |
+| 08 | Perfiles, paginación, OpenAPI, actuator, logging (`08-produccion-perfiles.md`) | Book Catalog: entregas 4–6 | 3h |
+| 09 | Docker, Tomcat tuning, alternativas (`09-docker-tomcat.md`) | Gestión de eventos: iniciar su tramo evaluable | 2h |
+| 10 | [Trazabilidad SDD del contrato](10-sdd-openapi.md) | Gestión de eventos: contrato y conformidad | Lectura |
 
 Total: ~24h de clase distribuidas en 3-4 semanas.
 

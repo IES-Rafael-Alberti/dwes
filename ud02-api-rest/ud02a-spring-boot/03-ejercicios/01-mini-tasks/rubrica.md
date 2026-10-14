@@ -4,24 +4,25 @@
 
 | Criterio | Excelente (4) | Notable (3) | Aprobado (2) | Insuficiente (1) | Peso |
 |----------|---------------|-------------|--------------|-------------------|------|
-| **Uso de Git y Recreación de Historia (Transversal)** | Recrea correctamente el histórico pedagógico con el script `setup-history.sh`, navega con éxito por las tags y explica los cambios de cada etapa. | Recrea el repositorio pero tiene dudas al explicar las diferencias entre etiquetas. | Recrea el repositorio pero no sabe realizar checkout ni entiende el histórico. | No logra recrear el repositorio ni el histórico. | 25% |
+| **Uso de Git e historial (Transversal)** | Mantiene el fork del grupo, explora y explica las etiquetas, trabaja sobre `main` y registra cambios pequeños y atribuibles a cada integrante. | El fork y los commits están, pero la evolución o la autoría de algunos cambios no queda clara. | Hay pocos commits significativos, no se usan las etiquetas o el trabajo del grupo no se refleja de forma suficiente. | No hay un fork de grupo utilizable ni historial de trabajo verificable. | 25% |
 | **Separación por Capas (RA5.b)** | Implementa y comprende la separación estricta: Controlador V4 (DTOs) → Servicio → Repositorio JPA, sin fugas de responsabilidades. | Separación correcta pero con pequeñas mezclas de responsabilidades (ej.: lógica de negocio en controller). | Arquitectura básica V2 (controlador directo en memoria sin servicios). | No separa el código en capas o presenta errores de compilación graves. | 35% |
-| **Paso de Tests y Verificación (RA5.h)** | Todos los perfiles de test (`mvn test`) pasan con éxito de forma local y sabe interpretar los resultados. | Todos los tests básicos pasan pero fallan los extras/addons o de rendimiento. | Pasan únicamente los tests de la versión V1 o V2. | Ningún test pasa con éxito. | 30% |
+| **Tests y verificación (RA5.h)** | `mvn test` termina correctamente e incluye pruebas pertinentes para el slice del grupo, incluidos sus casos representativos. | Las pruebas principales pasan; falta cubrir algún caso relevante del slice. | Hay pruebas, pero no verifican el comportamiento nuevo o no se ejecutan de forma reproducible. | No hay pruebas para el slice o no se pueden ejecutar. | 30% |
 | **Declaración de IA (Transversal)** | Presente, detallada y totalmente de acuerdo con las plantillas del centro. | Presente pero genérica. | Presente incompleta. | Ausente. | 10% |
 
 ## Notas
 
-- Para obtener el 4 en cualquier criterio, el estudiante debe poder defenderlo oralmente si se le pregunta.
 - El uso de IA sin declarar se considera falta de honestidad académica.
 
 ## Aplicación 2026/2027
 
-La práctica se ejecuta en grupos de 3-4 por vertical slices. Además del resultado
-común se valoran responsabilidad individual, tests del slice, trazabilidad Git,
-revisión de pares y defensa oral. Las ponderaciones históricas no se trasladan
-automáticamente.
+Con 27 alumnos, la práctica se organiza en siete grupos (seis de cuatro y uno de
+tres) que desarrollan una funcionalidad vertical. El fork del grupo es la única
+fuente de evidencias de esta entrega: código, tests, commits, decisiones y
+declaración de IA. La tarea de Moodle solo recoge el enlace al repositorio; no se
+califican capturas ni documentos separados.
 
-El slice adicional es obligatorio para la ruta 2026/2027: debe evidenciar la
-conexión JPA/H2, una operación en servicio y repositorio, DTO, respuesta HTTP y
-prueba. Corresponde a RA6.a-d y RA7.a-d; la práctica representa el 15 % de la
-calificación de UD2a en 2026/2027.
+La funcionalidad vertical adicional es obligatoria para la ruta 2026/2027: un
+cambio pequeño de extremo a extremo que evidencie conexión JPA/H2, servicio,
+repositorio, DTO cuando corresponda, respuesta HTTP y prueba. Corresponde a
+RA6.a-d y RA7.a-d; la práctica representa el 15 % de la calificación de UD2a en
+2026/2027.

@@ -152,21 +152,15 @@ Detener con `Ctrl+C`.
 | Spring Boot Maven plugin (Wrapper) | `./mvnw spring-boot:run` |
 | Estructura de proyecto | Paquetes, recursos, tests |
 
-## Tarea — Book Catalog, Entrega 1
+## Práctica cooperativa — Mini Spring Boot Tasks
 
-Crea un proyecto nuevo (o clona el template) para **Book Catalog API** siguiendo las mismas instrucciones de creación que vimos en clase.
+La primera práctica evaluable de UD2a será **Mini Spring Boot Tasks** (15 %).
+En esta sesión, cada grupo prepara su fork del
+[repositorio plantilla](https://github.com/IES-Rafael-Alberti/dwes-template-ud2a-mini-spring-boot-tasks),
+añade a sus integrantes como colaboradores y consulta el historial. No hace
+falta implementar el slice hoy: Mini Tasks v1 se trabaja en la sesión 02 y v2
+en la sesión 03; después se completa el slice y sus pruebas.
 
-**Entrega 1**: Un controlador que devuelva texto plano.
-
-```java
-@RestController
-public class BookController {
-
-    @GetMapping("/books")
-    public String hello() {
-        return "Hello, Book Catalog!";
-    }
-}
-```
-
-Ver `../../03-ejercicios/02-book-catalog/README.md` para los detalles completos. Es la **entrega 1 de la práctica cooperativa Book Catalog**, que forma parte de la evaluación de UD2a; practica lo mismo que acabamos de ver.
+Book Catalog (ejercicio 02) se habilitará después de cerrar Mini Tasks; Gestión
+de eventos (ejercicio 03), después de Book Catalog. Esta sesión no abre una
+entrega de Book Catalog.
