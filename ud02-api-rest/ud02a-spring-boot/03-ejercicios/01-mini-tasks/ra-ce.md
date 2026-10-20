@@ -13,5 +13,5 @@
 ## Contribución a la nota
 
 - Peso sobre la evaluación de la unidad 2026/2027: **15%**
-- Tipo: Cooperativa por funcionalidad vertical; contribución individual trazada en el historial Git.
-- Entrega: Un fork por grupo con historial, funcionalidad adicional, tests y evidencias dentro del repo. En Moodle solo se comparte el enlace.
+- Tipo: **Individual**, con funcionalidad vertical y autoría trazada en el historial Git.
+- Entrega: Un fork propio por estudiante con historial, funcionalidad adicional, tests y evidencias dentro del repo. En Moodle solo se comparte el enlace.

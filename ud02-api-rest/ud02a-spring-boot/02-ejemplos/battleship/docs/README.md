@@ -1,5 +1,23 @@
 # Battleship API — ampliaciones por sesión
 
+## Recorrido de aula 2026/2027: construir desde cero
+
+El code-along se construye en **`02-ejemplos/bshipAlong/`**, con **Spring Boot
+4.1.1 y Java 25**. El proyecto terminado `battleship/` permanece como referencia
+funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
+
+- Sesión 2: realizada en clase; entidad mínima `Game`, test `PENDING` y tabla `games`.
+- [Sesión 3](03-controladores-rest.md): adaptada al proyecto de clase y reproducida
+  paso a paso en una copia, incluidos los cinco ciclos rojo/verde y la integración.
+- Sesiones 4 y siguientes: pendientes de adaptación progresiva. Sus fragmentos
+  antiguos no constituyen aún una continuación ejecutable del checkpoint 3.
+
+**Tareas:** Mini Tasks es **individual**; después Book Catalog y Gestión de
+eventos son **en grupo**. Se trabaja una tarea cada vez y su avance se indica al
+final de cada sesión. Battleship es el code-along, no otra entrega.
+
+## Material de referencia anterior
+
 Estas sesiones amplían el [recorrido incremental canónico](../../../01-documentacion/08-battleship-caso-practico.md). Empieza allí: fija los checkpoints y separa el núcleo comprobado de las extensiones de seguridad y producción.
 
 El proyecto de referencia actual usa Spring Boot 4.0.5 y Java 25. Algunas sesiones muestran el camino hacia el resultado final y no describen necesariamente un commit intermedio conservado en el repositorio.
@@ -100,15 +118,20 @@ Horario semanal: **2h + 2h + 3h** (tres días a la semana).
 
 Dentro de cada sesión:
 - **Code-along**: el profe explica teoría y escribe código en vivo con los alumnos (Battleship)
-- **Práctica cooperativa**: los últimos 30 min (sesiones de 2h) o 60 min (sesión de 3h) los grupos trabajan en el slice correspondiente
+- **Trabajo de la tarea activa**: últimos 30 min (sesiones de 2h) o 60 min
+  (sesiones de 3h). Mini Tasks se realiza individualmente; Book Catalog y
+  Gestión de eventos, en grupo.
 
-Los alumnos avanzan en paralelo con su proyecto (book-catalog, mini-tasks, gestion-eventos) aplicando los mismos conceptos que ven en Battleship.
+El alumnado aplica los conceptos de Battleship en la tarea activa: primero Mini
+Tasks, luego Book Catalog y finalmente Gestión de eventos. La tabla siguiente
+es una previsión temática; no certifica que las sesiones posteriores a la 3 estén
+adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 
 ## Sesiones
 
-| # | Code-along (Battleship) | Práctica cooperativa | Tiempo estimado |
+| # | Code-along (Battleship) | Tarea (Mini Tasks individual; restantes en grupo) | Tiempo estimado |
 |---|------------------------|------------------|-----------------|
-| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el fork de grupo | 2h |
+| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el fork individual | 2h |
 | 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |
 | 03 | Controladores REST, endpoints básicos (`03-controladores-rest.md`) | Mini-tasks v2 | 3h |
 | 04 | Capa de servicios, DTOs, lógica de negocio (`04-capa-servicios-dtos.md`) | Mini Tasks: servicio y slice vertical | 2h |
