@@ -152,6 +152,23 @@ nos permite simular ese resultado; el POST no recibe una entidad del usuario.
 
 ## 3. Primer ciclo: consultar una partida existente
 
+### Mapa del ciclo (para no empezar por la solución)
+
+```mermaid
+flowchart LR
+    A["Escribir getsExistingGame"] --> B["Ejecutar: falla porque falta el GET"]
+    B --> C["Crear el GET mínimo para pasar ese test"]
+    C --> D["Ejecutar: verde"]
+    D --> E["Refactorizar manteniendo los tests verdes"]
+    E --> F["Siguiente test: missingGameReturns404"]
+```
+
+Si el visor de Markdown no dibuja Mermaid, la lectura es la misma:
+**test concreto → ejecutar y entender el rojo → código mínimo para ese test →
+verde → refactorizar → siguiente test**. No se escribe todo el controlador y
+después se buscan tests que lo confirmen. Refactorizar mejora la estructura sin
+añadir comportamiento ni cambiar el resultado observado.
+
 ### Rojo: escribir primero el test
 
 Crea este archivo completo. Los imports y el método auxiliar servirán también
@@ -520,7 +537,27 @@ sin perder el comportamiento observado por estos tests.
 
 ## 8. Comprobar el ensamblaje con persistencia real
 
-Los cinco tests MVC no prueban Hibernate ni Flyway. Añade este archivo completo:
+Los cinco tests MVC prueban las rutas y el JSON, pero **el repositorio es falso**:
+nosotros le hemos indicado qué devolver. Podrían pasar aunque la tabla no
+existiera o aunque la entidad estuviera mal mapeada.
+
+El test de integración plantea otra pregunta: **«¿Colaboran de verdad todas las
+piezas para crear una partida y recuperarla?»**. Antes de copiarlo, dibuja este
+recorrido (MockMvc no abre un puerto):
+
+```text
+GameHttpIntegrationTest
+    → MockMvc → GameController → GameRepository real → Hibernate → H2
+                                                              ↑
+                                   tablas creadas por Flyway al arrancar
+```
+
+- `@SpringBootTest` carga la aplicación, no solo el controlador.
+- `@AutoConfigureMockMvc` permite enviar peticiones a ese contexto desde el test.
+- No hay `@MockitoBean`: Spring inyecta el repositorio real.
+- `@Transactional` revierte los datos al terminar para aislar este escenario.
+
+Añade este archivo completo:
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameHttpIntegrationTest.java -->
 ```java
@@ -568,6 +605,25 @@ crea `games` y Hibernate valida el esquema. `@Transactional` revierte los datos
 al terminar; no dependemos de un id concreto ni de filas sembradas previamente.
 Esta es una comprobación de integración del comportamiento ya construido.
 
+### Leer el test en tres pasos
+
+1. **Crear:** el POST exige `201`, comprueba `PENDING` y captura `Location`.
+   No suponemos que la base asigne el id 1 ni que las secuencias se reinicien
+   después de cada test.
+2. **Recuperar:** el GET a la URL capturada comprueba que la creación se puede
+   consultar por el recorrido real. Si el POST no guardase la partida, fallaría.
+3. **Listar:** el filtro `PENDING` debe encontrar la partida recién creada.
+   Todo ocurre en un único escenario; no son tres tests que comparten estado.
+
+Este test no pretende volver a comprobar todos los casos del controlador: une
+las piezas. Un error de conexión, migración o mapeo se investiga en el arranque;
+un `404` al seguir `Location` se investiga en guardado/consulta. La prueba usa una
+transacción de test y puede reutilizar el contexto de persistencia: no demuestra
+por sí sola que los datos sobrevivan a un reinicio de la aplicación.
+
+Para explicarlo en clase: **«En el test MVC le digo al mock lo que debe devolver;
+en la integración espero que la aplicación consiga el resultado por sí misma»**.
+
 ```bash
 ./mvnw test
 ```
@@ -599,8 +655,8 @@ curl 'http://localhost:8080/api/games?status=PENDING'
 La siguiente sesión partirá **exactamente de estos archivos** para introducir
 servicio y DTOs. Documentará también cómo evolucionar `Game`, sus estados y el
 esquema hasta la referencia final; no se sobrescribirá una migración ya aplicada.
-La guía antigua de sesión 4 está pendiente de esa adaptación: no copies aún sus
-fragmentos sobre este checkpoint. El proyecto terminado `battleship/` sirve para
+Continúa con la [sesión 4, servicio y DTOs](04-capa-servicios-dtos.md), después de
+completar la integración pendiente. El proyecto terminado `battleship/` sirve para
 contrastar el destino, no para sustituir el proyecto que estamos construyendo.
 
 ## 10. Trabajo individual — Mini Tasks, avance de sesión 3

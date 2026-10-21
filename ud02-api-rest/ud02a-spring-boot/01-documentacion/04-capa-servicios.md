@@ -1,5 +1,11 @@
 ## **Capítulo 4. Capa de Servicio**
 
+> **Apuntes generales.** Para construir Battleship desde el checkpoint de sesión 3,
+> sigue la [guía 4 del code-along](../02-ejemplos/battleship/docs/04-capa-servicios-dtos.md)
+> y después [4b, modelo y reglas](../02-ejemplos/battleship/docs/04b-reglas-de-negocio.md).
+> Estas guías indican los archivos, pruebas y cambios de esquema necesarios;
+> no es preciso realizar hoy las ampliaciones de estos apuntes.
+
 La **capa de servicio** es una pieza clave en el diseño de aplicaciones backend. Actúa como un intermediario entre los controladores (que manejan las solicitudes HTTP) y los repositorios (que interactúan con la base de datos). Su objetivo principal es encapsular la lógica de negocio, lo que permite separar responsabilidades y mejorar la organización del código.
 
 ------------------------------------------------------------------------

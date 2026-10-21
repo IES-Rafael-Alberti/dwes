@@ -9,8 +9,12 @@ funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
 - Sesión 2: realizada en clase; entidad mínima `Game`, test `PENDING` y tabla `games`.
 - [Sesión 3](03-controladores-rest.md): adaptada al proyecto de clase y reproducida
   paso a paso en una copia, incluidos los cinco ciclos rojo/verde y la integración.
-- Sesiones 4 y siguientes: pendientes de adaptación progresiva. Sus fragmentos
-  antiguos no constituyen aún una continuación ejecutable del checkpoint 3.
+- [Sesión 4](04-capa-servicios-dtos.md): servicio y DTOs desde el checkpoint 3,
+  reproducida con cuatro ciclos rojo/verde y doce pruebas finales.
+- [Tramo 4b](04b-reglas-de-negocio.md): construcción completa del núcleo de reglas,
+  modelo, migraciones y endpoints; cierre de 29 pruebas. Se reparte en los bloques
+  que requiera el ritmo de clase, no se presupone terminado en la sesión 4.
+- Sesiones 5 y siguientes: pendientes de adaptación progresiva desde ese checkpoint.
 
 **Tareas:** Mini Tasks es **individual**; después Book Catalog y Gestión de
 eventos son **en grupo**. Se trabaja una tarea cada vez y su avance se indica al
@@ -124,7 +128,7 @@ Dentro de cada sesión:
 
 El alumnado aplica los conceptos de Battleship en la tarea activa: primero Mini
 Tasks, luego Book Catalog y finalmente Gestión de eventos. La tabla siguiente
-es una previsión temática; no certifica que las sesiones posteriores a la 3 estén
+es una previsión temática; no certifica que las sesiones posteriores a la 4b estén
 adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 
 ## Sesiones
@@ -134,8 +138,8 @@ adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 | 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el fork individual | 2h |
 | 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |
 | 03 | Controladores REST, endpoints básicos (`03-controladores-rest.md`) | Mini-tasks v2 | 3h |
-| 04 | Capa de servicios, DTOs, lógica de negocio (`04-capa-servicios-dtos.md`) | Mini Tasks: servicio y slice vertical | 2h |
-| 04b | Reglas de negocio: soft delete, estados, máquina de estados (`04b-reglas-de-negocio.md`) | Mini Tasks: cerrar el comportamiento del slice | 3h |
+| 04 | Cerrar integración de 03; servicio y DTOs (`04-capa-servicios-dtos.md`) | Mini Tasks individual: normalizar título con TDD (50 min) | 3h |
+| 04b | Modelo, migraciones y reglas completas (`04b-reglas-de-negocio.md`) | Mini Tasks individual: completar tarea de forma idempotente | Varios bloques según ritmo |
 | 05 | Manejo de errores, @ControllerAdvice (`05-manejo-errores.md`) | Mini Tasks: respuesta del caso de error | 2h |
 | 06 | Test slicing, @WebMvcTest, @DataJpaTest (`06-test-slicing.md`) | Mini-tasks tests | 2h |
 | 07 | Seguridad JWT, RBAC, CORS, rate limiting (`07-seguridad-jwt.md`) | Book Catalog: entregas 1–3 | 3h |
@@ -143,7 +147,8 @@ adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 | 09 | Docker, Tomcat tuning, alternativas (`09-docker-tomcat.md`) | Gestión de eventos: iniciar su tramo evaluable | 2h |
 | 10 | [Trazabilidad SDD del contrato](10-sdd-openapi.md) | Gestión de eventos: contrato y conformidad | Lectura |
 
-Total: ~24h de clase distribuidas en 3-4 semanas.
+La duración global se ajusta a los checkpoints realmente alcanzados. La tabla
+orienta la secuencia; no obliga a comprimir 4b ni a quitar tiempo de la tarea activa.
 
 > **Nota**: Cada sesión asume que leíste el documento de teoría correspondiente de `01-documentacion/`.
 
