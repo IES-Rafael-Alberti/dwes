@@ -4,7 +4,7 @@ Las adaptaciones de acceso y ritmo se aplican conforme al protocolo transversal
 docente. No modifican RA/CE ni ponderaciones.
 
 Para 2026/2027, las entregas evaluables de UD2a se reorganizan en prácticas
-cooperativas incrementales. Los enunciados y rúbricas individuales existentes se
+cooperativas incrementales, salvo Mini Spring Boot Tasks, que es individual. Los enunciados y rúbricas individuales existentes se
 conservan como material alternativo para recuperación, grupos pequeños o cursos
 futuros. Battleship no es una entrega independiente.
 
@@ -24,7 +24,7 @@ futuros. Battleship no es una entrega independiente.
 | Cuestionarios Moodle de UD2a | 25 % | Bancos semanales de persistencia, seguridad, errores/pruebas y OpenAPI |
 | Defensa individual | 15 % | Autoría del slice, decisiones técnicas, ejecución y explicación de pruebas |
 
-Las tres prácticas suman el 60 %. Los cuestionarios y la defensa son
+Las tres prácticas suman el 60 %. Mini Tasks es individual; Book Catalog y Gestión de eventos siguen una ruta cooperativa de grupo. Los cuestionarios y la defensa son
 individuales. No se atribuye ningún porcentaje a Battleship ni a un examen
 global no publicado.
 
@@ -35,8 +35,9 @@ ya recogida por las evidencias de la unidad.
 
 ## Modalidad 2026/2027 para 30 alumnos
 
-Tasks, Book Catalog y Gestión de eventos forman una ruta cooperativa incremental,
-no tres colas de 30 entregas individuales. Cada grupo de 3-4 seleccionará slices
+Book Catalog y Gestión de eventos forman una ruta cooperativa incremental. Mini
+Tasks se entrega individualmente en un repositorio propio iniciado desde cero.
+En la ruta cooperativa, cada grupo de 3-4 seleccionará slices
 que recorran endpoint/controlador, servicio o caso de uso, repositorio,
 validación/error y pruebas. Cada integrante debe tener al menos un slice propio
 de principio a fin y revisar un cambio de otra persona.
@@ -71,7 +72,7 @@ repositorio de práctica.
 
 ## Condiciones comunes
 
-- Para la ruta 2026/2027, la práctica es cooperativa; los enunciados y rúbricas
+- Para la ruta 2026/2027, Mini Tasks es individual y Book Catalog y Gestión de eventos son cooperativas; los enunciados y rúbricas
   individuales originales se conservan como material alternativo.
 - Debes poder reproducir y explicar la evidencia entregada. Una prueba verde
   sin comprensión no demuestra por sí sola el criterio.

@@ -10,11 +10,14 @@ funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
 - [Sesión 3](03-controladores-rest.md): adaptada al proyecto de clase y reproducida
   paso a paso en una copia, incluidos los cinco ciclos rojo/verde y la integración.
 - [Sesión 4](04-capa-servicios-dtos.md): servicio y DTOs desde el checkpoint 3,
-  reproducida con cuatro ciclos rojo/verde y doce pruebas finales.
+  realizada en clase y comprobada con doce pruebas finales.
 - [Tramo 4b](04b-reglas-de-negocio.md): construcción completa del núcleo de reglas,
   modelo, migraciones y endpoints; cierre de 29 pruebas. Se reparte en los bloques
   que requiera el ritmo de clase, no se presupone terminado en la sesión 4.
-- Sesiones 5 y siguientes: pendientes de adaptación progresiva desde ese checkpoint.
+- [Sesión 5](05-manejo-errores.md): advice y payload de errores desde 04b,
+  reproducida con los rojos previos y 37 pruebas finales. Empezar cuando se cierre
+  04b, no por haber llegado a una hora determinada.
+- Sesiones 6 y siguientes: pendientes de adaptación progresiva desde ese checkpoint.
 
 **Tareas:** Mini Tasks es **individual**; después Book Catalog y Gestión de
 eventos son **en grupo**. Se trabaja una tarea cada vez y su avance se indica al
@@ -128,14 +131,14 @@ Dentro de cada sesión:
 
 El alumnado aplica los conceptos de Battleship en la tarea activa: primero Mini
 Tasks, luego Book Catalog y finalmente Gestión de eventos. La tabla siguiente
-es una previsión temática; no certifica que las sesiones posteriores a la 4b estén
+es una previsión temática; no certifica que las sesiones posteriores a la 5 estén
 adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 
 ## Sesiones
 
 | # | Code-along (Battleship) | Tarea (Mini Tasks individual; restantes en grupo) | Tiempo estimado |
 |---|------------------------|------------------|-----------------|
-| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el fork individual | 2h |
+| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el repositorio propio desde cero | 2h |
 | 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |
 | 03 | Controladores REST, endpoints básicos (`03-controladores-rest.md`) | Mini-tasks v2 | 3h |
 | 04 | Cerrar integración de 03; servicio y DTOs (`04-capa-servicios-dtos.md`) | Mini Tasks individual: normalizar título con TDD (50 min) | 3h |

@@ -14,4 +14,4 @@
 
 - Peso sobre la evaluación de la unidad 2026/2027: **15%**
 - Tipo: **Individual**, con funcionalidad vertical y autoría trazada en el historial Git.
-- Entrega: Un fork propio por estudiante con historial, funcionalidad adicional, tests y evidencias dentro del repo. En Moodle solo se comparte el enlace.
+- Entrega: Un repositorio propio por estudiante, iniciado desde cero, con historial, funcionalidad adicional, tests y evidencias dentro del repo. En Moodle solo se comparte el enlace.

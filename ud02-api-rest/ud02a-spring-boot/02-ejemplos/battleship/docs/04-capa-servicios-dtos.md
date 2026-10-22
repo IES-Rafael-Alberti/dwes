@@ -489,11 +489,12 @@ mínimo de sesión 3. Sus pasos de preparación forman parte del recorrido.
 
 ## 8. Mini Tasks individual — trabajo de esta sesión
 
-**Reserva de clase: al menos 40 minutos.** Continúa tu fork, sin abrir Book Catalog.
+**Reserva de clase: al menos 40 minutos.** Continúa tu repositorio propio, sin abrir Book Catalog.
 
 1. Si está pendiente, cierra el GET por id/404 de V1 de la sesión anterior.
-2. Localiza `services.TaskService` y `web.TaskControllerV4` del starter `main`/v4.
-   El servicio ya existe: no se considera trabajo nuevo copiarlo.
+2. Localiza la capa `TaskService` y el controlador que hayas implementado en tu
+   propio proyecto siguiendo el enunciado. Si el servicio todavía no existe,
+   créalo como parte de este avance; no copies un starter ni una solución completa.
 3. Implementa con TDD esta regla nueva de creación: **el título se guarda sin
    espacios en sus extremos**, manteniendo los interiores y `done=false`.
    Por ejemplo, `"  Repasar Spring Boot  "` se almacena como `"Repasar Spring Boot"`.
@@ -505,7 +506,7 @@ mínimo de sesión 3. Sus pasos de preparación forman parte del recorrido.
 6. Conserva las pruebas MVC existentes y registra rojo, cambio y verde en
    `aprendizaje.md`, con commits y declaración de IA propios.
 
-No cambies las rutas del starter para que coincidan con Battleship. Este avance
+No cambies las rutas de Mini Tasks para que coincidan con Battleship. Este avance
 se añade a la misma actividad individual del 15 %, no a una entrega nueva.
 Si tu copia ya normaliza títulos, comunícalo antes de elegir otro caso: no
 simules un rojo sobre una capacidad ya resuelta.

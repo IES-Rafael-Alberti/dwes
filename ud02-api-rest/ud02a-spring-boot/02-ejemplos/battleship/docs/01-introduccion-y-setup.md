@@ -152,12 +152,11 @@ Detener con `Ctrl+C`.
 | Spring Boot Maven plugin (Wrapper) | `./mvnw spring-boot:run` |
 | Estructura de proyecto | Paquetes, recursos, tests |
 
-## Práctica cooperativa — Mini Spring Boot Tasks
+## Práctica individual — Mini Spring Boot Tasks
 
 La primera práctica evaluable de UD2a será **Mini Spring Boot Tasks** (15 %).
-En esta sesión, cada grupo prepara su fork del
-[repositorio plantilla](https://github.com/IES-Rafael-Alberti/dwes-template-ud2a-mini-spring-boot-tasks),
-añade a sus integrantes como colaboradores y consulta el historial. No hace
+En esta sesión, cada estudiante crea desde cero su repositorio propio de Mini
+Tasks, sin fork ni historial heredado. No hace
 falta implementar el slice hoy: Mini Tasks v1 se trabaja en la sesión 02 y v2
 en la sesión 03; después se completa el slice y sus pruebas.
 

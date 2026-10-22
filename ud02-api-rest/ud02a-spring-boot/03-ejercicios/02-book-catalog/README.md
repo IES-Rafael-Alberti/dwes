@@ -6,10 +6,44 @@ Construir una API REST para un catálogo de libros de forma incremental, aplican
 
 ## Contenidos y Recursos
 
-Este ejercicio está diseñado como **GitHub Classroom** con tests semilla para cada entrega:
+Esta práctica se realizará **en grupo**, después de cerrar Mini Tasks individual.
+Sus seis entregas progresivas pertenecen a una sola práctica del **20 % de UD2a**;
+no son seis actividades con seis pesos nuevos.
 
-- `recursos/book-catalog-template/`: Proyecto base con el controlador inicial.
-- `recursos/book-catalog-tests-seed/`: Tests para cada entrega (usados por GitHub Classroom para evaluar automáticamente).
+## Repositorio plantilla y trabajo del grupo
+
+Punto de partida: [**book-catalog-template**](https://github.com/IES-Rafael-Alberti/book-catalog-template).
+
+1. Una persona del grupo usa **Use this template → Create a new repository** y
+   añade al resto como colaboradores. No hace falta GitHub Classroom ni fork.
+2. Cada integrante clona el mismo repositorio y hace commits con su propia cuenta.
+3. El starter incluye el eco inicial, el wrapper y las semillas de las seis
+   entregas; no incluye las soluciones posteriores. Los datos se guardan **en memoria**.
+4. Activad solo la semilla correspondiente al checkpoint:
+
+   ```bash
+   java classroom/ActivarEntrega.java 2
+   ./mvnw test
+   ```
+
+   Cambiad `2` por `1`–`6`. En Windows, `mvnw.cmd test`. El activador conserva
+   los tests propios con otros nombres y se detiene si habéis editado una semilla.
+
+La carpeta `classroom/` organiza los recursos, pero no implica una actividad
+Classroom ni un autocalificador configurado. La CI ejecuta la entrega activa y
+las pruebas propias; no asigna una nota por sí sola.
+
+## Recursos de consulta
+
+- `recursos/book-catalog-template/`: fuente local del repositorio plantilla.
+- `recursos/book-catalog-template/classroom/tests-seed/`: semillas corregidas por
+  checkpoint; ya están integradas en la plantilla, no se descargan por separado.
+- [Orientación hasta la sesión 5 de Battleship](orientacion-hasta-sesion-5.md):
+  progresión de las seis entregas, slices verticales, contrato HTTP y checklist.
+
+Publicar esta orientación como consulta no obliga a empezar Book Catalog antes
+de cerrar Mini Tasks. Las entregas posteriores se activan progresivamente; no se
+copian todos los tests semilla al proyecto inicial de una vez.
 
 ## Tareas (entregas progresivas)
 
@@ -35,10 +69,15 @@ se añaden en Gestión de eventos.
 
 - Repositorio Git con los 6 commits en el formato indicado.
 - Declaración de uso de IA cumplimentada (ver plantilla en `00-recursos-comunes/plantillas/`).
+- README con los ejemplos HTTP y las decisiones del grupo, más las pruebas del
+  contrato y las contribuciones individuales de los slices. La entrega en Moodle
+  es el enlace al repositorio y al issue de entrega del grupo, según las
+  [condiciones de la unidad](../../EVALUACION.md).
 
 ## Requisitos técnicos
 
-- Spring Boot 4.0.5+, Java 25
+- Spring Boot **4.1.1**, Java **25**, Maven Wrapper **3.9.11** incluido.
+- Almacenamiento en memoria: no se exige JPA, H2, seguridad ni migraciones en esta práctica.
 - TDD: los tests se proporcionan como semilla — deben pasar antes de pasar a la siguiente entrega
 - Cada entrega debe compilar y pasar los tests correspondientes antes de avanzar
 

@@ -11,14 +11,14 @@ public class BookController {
     public String list() { return "GET /books"; }
 
     @GetMapping("/{id}")
-    public String getOne(@PathVariable Long id) { return "GET /books/" + id; }
+    public String getOne(@PathVariable("id") Long id) { return "GET /books/" + id; }
 
     @PostMapping
     public String create() { return "POST /books"; }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id) { return "PUT /books/" + id; }
+    public String update(@PathVariable("id") Long id) { return "PUT /books/" + id; }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) { return "DELETE /books/" + id; }
+    public String delete(@PathVariable("id") Long id) { return "DELETE /books/" + id; }
 }

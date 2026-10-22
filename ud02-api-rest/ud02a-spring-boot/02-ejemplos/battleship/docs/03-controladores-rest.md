@@ -661,12 +661,10 @@ contrastar el destino, no para sustituir el proyecto que estamos construyendo.
 
 ## 10. Trabajo individual — Mini Tasks, avance de sesión 3
 
-**Modalidad: individual.** Continúa tu propio fork según el
+**Modalidad: individual.** Continúa tu propio repositorio, iniciado desde cero, según el
 [enunciado de Mini Tasks](../../../03-ejercicios/01-mini-tasks/README.md).
-Si antes se preparó un fork de grupo, cada estudiante debe disponer ahora de una
-copia propia con historial y cambios personales identificables. La plantilla
-conserva `main` en `v4`; las etiquetas sirven para estudiar la evolución. No
-ejecutes `setup-history.sh` ni sustituyas `main` por una etiqueta para entregar.
+No se usa fork, plantilla, historial ni etiquetas heredadas; conserva tus
+propios commits en `main`.
 
 ### Qué hacer hoy
 

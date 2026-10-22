@@ -1,11 +1,14 @@
-# Instrucciones (GitHub Classroom)
+# Instrucciones de trabajo
 
-Sigue las entregas en orden:
-- Entrega 1: eco texto (este repo ya incluye un controlador base).
-- Entrega 2: JSON (Book y DTO), sin ResponseEntity.
-- Entrega 3: ResponseEntity (201, 204, Location).
-- Entrega 4: Servicio.
-- Entrega 5: Excepciones en servicio.
-- Entrega 6: RestControllerAdvice global.
+1. Leed el README y `classroom/entregas.md` antes de cambiar código.
+2. Trabajad en un repositorio por grupo creado con **Use this template**.
+3. Cada integrante usa su cuenta y deja contribuciones y revisión identificables.
+4. Activad una entrega cada vez: `java classroom/ActivarEntrega.java N`.
+5. Ejecutad `./mvnw test`, observad el rojo del comportamiento nuevo, implementad
+   lo mínimo y refactorizad con la suite verde. Las firmas que falten se crean
+   como estructura mínima antes de atribuir el rojo al comportamiento.
+6. Registrad commits `Entrega X: ...` y completad las evidencias del repositorio.
+7. Entregad en Moodle el enlace común al repositorio y al issue de entrega.
 
-Haz commits con el formato: `Entrega X: ...`.
+El directorio se llama `classroom` por la organización histórica del recurso;
+no hace falta aceptar una invitación de GitHub Classroom para este procedimiento.

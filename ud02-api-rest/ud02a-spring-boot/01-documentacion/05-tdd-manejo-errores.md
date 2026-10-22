@@ -12,6 +12,11 @@ output: pdf_document
 
 # Capítulo 2 bis — Tests de errores y payload consistente (Tasks)
 
+> **Material de apoyo sobre Tasks.** El recorrido ejecutable de Battleship está
+> en [05 — manejo de errores](../02-ejemplos/battleship/docs/05-manejo-errores.md),
+> desde el checkpoint completo de 04b. Esa guía conserva la distinción entre
+> recurso inexistente (404), argumento inválido (400) y conflicto de estado (409).
+
 **Módulo:** DWES  
 **Capítulos:** 2 bis (Tests)  
 **RA relacionados:** RA1, RA5

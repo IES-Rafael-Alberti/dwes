@@ -14,6 +14,31 @@ Salimos con tamaño/fecha, barcos, ataques, hundimiento, victoria y cancelación
 lógica, expuestos por HTTP y probados. Seguridad, paginación, payload uniforme
 de errores, OpenAPI y producción se construirán después.
 
+### Puntos de corte: no hay que terminar todo de una vez
+
+El checkpoint de entrada tiene **12 pruebas**. Para una clase de dos horas, el
+objetivo razonable es llegar a crear el tablero solicitado, colocar el primer
+barco y, si el ritmo acompaña, comprobar sus límites. Se continúa desde el último
+verde, no saltando a la implementación final para poder empezar 05.
+
+| Tramo terminado | Pruebas de la suite completa | Qué se puede demostrar |
+|---|---:|---|
+| Preparación y creación con tamaño, apartado 2 | 13 | POST con `boardSize` y persistencia del nuevo modelo |
+| Primer barco, apartado 3 | 14 | Colocación y paso a `IN_PROGRESS` |
+| Límites, primer ciclo del apartado 4 | 15 | Rechazo de barcos que no caben |
+| Nombre y solapamiento, final del apartado 4 | 17 | Restricciones de colocación |
+| Estado y agua/impacto, primeros ciclos del apartado 5 | 19 | Disparos básicos |
+| Coordenada repetida, final del apartado 5 | 20 | Rechazo de disparos duplicados |
+| Hundimiento y victoria, antes del último ciclo del apartado 6 | 22 | Flota hundida y `WON` |
+| Restricción tras victoria y cancelación, final del apartado 7 | 25 | No colocar tras ganar; cancelación con histórico |
+| Flujo HTTP, apartado 8 | 28 | Operaciones reales por HTTP simulado |
+| Actualización con datos anteriores, apartado 8.1 | 29 | Checkpoint completo para empezar 05 |
+
+Estos recuentos corresponden a los archivos de esta guía. Si añadiste tests
+propios, el número puede ser mayor: conserva sus comportamientos. Hasta completar
+un caso, las firmas preparadas para operaciones posteriores no se consideran
+funcionalidad disponible. Demuestra solo lo que ya está probado.
+
 Esta API es el juego simplificado de la referencia: **no tiene todavía jugadores
 ni turnos alternos**. Al colocar el primer barco pasa a `IN_PROGRESS`; se pueden
 añadir más barcos mientras esté en curso. Gana al hundir la flota. Una partida
@@ -1275,9 +1300,9 @@ HTTP y la actualización de una base con datos anteriores.
 - [ ] Cancelación lógica: filas conservadas, lectura/listado de activos.
 - [ ] Servicio probado y flujo HTTP comprobado; ningún método pendiente vacío.
 
-El siguiente documento de errores deberá partir de **este checkpoint**, mantener
+El [siguiente documento de errores](05-manejo-errores.md) parte de **este checkpoint**, mantiene
 `GameNotFoundException → 404`, `IllegalArgumentException → 400` e
-`IllegalStateException → 409`, y sustituir handlers locales por advice/payload.
+`IllegalStateException → 409` y sustituye handlers locales por advice/payload.
 No copiar el handler antiguo que traduce todos los argumentos inválidos a 404.
 La comparación con la referencia es de comportamiento y esquema final; nuestros
 paquetes, historia de migraciones y algoritmo de solapamiento pueden diferir.
@@ -1286,15 +1311,16 @@ paquetes, historia de migraciones y algoritmo de solapamiento pueden diferir.
 
 Continúa la misma tarea individual. Primero termina la normalización del título
 de sesión 4. Después plantea una operación **idempotente para completar una tarea**,
-distinta del `toggle` existente:
+distinta de invertir el estado con `toggle`, si ya lo has implementado:
 
 1. Test `completeMarksTaskDone`: la tarea queda con `done=true`.
 2. Test `completeTwiceKeepsTaskDone`: repetir no la desmarca.
 3. Implementación en `TaskService`, probada con repositorio mock; conserva título e id.
 4. Conectar el slice a un endpoint propio, por ejemplo
-   `PATCH /v4/tasks/{id}/complete`, con DTO de salida y test MVC.
+   `PATCH /api/tasks/{id}/complete`, con DTO de salida y test MVC. Adapta el
+   prefijo al contrato de tu propio proyecto; no hay una plantilla V4 que copiar.
 5. Probar recurso inexistente y concretar su `404` al trabajar el manejo de errores.
 
-No sustituir `toggle`: son contratos distintos. Guardar commits, pruebas y
-`aprendizaje.md` en el fork individual. Book Catalog no se abre hasta cerrar Mini
+Si existe `toggle`, no lo sustituyas: son contratos distintos. Guarda commits, pruebas y
+`aprendizaje.md` en el repositorio propio individual. Book Catalog no se abre hasta cerrar Mini
 Tasks; las tareas posteriores mantienen modalidad grupal.

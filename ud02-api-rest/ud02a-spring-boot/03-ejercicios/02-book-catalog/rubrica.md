@@ -19,6 +19,10 @@
 
 - Para obtener el 4 en cualquier criterio, el estudiante debe poder defenderlo oralmente si se le pregunta.
 - El uso de IA sin declarar se considera falta de honestidad académica.
+- Las semillas se comprueban en el checkpoint para el que fueron diseñadas, no
+  todas a la vez. El eco inicial y el JSON, o POST 200 y POST 201, son contratos
+  sucesivos. La suite de cierre incluye la semilla activa y los tests propios
+  de los comportamientos que siguen vigentes; la CI no sustituye la defensa.
 
 ## Aplicación 2026/2027
 
