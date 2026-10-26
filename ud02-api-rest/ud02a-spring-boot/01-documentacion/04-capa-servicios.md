@@ -1,5 +1,9 @@
 ## **Capítulo 4. Capa de Servicio**
 
+Para entender **por qué** separamos controlador, servicio, acceso a datos y
+modelo, empieza por [Arquitectura en capas: por qué separamos la aplicación](04a-arquitectura-en-capas.md).
+Los ejemplos siguientes muestran una parte de esa organización.
+
 > **Apuntes generales.** Para construir Battleship desde el checkpoint de sesión 3,
 > sigue la [guía 4 del code-along](../02-ejemplos/battleship/docs/04-capa-servicios-dtos.md)
 > y después [4b, modelo y reglas](../02-ejemplos/battleship/docs/04b-reglas-de-negocio.md).

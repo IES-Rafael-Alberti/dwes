@@ -29,7 +29,7 @@
 | **@ResponseStatus**                                                                       | Permite establecer el código HTTP devuelto sin usar `ResponseEntity`.                                                                                |
 | **@CrossOrigin**                                                                          | Habilita CORS (acceso entre dominios) para controladores o métodos específicos.                                                                      |
 | **@ControllerAdvice**                                                                     | Define una clase global para manejar excepciones y consejos aplicables a todos los controladores.                                                    |
-| **@ExceptionHandler**                                                                     | Dentro de un `@ControllerAdvice`, captura excepciones específicas y define la respuesta HTTP a devolver.                                             |
+| **@ExceptionHandler**                                                                     | En un controlador o un advice, trata excepciones específicas y define la respuesta HTTP. Un handler local tiene prioridad sobre el global.          |
 
 ---
 
@@ -38,7 +38,7 @@
 | Anotación                | Significado / Uso                                                                       |
 | ------------------------ | --------------------------------------------------------------------------------------- |
 | **@Valid**               | Indica que el objeto recibido debe validarse usando las reglas de `jakarta.validation`. |
-| **@NotBlank**            | Valida que una cadena no sea nula ni vacía.                                             |
+| **@NotBlank**            | Exige una cadena no nula con al menos un carácter que no sea un espacio en blanco.       |
 | **@NotNull**             | El valor no puede ser nulo.                                                             |
 | **@Min**, **@Max**       | Valida valores numéricos mínimos o máximos.                                             |
 | **@Email**, **@Pattern** | Valida formato de email o expresión regular.                                            |
@@ -57,6 +57,7 @@
 | **@Table**                                                     | Permite definir el nombre de la tabla o esquemas específicos.                               |
 | **@Transient**                                                 | Indica que un campo no debe persistirse en la base de datos.                                |
 | **@Enumerated**                                                | Define cómo se guardan los `enum` (por nombre o ordinal).                                   |
+| **@PrePersist**, **@PreUpdate**                                | Marcan callbacks del ciclo de vida de la entidad antes de su inserción o actualización; útiles, por ejemplo, para fechas. |
 | **@Embeddable**, **@Embedded**, **@EmbeddedId**                | Definen objetos valor integrados o claves compuestas. *(se verán más adelante con records)* |
 | **@ManyToOne**, **@OneToMany**, **@OneToOne**, **@ManyToMany** | Relaciones entre entidades (no usadas aún, se verán más adelante).                          |
 | **@JoinColumn**, **@JoinTable**                                | Configura columnas de unión en relaciones.                                                  |
@@ -68,8 +69,16 @@
 | Anotación          | Significado / Uso                                                                                                                                         |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **@Service**       | Marca una clase como componente de la capa de negocio. Se detecta automáticamente y puede inyectarse.                                                     |
-| **@Transactional** | Define límites transaccionales (inicio/fin de transacción). Garantiza que un conjunto de operaciones se ejecuten como una sola unidad.                    |
+| **@Transactional** | Configura el límite transaccional de los recursos gestionados por Spring cuando la llamada es interceptada por su infraestructura transaccional.           |
 | **@Repository**    | Indica que la clase gestiona el acceso a datos. También traduce excepciones específicas de JPA a excepciones genéricas de Spring (`DataAccessException`). |
+
+En el modo habitual basado en proxies, la llamada debe pasar por el bean de
+Spring: crear el servicio con `new` en un test unitario no activa por sí solo
+las transacciones, y una llamada interna entre métodos de la misma instancia
+no aplica una nueva interceptación. `readOnly = true` expresa una intención de
+lectura y puede permitir optimizaciones; no es una autorización de seguridad.
+No convierte llamadas HTTP externas o escritura de ficheros en operaciones
+reversibles junto con la transacción de base de datos.
 
 ---
 
