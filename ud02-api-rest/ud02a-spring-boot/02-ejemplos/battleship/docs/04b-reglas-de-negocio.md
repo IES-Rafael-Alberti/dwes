@@ -241,6 +241,10 @@ public class Attack {
 El POST ahora sí recibirá `{"boardSize":8}`. Es un cambio deliberado del contrato
 anterior, no una petición que llevase funcionando desde la sesión 3.
 
+`CreateGameDTO` es el dato de entrada: contiene solo lo que el cliente puede
+solicitar. `GameResponseDTO` es el dato de salida: describe lo que la API decide
+devolver. No son entidades ni tablas; sirven para definir el contrato JSON.
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/dto/CreateGameDTO.java -->
 ```java
 package es.daw2a.bshipalong.dto;
@@ -275,11 +279,34 @@ import java.util.List;
 
 public record GameResponseDTO(Long id, int boardSize, String status,
         LocalDateTime createdAt, List<ShipDTO> ships, List<AttackDTO> attacks) {
+    // Tipos de salida incluidos dentro de la respuesta de una partida.
     public record ShipDTO(Long id, String shipName, int length,
             int startX, int startY, boolean isHorizontal, boolean sunk) {}
     public record AttackDTO(Long id, int x, int y, boolean hit, LocalDateTime createdAt) {}
 }
 ```
+
+Los records anidados `ShipDTO` y `AttackDTO` son tipos de datos pequeños que
+agrupan la información pública de cada barco y ataque dentro de `GameResponseDTO`.
+No son clases JPA ni endpoints. En Java son miembros implícitamente `static` y se
+usan como `GameResponseDTO.ShipDTO`; el `AttackDTO` anidado no es el `AttackDTO`
+de entrada del paquete `dto`.
+
+Por ejemplo, una partida sin barcos ni ataques podría representarse así:
+
+```json
+{
+  "id": 17,
+  "boardSize": 8,
+  "status": "PENDING",
+  "createdAt": "2026-10-28T10:30:00",
+  "ships": [],
+  "attacks": []
+}
+```
+
+Las listas vacías son parte del contrato: en los siguientes ciclos se llenarán
+al persistir barcos y ataques.
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/repository/ShipRepository.java -->
 ```java
@@ -308,345 +335,140 @@ public interface AttackRepository extends JpaRepository<Attack, Long> {
 explícito el filtro `active` en el servicio; más adelante se podrá trasladar a
 métodos derivados o Specifications sin cambiar el contrato.
 
-## 2. Primer ciclo: crear el tamaño solicitado
+Estas interfaces son la preparación del acceso a datos. Spring Data genera su
+implementación al arrancar la aplicación; `findByGameId` y
+`existsByGameIdAndXAndY` expresan consultas a partir del nombre. Crear los
+repositorios **no implementa todavía** las reglas del juego.
 
-Actualiza el test unitario de sesión 4 al nuevo contrato de entrada/salida y a
-los dos colaboradores nuevos. Solo cambia el servicio después de ver el rojo.
+## 2. Preparar el contrato sin empezar todavía el ciclo TDD
 
-<!-- archivo: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+Los repositorios y los DTOs ya están definidos. Ahora conectamos el nuevo dato de
+entrada con el endpoint sin implementar aún la regla «crear con el tamaño
+solicitado». Esta preparación puede tocar varias llamadas porque cambia una
+firma pública; no la presentemos como el ciclo rojo-verde.
+
+### 2.1. Migrar la firma manteniendo el comportamiento anterior
+
+Haz solo estos cambios estructurales:
+
+1. En `GameService`, cambia `createGame()` por `createGame(CreateGameDTO dto)`.
+   Conserva temporalmente el comportamiento anterior: crea `new Game()` (tamaño
+   predeterminado 10) y guarda el resultado. No añadas todavía métodos auxiliares.
+2. En `GameController`, modifica únicamente el método POST existente para recibir
+   `@Valid @RequestBody CreateGameDTO dto` y llamar a `service.createGame(dto)`.
+   Conserva su respuesta actual (`201 Created` y `Location`). No sustituyas el
+   controlador completo ni añadas endpoints de barcos, ataques o cancelación.
+3. Actualiza las llamadas al servicio en los tests para pasar `CreateGameDTO`.
+   En esta preparación, conserva la expectativa anterior: manda 10 y comprueba
+   que la partida sigue teniendo el tamaño predeterminado 10. Si el test actual
+   pedía 8, cambia temporalmente su entrada y expectativa a 10; el requisito de
+   tamaño solicitado tendrá su test nuevo en el ciclo siguiente.
+4. En los tests web, configura el mock con `new CreateGameDTO(10)` y envía
+   `{"boardSize":10}`. En el test de integración, añade el mismo cuerpo JSON al
+   POST y conserva la expectativa 10. Así se adapta el contrato HTTP sin afirmar
+   todavía que el servicio aplique el valor recibido.
+5. Busca y actualiza cualquier otra llamada a `createGame()` con la firma nueva.
+   Ejecuta todos los tests. Si no compilan, aún estamos en preparación: resuelve
+   esas referencias. No avances al rojo hasta tener compilación y suite verde.
+
+El cambio del controlador y la actualización de los tests no son el rojo TDD:
+son migración del contrato para que el proyecto siga compilando. La validación
+`@Valid` puede probarse aparte; no demuestra que el servicio use el tamaño.
+
+### 2.2. Ciclo TDD de servicio: aplicar el tamaño solicitado
+
+Con la preparación verde, añade un test nuevo a `GameServiceTest`. No cambies
+ningún test existente ni el controlador en este paso:
+
 ```java
-package es.daw2a.bshipalong.service;
-
-import es.daw2a.bshipalong.domain.*;
-import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
-import es.daw2a.bshipalong.dto.CreateGameDTO;
-import es.daw2a.bshipalong.repository.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
-class GameServiceTest {
-    @Mock GameRepository repository;
-    @Mock ShipRepository shipRepository;
-    @Mock AttackRepository attackRepository;
-    @InjectMocks GameService service;
-
-    private Game pending(long id) {
-        Game game = new Game();
-        game.setId(id);
+@Test
+void createsGameWithRequestedBoardSize() {
+    when(repository.save(any(Game.class))).thenAnswer(call -> {
+        Game game = call.getArgument(0);
+        game.setId(17L);
         return game;
-    }
-    @Test void createsPendingDto() {
-        when(repository.save(any(Game.class))).thenAnswer(call -> {
-            Game game = call.getArgument(0);
-            game.setId(17L);
-            return game;
-        });
-        var result = service.createGame(new CreateGameDTO(8));
-        assertThat(result.id()).isEqualTo(17L);
-        assertThat(result.boardSize()).isEqualTo(8);
-        assertThat(result.status()).isEqualTo("PENDING");
-    }
-    @Test void retrievesDto() {
-        when(repository.findById(17L)).thenReturn(Optional.of(pending(17L)));
-        assertThat(service.getGame(17L).id()).isEqualTo(17L);
-    }
-    @Test void missingGameHasSpecificException() {
-        when(repository.findById(999L)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.getGame(999L))
-                .isInstanceOf(GameNotFoundException.class);
-    }
-    @Test void listsAndFiltersDtos() {
-        when(repository.findAll()).thenReturn(List.of(pending(1L), pending(2L)));
-        assertThat(service.listGames(null)).hasSize(2);
-        assertThat(service.listGames(GameStatus.PENDING)).hasSize(2);
-        assertThat(service.listGames(GameStatus.IN_PROGRESS)).isEmpty();
-    }
+    });
+
+    var result = service.createGame(new CreateGameDTO(8));
+
+    assertThat(result.boardSize()).isEqualTo(8);
 }
 ```
 
-Prepara las firmas del servicio con esta versión **incompleta**. La creación
-todavía ignora el tamaño solicitado; las operaciones nuevas lanzan una excepción
-para que no puedan confundirse con capacidades implementadas.
+Imports necesarios si aún no están presentes:
 
-<!-- archivo: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
-package es.daw2a.bshipalong.service;
-
-import es.daw2a.bshipalong.domain.*;
-import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
-import es.daw2a.bshipalong.dto.*;
-import es.daw2a.bshipalong.repository.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-
-@Service @Transactional
-public class GameService {
-    private final GameRepository repository;
-    private final ShipRepository shipRepository;
-    private final AttackRepository attackRepository;
-
-    public GameService(GameRepository repository, ShipRepository shipRepository,
-            AttackRepository attackRepository) {
-        this.repository = repository;
-        this.shipRepository = shipRepository;
-        this.attackRepository = attackRepository;
-    }
-    public GameResponseDTO createGame(CreateGameDTO dto) {
-        return toResponse(repository.save(new Game()));
-    }
-    @Transactional(readOnly = true)
-    public GameResponseDTO getGame(Long id) { return toResponse(findGame(id)); }
-    @Transactional(readOnly = true)
-    public List<GameResponseDTO> listGames(GameStatus status) {
-        return repository.findAll().stream().filter(Game::isActive)
-                .filter(g -> status == null || g.getStatus() == status)
-                .map(this::toResponse).toList();
-    }
-    private Game findGame(Long id) {
-        return repository.findById(id).filter(Game::isActive)
-                .orElseThrow(() -> new GameNotFoundException(id));
-    }
-    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
-        throw new UnsupportedOperationException("Pending placement");
-    }
-    public GameResponseDTO attack(Long id, AttackDTO dto) {
-        throw new UnsupportedOperationException("Pending attack");
-    }
-    public void cancelGame(Long id) {
-        throw new UnsupportedOperationException("Pending cancellation");
-    }
-    private void validatePlacement(Game game, PlaceShipDTO dto) {}
-    private void validateNoOverlap(Long id, PlaceShipDTO dto) {}
-    private void checkSunkShips(Game game, List<Ship> ships) {}
-    private void checkGameOver(Game game, List<Ship> ships) {}
-    private boolean occupies(Ship ship, int x, int y) {
-        for (int i = 0; i < ship.getLength(); i++) {
-            int sx = ship.getStartX() + (ship.isHorizontal() ? i : 0);
-            int sy = ship.getStartY() + (ship.isHorizontal() ? 0 : i);
-            if (sx == x && sy == y) return true;
-        }
-        return false;
-    }
-    private GameResponseDTO toResponse(Game game) {
-        var ships = shipRepository.findByGameId(game.getId()).stream()
-                .map(s -> new GameResponseDTO.ShipDTO(s.getId(), s.getShipName(),
-                        s.getLength(), s.getStartX(), s.getStartY(), s.isHorizontal(), s.isSunk()))
-                .toList();
-        var attacks = attackRepository.findByGameId(game.getId()).stream()
-                .map(a -> new GameResponseDTO.AttackDTO(a.getId(), a.getX(), a.getY(),
-                        a.isHit(), a.getCreatedAt())).toList();
-        return new GameResponseDTO(game.getId(), game.getBoardSize(), game.getStatus().name(),
-                game.getCreatedAt(), ships, attacks);
-    }
-}
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 ```
 
-Antes de ejecutar Maven hay que actualizar también los tests web e integración
-que aún invocan la firma antigua: Java compila **todos los tests** aunque se
-seleccione uno solo. Haz la adaptación de contratos de los dos apartados
-siguientes; todavía no implementes el tamaño en el servicio.
-
-### 2.1. Adaptar controlador y tests web al nuevo contrato
-
-Sustituye el controlador completo. Las tres operaciones nuevas delegan en firmas
-todavía pendientes; se probarán una a una antes de usar esos endpoints.
-
-<!-- archivo: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
-```java
-package es.daw2a.bshipalong.web;
-
-import es.daw2a.bshipalong.domain.GameStatus;
-import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
-import es.daw2a.bshipalong.dto.*;
-import es.daw2a.bshipalong.service.GameService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.net.URI;
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/games")
-public class GameController {
-    private final GameService service;
-    public GameController(GameService service) { this.service = service; }
-    private ResponseEntity<GameResponseDTO> created(GameResponseDTO game) {
-        return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
-    }
-    @PostMapping
-    public ResponseEntity<GameResponseDTO> create(@Valid @RequestBody CreateGameDTO dto) {
-        return created(service.createGame(dto));
-    }
-    @GetMapping("/{id}")
-    public GameResponseDTO get(@PathVariable("id") Long id) { return service.getGame(id); }
-    @GetMapping
-    public List<GameResponseDTO> list(
-            @RequestParam(name = "status", required = false) GameStatus status) {
-        return service.listGames(status);
-    }
-    @PostMapping("/{id}/ships")
-    public ResponseEntity<GameResponseDTO> place(
-            @PathVariable("id") Long id, @Valid @RequestBody PlaceShipDTO dto) {
-        return created(service.placeShip(id, dto));
-    }
-    @PostMapping("/{id}/attacks")
-    public ResponseEntity<GameResponseDTO> attack(
-            @PathVariable("id") Long id, @Valid @RequestBody AttackDTO dto) {
-        return created(service.attack(id, dto));
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable("id") Long id) {
-        service.cancelGame(id);
-        return ResponseEntity.noContent().build();
-    }
-    @ExceptionHandler(GameNotFoundException.class)
-    public ResponseEntity<Void> missing(GameNotFoundException ex) {
-        return ResponseEntity.notFound().build();
-    }
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> badRequest(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().build();
-    }
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Void> conflict(IllegalStateException ex) {
-        return ResponseEntity.status(409).build();
-    }
-}
-```
-
-Los handlers son **locales y transitorios**: preservan códigos y no inventan aún
-un payload JSON de error. En sesión 5 se trasladarán al advice. `@Valid` protege
-la forma de la entrada; el servicio protege reglas dependientes de la partida.
-
-<!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
-```java
-package es.daw2a.bshipalong.web;
-
-import es.daw2a.bshipalong.domain.GameStatus;
-import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
-import es.daw2a.bshipalong.dto.*;
-import es.daw2a.bshipalong.service.GameService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import java.time.LocalDateTime;
-import java.util.List;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(GameController.class)
-class GameControllerTest {
-    @Autowired MockMvc mvc;
-    @MockitoBean GameService service;
-    private GameResponseDTO pending(long id) {
-        return new GameResponseDTO(id, 8, "PENDING", LocalDateTime.now(), List.of(), List.of());
-    }
-    @Test void getsExistingGame() throws Exception {
-        when(service.getGame(17L)).thenReturn(pending(17L));
-        mvc.perform(get("/api/games/17")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(17));
-    }
-    @Test void missingGameReturns404() throws Exception {
-        when(service.getGame(999L)).thenThrow(new GameNotFoundException(999L));
-        mvc.perform(get("/api/games/999")).andExpect(status().isNotFound());
-    }
-    @Test void createsPendingGameWithLocation() throws Exception {
-        when(service.createGame(new CreateGameDTO(8))).thenReturn(pending(99L));
-        mvc.perform(post("/api/games").contentType("application/json")
-                .content("{\"boardSize\":8}"))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/games/99"))
-                .andExpect(jsonPath("$.boardSize").value(8));
-    }
-    @Test void rejectsInvalidBoardSize() throws Exception {
-        mvc.perform(post("/api/games").contentType("application/json")
-                .content("{\"boardSize\":0}"))
-                .andExpect(status().isBadRequest());
-        verifyNoInteractions(service);
-    }
-    @Test void listsGames() throws Exception {
-        when(service.listGames(null)).thenReturn(List.of(pending(1L)));
-        mvc.perform(get("/api/games")).andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-    }
-    @Test void filtersByStatus() throws Exception {
-        when(service.listGames(GameStatus.IN_PROGRESS)).thenReturn(List.of());
-        mvc.perform(get("/api/games").param("status", "IN_PROGRESS"))
-                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
-    }
-}
-```
-
-### 2.2. Actualizar el escenario real y obtener el primer rojo
-
-<!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameHttpIntegrationTest.java -->
-```java
-package es.daw2a.bshipalong.web;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@SpringBootTest @AutoConfigureMockMvc @Transactional
-class GameHttpIntegrationTest {
-    @Autowired MockMvc mvc;
-    @Test void createsPersistsAndRetrievesGame() throws Exception {
-        String location = mvc.perform(post("/api/games").contentType("application/json")
-                        .content("{\"boardSize\":8}"))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", startsWith("/api/games/")))
-                .andExpect(jsonPath("$.boardSize").value(8))
-                .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andReturn().getResponse().getHeader("Location");
-        mvc.perform(get(location)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.boardSize").value(8));
-        mvc.perform(get("/api/games").param("status", "PENDING"))
-                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(1)));
-    }
-}
-```
+Ejecuta solo este test:
 
 ```bash
-./mvnw -Dtest=GameServiceTest#createsPendingDto test
+./mvnw -Dtest=GameServiceTest#createsGameWithRequestedBoardSize test
 ```
-<!-- comprobar: rojo GameServiceTest#createsPendingDto -->
 
-Debe fallar por **10 en lugar de 8**, no por compilación. Sustituye el método
-`createGame` del servicio:
+<!-- comprobar: test compilado, rojo por expected 8 but was 10 -->
 
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame -->
+Este es el rojo útil: el test compila, se ejecuta y observa el valor predeterminado
+10 en lugar del valor pedido 8. Si el error es de compilación, no hemos seguido
+el checkpoint verde de preparación y todavía no estamos en TDD.
+
+Ahora cambia únicamente el cuerpo de `createGame` para pasar el tamaño al
+constructor de `Game`:
+
 ```java
-    public GameResponseDTO createGame(CreateGameDTO dto) {
-        return toResponse(repository.save(new Game(dto.boardSize())));
-    }
+public GameResponseDTO createGame(CreateGameDTO dto) {
+    return toResponse(repository.save(new Game(dto.boardSize())));
+}
 ```
+
+Vuelve a ejecutar el test dirigido; debe quedar verde. Después ejecuta la suite
+completa para comprobar que los clientes antiguos, la persistencia y el endpoint
+siguen funcionando:
 
 ```bash
+./mvnw -Dtest=GameServiceTest#createsGameWithRequestedBoardSize test
 ./mvnw test
 ```
-<!-- comprobar: verde * -->
 
-Checkpoint de preparación: trece pruebas verdes. `@Valid` ya rechaza los tamaños
-inválidos en HTTP. Ningún dato previo ha requerido reescribir V1.
+<!-- comprobar: test dirigido verde y suite completa verde -->
+
+El ciclo ha cambiado una regla y una sola implementación: el tamaño de la partida
+creada. La conversión a `GameResponseDTO` ya estaba preparada antes del ciclo; no
+la ampliamos ahora con mappers, helpers ni reglas futuras.
+
+### 2.3. Comprobar el contrato HTTP por separado
+
+Una vez verde el servicio, añade o adapta un test web que envíe el DTO y compruebe
+que el controlador lo enlaza correctamente. Al ser `@WebMvcTest`, el servicio es
+un mock: esta prueba comprueba el contrato HTTP, no la persistencia ni la regla
+del tamaño.
+
+```java
+@Test
+void createAcceptsBoardSizeAndReturnsCreatedLocation() throws Exception {
+    when(service.createGame(new CreateGameDTO(8))).thenReturn(
+            new GameResponseDTO(17L, 8, "PENDING", LocalDateTime.now(),
+                    List.of(), List.of()));
+
+    mvc.perform(post("/api/games").contentType("application/json")
+                    .content("{\"boardSize\":8}"))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", "/api/games/17"))
+            .andExpect(jsonPath("$.boardSize").value(8));
+}
+```
+
+Si ya existe un test equivalente de creación, modifica solo ese caso en lugar de
+duplicarlo. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
+listas vacías porque la partida recién creada aún no tiene esos elementos.
+
+**No adelantes** las funciones de validación de barcos, colisiones, hundimiento o
+victoria. Cada regla empieza en su propio test de comportamiento, antes de su
+implementación. Las firmas de esos casos se incorporan cuando toque cada ciclo;
+no se crean stubs ni métodos auxiliares vacíos por anticipado.
 
 ## 3. Banco incremental de reglas: primero colocar un barco
 
