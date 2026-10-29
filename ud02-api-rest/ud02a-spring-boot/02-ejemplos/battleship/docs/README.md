@@ -12,10 +12,12 @@ funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
 - [Sesión 4](04-capa-servicios-dtos.md): servicio y DTOs desde el checkpoint 3,
   realizada en clase y comprobada con doce pruebas finales.
 - [Tramo 4b](04b-reglas-de-negocio.md): construcción completa del núcleo de reglas,
-  modelo, migraciones y endpoints; cierre de 29 pruebas. Se reparte en los bloques
+  modelo, migraciones y endpoints; preparación verde y ciclos red/green/blue,
+  cierre de 36 pruebas. Se reparte en los bloques
   que requiera el ritmo de clase, no se presupone terminado en la sesión 4.
 - [Sesión 5](05-manejo-errores.md): advice y payload de errores desde 04b,
-  reproducida con los rojos previos y 37 pruebas finales. Empezar cuando se cierre
+  reproducida con los rojos previos y 43 pruebas finales. Cada handler local se
+  retira por separado para mantener verde la suite. Empezar cuando se cierre
   04b, no por haber llegado a una hora determinada.
 - Sesiones 6 y siguientes: pendientes de adaptación progresiva desde ese checkpoint.
 

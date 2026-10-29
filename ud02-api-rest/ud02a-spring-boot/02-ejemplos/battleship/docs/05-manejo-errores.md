@@ -1,7 +1,7 @@
 # Sesión 5 — Errores HTTP coherentes con un advice global
 
 **Proyecto:** `02-ejemplos/bshipAlong/`, Boot **4.1.1**, Java 25.
-**Entrada:** checkpoint completo de [04b](04b-reglas-de-negocio.md), con 29 pruebas
+**Entrada:** checkpoint completo de [04b](04b-reglas-de-negocio.md), con 36 pruebas
 verdes. No se empieza este documento si todavía faltan reglas de ese tramo.
 
 > Battleship es el code-along. El avance final sigue siendo **Mini Tasks
@@ -41,12 +41,22 @@ Petición → controlador → servicio → excepción específica
 
 ## 2. Primer test: el 404 también debe tener JSON
 
-Añade este método **dentro de `GameControllerTest`**, antes de la última llave.
-El archivo ya importa la excepción, Mockito y los helpers de MockMvc de 04b.
+Amplía el test existente `missingGameReturns404` de `GameControllerTest`: cambia
+su nombre y cuerpo por el siguiente, **conservando su `@Test`**. En 04b exigíamos
+404 sin cuerpo; ahora evolucionamos deliberadamente ese contrato a un 404 con
+payload. No se mantienen a la vez expectativas incompatibles de cuerpo vacío y
+JSON. Añade también los imports que se utilizarán en los ciclos de esta guía:
 
-<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
+<!-- imports: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
 ```java
-    @Test void missingGameHasErrorPayload() throws Exception {
+import es.daw2a.bshipalong.dto.PlaceShipDTO;
+import es.daw2a.bshipalong.dto.AttackDTO;
+import static org.mockito.Mockito.verifyNoInteractions;
+```
+
+<!-- método: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#missingGameReturns404 -->
+```java
+    void missingGameHasErrorPayload() throws Exception {
         when(service.getGame(999L)).thenThrow(new GameNotFoundException(999L));
         mvc.perform(get("/api/games/999"))
                 .andExpect(status().isNotFound())
@@ -114,67 +124,26 @@ a un método. Pero **el handler local tiene prioridad sobre el global**:
 El test sigue rojo mientras exista `missing(...)` en el controlador. No es
 necesario desactivar filtros ni cambiar el servicio para resolverlo.
 
-## 4. Quitar los handlers locales sin perder endpoints
+## 4. Retirar solo el handler local del caso actual
 
-Sustituye `GameController.java` por este archivo completo. Conserva creación,
-consulta, filtro, barcos, ataques y cancelación; desaparecen sus tres handlers.
-El 400/409 uniforme se construirá en los siguientes ciclos.
+No se sustituye el controlador completo. Retira **solo este método y su anotación**
+de `GameController`, para que el 404 pase al advice que acabamos de construir:
 
-<!-- archivo: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+<!-- quitar: src/main/java/es/daw2a/bshipalong/web/GameController.java#missing -->
 ```java
-package es.daw2a.bshipalong.web;
-
-import es.daw2a.bshipalong.domain.GameStatus;
-import es.daw2a.bshipalong.dto.*;
-import es.daw2a.bshipalong.service.GameService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.net.URI;
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/games")
-public class GameController {
-    private final GameService service;
-    public GameController(GameService service) { this.service = service; }
-
-    private ResponseEntity<GameResponseDTO> created(GameResponseDTO game) {
-        return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<Void> missing(GameNotFoundException ex) {
+        return ResponseEntity.notFound().build();
     }
-    @PostMapping
-    public ResponseEntity<GameResponseDTO> create(@Valid @RequestBody CreateGameDTO dto) {
-        return created(service.createGame(dto));
-    }
-    @GetMapping("/{id}")
-    public GameResponseDTO get(@PathVariable("id") Long id) { return service.getGame(id); }
-    @GetMapping
-    public List<GameResponseDTO> list(
-            @RequestParam(name = "status", required = false) GameStatus status) {
-        return service.listGames(status);
-    }
-    @PostMapping("/{id}/ships")
-    public ResponseEntity<GameResponseDTO> place(
-            @PathVariable("id") Long id, @Valid @RequestBody PlaceShipDTO dto) {
-        return created(service.placeShip(id, dto));
-    }
-    @PostMapping("/{id}/attacks")
-    public ResponseEntity<GameResponseDTO> attack(
-            @PathVariable("id") Long id, @Valid @RequestBody AttackDTO dto) {
-        return created(service.attack(id, dto));
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancel(@PathVariable("id") Long id) {
-        service.cancelGame(id);
-        return ResponseEntity.noContent().build();
-    }
-}
 ```
+
+Conserva los endpoints y los handlers locales de 400/409. Se retirará cada uno
+cuando su propio test haya exigido el nuevo payload.
 
 ```bash
 ./mvnw -Dtest=GameControllerTest#missingGameHasErrorPayload test
 ```
-<!-- comprobar: verde GameControllerTest#missingGameHasErrorPayload -->
+<!-- comprobar: verde * -->
 
 ```mermaid
 flowchart LR
@@ -185,10 +154,13 @@ flowchart LR
     E --> F["Siguiente test: argumento inválido"]
 ```
 
-Lectura sin visor: **test → rojo → implementación mínima → verde → refactor**.
-En este punto el resto de la suite puede detectar los mapeos 400/409 que acabamos
-de retirar: se recuperan inmediatamente en los próximos dos ciclos. No se da
-por terminada la extracción hasta que toda la suite vuelva a verde.
+Lectura sin visor: **test → rojo → implementación mínima → verde → blue**.
+Ahora toda la suite vuelve a verde: 404 global con JSON y 400/409 locales todavía
+operativos. **Blue:** revisar que no se han cambiado reglas ni rutas; retirar
+imports sin uso si corresponde. El siguiente payload requiere su propio test.
+Si se empieza esta sesión al terminar 04b y no queda tiempo, este es un corte
+válido: guardar el verde aquí y retomar después el 400. No es obligatorio retirar
+los tres handlers para cerrar el primer ciclo.
 
 ## 5. Regla incumplida: 400 con mensaje público
 
@@ -224,13 +196,24 @@ Añade este método dentro del advice, antes de su última llave:
     }
 ```
 
+Retira únicamente el handler local equivalente del controlador:
+
+<!-- quitar: src/main/java/es/daw2a/bshipalong/web/GameController.java#badRequest -->
+```java
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> badRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().build();
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameControllerTest#invalidPlacementHasBadRequestPayload test
 ```
-<!-- comprobar: verde GameControllerTest#invalidPlacementHasBadRequestPayload -->
+<!-- comprobar: verde * -->
 
 El mensaje viene de una regla que hemos diseñado para ser comunicada. Esto no
 autoriza a devolver indiscriminadamente detalles internos de cualquier excepción.
+**Blue:** el 400 ya se traduce en un solo lugar; conservar todavía el 409 local.
 
 ## 6. Estado incompatible: 409
 
@@ -260,10 +243,20 @@ autoriza a devolver indiscriminadamente detalles internos de cualquier excepció
     }
 ```
 
+Retira solo el handler local de conflicto:
+
+<!-- quitar: src/main/java/es/daw2a/bshipalong/web/GameController.java#conflict -->
+```java
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Void> conflict(IllegalStateException ex) {
+        return ResponseEntity.status(409).build();
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameControllerTest#invalidStateHasConflictPayload test
 ```
-<!-- comprobar: verde GameControllerTest#invalidStateHasConflictPayload -->
+<!-- comprobar: verde * -->
 
 ### Punto de corte si esta sesión se empieza al terminar 04b
 
@@ -272,11 +265,12 @@ autoriza a devolver indiscriminadamente detalles internos de cualquier excepció
 ```
 <!-- comprobar: verde * -->
 
-Aquí la suite completa tiene **32 pruebas verdes**: 404/400/409 ya se mapean
+Aquí la suite completa tiene **38 pruebas verdes**: 404/400/409 ya se mapean
 globalmente y devuelven el payload. Es un checkpoint posible si no queda tiempo
 para todo el documento. El payload uniforme de validación, las entradas ilegibles
 y el 500 todavía no se han construido; se retoman en el apartado 7. No detenerse
-justo después de quitar los handlers locales sin restaurar sus tres mapeos.
+durante un cambio de handler. **Blue:** el controlador ya no tiene esos tres
+mapeos locales y la suite sigue verde; la lógica del juego no ha cambiado.
 
 ## 7. Datos inválidos y solicitudes ilegibles no son un 500
 
@@ -510,7 +504,7 @@ class GameErrorsIntegrationTest {
 ```
 <!-- comprobar: verde * -->
 
-**Checkpoint de salida: 37 pruebas verdes**. Las reglas y las migraciones de
+**Checkpoint de salida: 43 pruebas verdes**. Las reglas y las migraciones de
 04b no cambian. El controlador no conserva handlers locales ni conoce cómo
 se construye el payload; el servicio sigue sin importar tipos HTTP.
 

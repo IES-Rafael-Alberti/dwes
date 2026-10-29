@@ -4,7 +4,7 @@
 `bshipAlong`, Boot **4.1.1**, Java 25, paquete `es.daw2a.bshipalong`.
 
 > Este documento contiene varios ciclos de construcción. **No se presupone que
-> quepa entero en la clase de 3 horas de sesión 4**. Se guarda el último ciclo
+> quepa entero en una sola clase de 3 horas**. Se guarda el último ciclo
 > verde y se continúa desde allí. Mini Tasks sigue siendo individual.
 
 ## 0. Alcance y relación con la referencia final
@@ -23,16 +23,19 @@ verde, no saltando a la implementación final para poder empezar 05.
 
 | Tramo terminado | Pruebas de la suite completa | Qué se puede demostrar |
 |---|---:|---|
-| Preparación y creación con tamaño, apartado 2 | 13 | POST con `boardSize` y persistencia del nuevo modelo |
-| Primer barco, apartado 3 | 14 | Colocación y paso a `IN_PROGRESS` |
-| Límites, primer ciclo del apartado 4 | 15 | Rechazo de barcos que no caben |
-| Nombre y solapamiento, final del apartado 4 | 17 | Restricciones de colocación |
-| Estado y agua/impacto, primeros ciclos del apartado 5 | 19 | Disparos básicos |
-| Coordenada repetida, final del apartado 5 | 20 | Rechazo de disparos duplicados |
-| Hundimiento y victoria, antes del último ciclo del apartado 6 | 22 | Flota hundida y `WON` |
-| Restricción tras victoria y cancelación, final del apartado 7 | 25 | No colocar tras ganar; cancelación con histórico |
-| Flujo HTTP, apartado 8 | 28 | Operaciones reales por HTTP simulado |
-| Actualización con datos anteriores, apartado 8.1 | 29 | Checkpoint completo para empezar 05 |
+| Preparación del contrato, apartado 2.1 | 12 | Firma migrada y comportamiento anterior conservado en verde |
+| Tamaño solicitado, apartados 2.2/2.3 | 13 | Test nuevo de tamaño y contrato POST comprobado |
+| Guardado del barco, apartado 3.3 | 14 | Barco persistido y representado, antes de cambiar el estado |
+| Transición, final del apartado 3 | 15 | Primer barco pasa a `IN_PROGRESS` |
+| Límites, primer ciclo del apartado 4 | 16 | Rechazo de barcos que no caben |
+| Nombre y solapamiento, final del apartado 4 | 18 | Restricciones de colocación |
+| Estado y agua/impacto, primeros ciclos del apartado 5 | 20 | Disparos básicos |
+| Coordenada repetida, final del apartado 5 | 21 | Rechazo de disparos duplicados |
+| Hundimiento y victoria, antes del último ciclo del apartado 6 | 23 | Flota hundida y `WON` |
+| Restricción tras victoria y cancelación, final del apartado 7 | 26 | No colocar tras ganar; cancelación con histórico |
+| Contrato MVC, primer tramo del apartado 8 | 32 | Endpoints y códigos locales por ciclos independientes |
+| Flujo HTTP real, apartado 8 | 35 | Web, servicio y persistencia juntos |
+| Actualización con datos anteriores, apartado 8.1 | 36 | Checkpoint completo para empezar 05 |
 
 Estos recuentos corresponden a los archivos de esta guía. Si añadiste tests
 propios, el número puede ser mayor: conserva sus comportamientos. Hasta completar
@@ -165,16 +168,19 @@ public class Game {
     void onCreate() {
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
-    public void cancel() {
-        throw new UnsupportedOperationException("Pending cancellation rule");
-    }
 }
 ```
 
-`cancel()` solo tiene la firma; su transición y el caso de uso que la guarda se
-construirán después del test de cancelación. Los setters permiten
+La cancelación se añadirá cuando tenga su test; no se prepara un método vacío
+para ella ahora. Los setters permiten
 el mapeo y preparar pruebas; ningún endpoint expone una asignación arbitraria
 de estado.
+
+Si vienes de la versión anterior, retira de esta preparación **solo los stubs de
+reglas futuras aún no implementadas**, como un `Game.cancel()` que lance
+`UnsupportedOperationException`. No borres lógica funcional protegida por tests.
+El recorrido nuevo incorpora cada firma cuando su caso la necesita y evita
+duplicarla al llegar a ese apartado.
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/domain/Ship.java -->
 ```java
@@ -375,11 +381,94 @@ El cambio del controlador y la actualización de los tests no son el rojo TDD:
 son migración del contrato para que el proyecto siga compilando. La validación
 `@Valid` puede probarse aparte; no demuestra que el servicio use el tamaño.
 
+La firma nueva conserva este cuerpo mientras se prepara el contrato. Añade el
+import de `CreateGameDTO` al servicio y cambia solo ese método:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame -->
+```java
+    public GameResponseDTO createGame(CreateGameDTO dto) {
+        return toResponse(repository.save(new Game()));
+    }
+```
+
+En el controlador añade los imports necesarios y adapta **solo el POST**:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+import jakarta.validation.Valid;
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#create -->
+```java
+    public ResponseEntity<GameResponseDTO> create(@Valid @RequestBody CreateGameDTO dto) {
+        var created = service.createGame(dto);
+        return ResponseEntity.created(URI.create("/api/games/" + created.id())).body(created);
+    }
+```
+
+#### Detalle del mapper que ya existe
+
+Como el DTO de respuesta ha crecido, adapta **el método existente** `toResponse`.
+Todavía no consultamos barcos ni ataques ni inyectamos sus repositorios en el
+servicio: las dos listas siguen vacías, igual que en una partida recién creada.
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
+```java
+    private GameResponseDTO toResponse(Game game) {
+        return new GameResponseDTO(game.getId(), game.getBoardSize(), game.getStatus().name(),
+                game.getCreatedAt(), List.of(), List.of());
+    }
+```
+
+En los mocks web sustituye también los constructores antiguos del DTO. Por
+ejemplo, `new GameResponseDTO(17L, 10, "PENDING", null, List.of(), List.of())`.
+No es necesario inventar una fecha para un mock que no comprueba persistencia.
+El servicio conserva por ahora **solo `GameRepository`** como colaborador.
+
+Los tests que pasan el DTO al servicio necesitan también este import:
+
+<!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+```java
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+```
+
+<!-- imports: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
+```java
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+```
+
+Para no repetir esa preparación en los casos web, puedes añadir a
+`GameControllerTest` este helper de fixture y usar `pending(17L)`, `pending(99L)`,
+etc. donde antes construías un DTO de dos argumentos. No añadirlo otra vez si
+ya existe un helper equivalente:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
+```java
+    private GameResponseDTO pending(long id) {
+        return new GameResponseDTO(id, 10, "PENDING", null, List.of(), List.of());
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Punto de partida obligatorio: suite verde con la entrada 10.** Guarda ese
+checkpoint antes de añadir el siguiente test.
+
 ### 2.2. Ciclo TDD de servicio: aplicar el tamaño solicitado
 
 Con la preparación verde, añade un test nuevo a `GameServiceTest`. No cambies
 ningún test existente ni el controlador en este paso:
 
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
 @Test
 void createsGameWithRequestedBoardSize() {
@@ -409,7 +498,7 @@ Ejecuta solo este test:
 ./mvnw -Dtest=GameServiceTest#createsGameWithRequestedBoardSize test
 ```
 
-<!-- comprobar: test compilado, rojo por expected 8 but was 10 -->
+<!-- comprobar: rojo GameServiceTest#createsGameWithRequestedBoardSize -->
 
 Este es el rojo útil: el test compila, se ejecuta y observa el valor predeterminado
 10 en lugar del valor pedido 8. Si el error es de compilación, no hemos seguido
@@ -418,10 +507,11 @@ el checkpoint verde de preparación y todavía no estamos en TDD.
 Ahora cambia únicamente el cuerpo de `createGame` para pasar el tamaño al
 constructor de `Game`:
 
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame -->
 ```java
-public GameResponseDTO createGame(CreateGameDTO dto) {
-    return toResponse(repository.save(new Game(dto.boardSize())));
-}
+    public GameResponseDTO createGame(CreateGameDTO dto) {
+        return toResponse(repository.save(new Game(dto.boardSize())));
+    }
 ```
 
 Vuelve a ejecutar el test dirigido; debe quedar verde. Después ejecuta la suite
@@ -433,47 +523,114 @@ siguen funcionando:
 ./mvnw test
 ```
 
-<!-- comprobar: test dirigido verde y suite completa verde -->
+<!-- comprobar: verde * -->
 
 El ciclo ha cambiado una regla y una sola implementación: el tamaño de la partida
 creada. La conversión a `GameResponseDTO` ya estaba preparada antes del ciclo; no
 la ampliamos ahora con mappers, helpers ni reglas futuras.
 
+**Blue — refactorizar sin cambiar el comportamiento:** revisar nombres, imports
+y duplicaciones reales. No hay que crear un método nuevo para «cumplir» la fase
+azul si el código ya es sencillo. Repetir la suite y mantener el verde antes de
+pasar al siguiente caso. No modificar los tests anteriores para que toleren un
+resultado incorrecto ni añadir otra regla durante este paso.
+
 ### 2.3. Comprobar el contrato HTTP por separado
 
-Una vez verde el servicio, añade o adapta un test web que envíe el DTO y compruebe
+Una vez verde el servicio, adapta el test web de creación que ya existe para que
+envíe 8 y compruebe
 que el controlador lo enlaza correctamente. Al ser `@WebMvcTest`, el servicio es
 un mock: esta prueba comprueba el contrato HTTP, no la persistencia ni la regla
 del tamaño.
 
+<!-- método: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#createsPendingGameWithLocation -->
 ```java
-@Test
-void createAcceptsBoardSizeAndReturnsCreatedLocation() throws Exception {
-    when(service.createGame(new CreateGameDTO(8))).thenReturn(
-            new GameResponseDTO(17L, 8, "PENDING", LocalDateTime.now(),
-                    List.of(), List.of()));
+    void createAcceptsBoardSizeAndReturnsCreatedLocation() throws Exception {
+        when(service.createGame(new CreateGameDTO(8))).thenReturn(
+                new GameResponseDTO(17L, 8, "PENDING", null, List.of(), List.of()));
 
-    mvc.perform(post("/api/games").contentType("application/json")
-                    .content("{\"boardSize\":8}"))
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "/api/games/17"))
-            .andExpect(jsonPath("$.boardSize").value(8));
-}
+        mvc.perform(post("/api/games").contentType("application/json")
+                        .content("{\"boardSize\":8}"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/games/17"))
+                .andExpect(jsonPath("$.boardSize").value(8));
+    }
 ```
 
-Si ya existe un test equivalente de creación, modifica solo ese caso en lugar de
-duplicarlo. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
+Conserva la anotación `@Test` que ya tenía el método y cambia su nombre y cuerpo,
+sin duplicar el caso. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
 listas vacías porque la partida recién creada aún no tiene esos elementos.
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
 
 **No adelantes** las funciones de validación de barcos, colisiones, hundimiento o
 victoria. Cada regla empieza en su propio test de comportamiento, antes de su
 implementación. Las firmas de esos casos se incorporan cuando toque cada ciclo;
 no se crean stubs ni métodos auxiliares vacíos por anticipado.
 
-## 3. Banco incremental de reglas: primero colocar un barco
+## 3. Banco incremental de reglas: guardar un barco y después iniciar la partida
 
-Crea esta clase. Aquí usamos integración de servicio con JPA real para comprobar
-las reglas y sus efectos persistidos; no hace falta MockMvc para la geometría.
+Partimos de la **suite completa verde del apartado 2**. Separamos dos decisiones:
+primero guardar y devolver un barco; después cambiar el estado al colocar el
+primero. Ningún cambio de firma o colaborador se presenta como un rojo funcional.
+
+### 3.1. Preparación pequeña: disponer del repositorio de barcos
+
+Añade estos imports a `GameService`:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+import es.daw2a.bshipalong.domain.Ship;
+import es.daw2a.bshipalong.dto.PlaceShipDTO;
+import es.daw2a.bshipalong.repository.ShipRepository;
+```
+
+Añade el campo junto al repositorio existente:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    private final ShipRepository shipRepository;
+```
+
+Sustituye el constructor actual, **sin conservar otro constructor de un solo
+argumento**. El servicio debe tener un único constructor de inyección:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService -->
+```java
+    public GameService(GameRepository repository, ShipRepository shipRepository) {
+        this.repository = repository;
+        this.shipRepository = shipRepository;
+    }
+```
+
+En el test unitario del servicio, añade el import y el colaborador mock. No
+cambies las expectativas de creación, consulta y listado:
+
+<!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+```java
+import es.daw2a.bshipalong.repository.ShipRepository;
+```
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+```java
+    @Mock ShipRepository shipRepository;
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+Hasta aquí solo hemos cambiado el ensamblaje; no se guardan barcos todavía.
+`AttackRepository`, geometría y reglas futuras aún no se añaden al servicio.
+
+### 3.2. Red — un barco guardado debe aparecer en la respuesta
+
+Crea esta clase de integración de servicio con JPA real. No necesita MockMvc:
+la pregunta es si el caso de uso guarda y devuelve el barco.
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -483,6 +640,7 @@ import es.daw2a.bshipalong.domain.*;
 import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
 import es.daw2a.bshipalong.dto.*;
 import es.daw2a.bshipalong.repository.GameRepository;
+import es.daw2a.bshipalong.repository.ShipRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -493,19 +651,136 @@ import static org.assertj.core.api.Assertions.*;
 class GameRulesTest {
     @Autowired GameService service;
     @Autowired GameRepository repository;
+    @Autowired ShipRepository ships;
 
     private Long game() { return service.createGame(new CreateGameDTO(8)).id(); }
     private PlaceShipDTO ship(String name, int length, int x, int y, boolean horizontal) {
         return new PlaceShipDTO(name, length, x, y, horizontal);
     }
+    @Test void placesShipOnGame() {
+        Long id = game();
+        var result = service.placeShip(id, ship("A", 2, 0, 0, true));
+        assertThat(result.ships()).hasSize(1);
+        assertThat(result.ships().getFirst().shipName()).isEqualTo("A");
+        assertThat(ships.findByGameId(id)).hasSize(1);
+    }
+}
+```
+
+Faltará la firma. Añade únicamente un método que devuelva la partida actual,
+sin guardar ni cambiar el estado. Así podemos compilar y observar el fallo real:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
+        return getGame(id);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#placesShipOnGame test
+```
+<!-- comprobar: rojo GameRulesTest#placesShipOnGame -->
+
+**Rojo esperado:** la lista tiene cero barcos y el test pide uno. La firma ya
+existe y el contexto arranca; no es un fallo de compilación.
+
+### 3.3. Green — guardar y representar el barco, sin cambiar aún el estado
+
+Sustituye solo `placeShip`. Reutiliza la consulta que ya conocemos; todavía no
+existe un auxiliar `findGame` ni se llama a validadores de reglas futuras:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
+```java
+    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
+        Game game = repository.findById(id)
+                .orElseThrow(() -> new GameNotFoundException(id));
+        shipRepository.save(Ship.builder().gameId(id).shipName(dto.shipName())
+                .length(dto.length()).startX(dto.startX()).startY(dto.startY())
+                .isHorizontal(dto.isHorizontal()).sunk(false).build());
+        return toResponse(game);
+    }
+```
+
+El mapper también debe devolver los barcos existentes. Sustituye su método;
+la lista de ataques continúa vacía porque ese caso de uso aún no se ha construido:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
+```java
+    private GameResponseDTO toResponse(Game game) {
+        var ships = shipRepository.findByGameId(game.getId()).stream()
+                .map(s -> new GameResponseDTO.ShipDTO(s.getId(), s.getShipName(),
+                        s.getLength(), s.getStartX(), s.getStartY(), s.isHorizontal(), s.isSunk()))
+                .toList();
+        return new GameResponseDTO(game.getId(), game.getBoardSize(), game.getStatus().name(),
+                game.getCreatedAt(), ships, List.of());
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#placesShipOnGame test
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+El test unitario usa un `ShipRepository` mock; Mockito devuelve una lista vacía
+por defecto cuando esa consulta no se configura. La integración usa el repositorio
+real. No se cambian los tests anteriores para ocultar un error del nuevo mapper.
+
+### 3.4. Blue — extraer la consulta repetida manteniendo el verde
+
+La búsqueda de una partida aparece en `getGame` y `placeShip`. Ahora sí tiene
+sentido extraerla. Añade un auxiliar **con la lógica que ya existe**:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    private Game findGame(Long id) {
+        return repository.findById(id).orElseThrow(() -> new GameNotFoundException(id));
+    }
+```
+
+Sustituye el cuerpo de `getGame`, conservando su anotación transaccional:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#getGame -->
+```java
+    public GameResponseDTO getGame(Long id) {
+        return toResponse(findGame(id));
+    }
+```
+
+Y reutiliza ese auxiliar en `placeShip`:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
+```java
+    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
+        Game game = findGame(id);
+        shipRepository.save(Ship.builder().gameId(id).shipName(dto.shipName())
+                .length(dto.length()).startX(dto.startX()).startY(dto.startY())
+                .isHorizontal(dto.isHorizontal()).sunk(false).build());
+        return toResponse(game);
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+No hemos añadido una regla en blue: únicamente eliminado duplicación. La partida
+sigue `PENDING`; el cambio de estado tendrá **su propio test nuevo**.
+
+### 3.5. Red — el primer barco inicia la partida
+
+Añade este caso a `GameRulesTest`. No alteres `placesShipOnGame`:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
+```java
     @Test void firstShipStartsGame() {
         Long id = game();
         var result = service.placeShip(id, ship("A", 2, 0, 0, true));
         assertThat(result.status()).isEqualTo("IN_PROGRESS");
-        assertThat(result.ships()).hasSize(1);
-        assertThat(result.ships().getFirst().shipName()).isEqualTo("A");
+        assertThat(service.getGame(id).status()).isEqualTo("IN_PROGRESS");
     }
-}
 ```
 
 ```bash
@@ -513,8 +788,205 @@ class GameRulesTest {
 ```
 <!-- comprobar: rojo GameRulesTest#firstShipStartsGame -->
 
-Sustituye `placeShip`. Los validadores aún están vacíos: **no están probadas ni
-implementadas todavía las restricciones**.
+Debe obtener `PENDING` donde se exige `IN_PROGRESS`. El barco ya se guarda:
+el test anterior sigue protegiendo esa capacidad.
+
+### 3.6. Green y blue — cambiar solo la transición que falta
+
+Después de guardar el barco, cambia el estado si estaba pendiente:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
+```java
+    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
+        Game game = findGame(id);
+        shipRepository.save(Ship.builder().gameId(id).shipName(dto.shipName())
+                .length(dto.length()).startX(dto.startX()).startY(dto.startY())
+                .isHorizontal(dto.isHorizontal()).sunk(false).build());
+        if (game.getStatus() == GameStatus.PENDING) {
+            game.setStatus(GameStatus.IN_PROGRESS);
+            repository.save(game);
+        }
+        return toResponse(game);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#firstShipStartsGame test
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** revisar la legibilidad y repetir la suite sin cambiar expectativas.
+No añadir todavía límites, solapamiento, ataques ni cancelación. El siguiente
+test se escribirá antes de introducir el primer validador del apartado 4.
+
+## 4. Límites, nombre y solapamiento
+
+Desde aquí se repite **red → green → blue**: añadir solo la expectativa nueva,
+verla fallar con el proyecto compilado, implementar la regla y refactorizar
+manteniendo la suite completa verde. En cada cierre, además de la prueba
+focalizada indicada, ejecutar `./mvnw test` antes del siguiente test nuevo.
+
+Añade este test a `GameRulesTest`, antes de la última llave:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
+```java
+    @Test void rejectsShipOutsideBoard() {
+        Long id = game();
+        assertThatThrownBy(() -> service.placeShip(id, ship("A", 2, 7, 0, true)))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.placeShip(id, ship("B", 2, 0, 7, false)))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.placeShip(id, ship("C", 1, 0, 8, true)))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.placeShip(id, ship("D", 1, 8, 0, false)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#rejectsShipOutsideBoard test
+```
+<!-- comprobar: rojo GameRulesTest#rejectsShipOutsideBoard -->
+
+**Green:** añade `validatePlacement` con la regla que acaba de fallar. No existía
+un validador vacío. Después conéctalo antes de guardar el barco:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    private void validatePlacement(Game game, PlaceShipDTO dto) {
+        if (dto.startX() < 0 || dto.startY() < 0
+                || dto.startX() >= game.getBoardSize() || dto.startY() >= game.getBoardSize()) {
+            throw new IllegalArgumentException("Position out of bounds");
+        }
+        if (dto.isHorizontal() && (long) dto.startX() + dto.length() > game.getBoardSize()) {
+            throw new IllegalArgumentException("Ship does not fit horizontally");
+        }
+        if (!dto.isHorizontal() && (long) dto.startY() + dto.length() > game.getBoardSize()) {
+            throw new IllegalArgumentException("Ship does not fit vertically");
+        }
+    }
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
+```java
+    public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
+        Game game = findGame(id);
+        validatePlacement(game, dto);
+        shipRepository.save(Ship.builder().gameId(id).shipName(dto.shipName())
+                .length(dto.length()).startX(dto.startX()).startY(dto.startY())
+                .isHorizontal(dto.isHorizontal()).sunk(false).build());
+        if (game.getStatus() == GameStatus.PENDING) {
+            game.setStatus(GameStatus.IN_PROGRESS);
+            repository.save(game);
+        }
+        return toResponse(game);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest test
+```
+<!-- comprobar: verde GameRulesTest -->
+
+**Blue:** revisar que el control está antes del `save` y que las operaciones
+válidas anteriores siguen funcionando. No añadir aún nombre ni solapamiento.
+
+**Nuevo red:** el nombre no se puede repetir dentro de la misma partida:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
+```java
+    @Test void rejectsRepeatedShipName() {
+        Long id = game();
+        service.placeShip(id, ship("A", 2, 0, 0, true));
+        assertThatThrownBy(() -> service.placeShip(id, ship("A", 2, 0, 2, true)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Ship name already used");
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#rejectsRepeatedShipName test
+```
+<!-- comprobar: rojo GameRulesTest#rejectsRepeatedShipName -->
+
+Reemplaza `validatePlacement` conservando los límites y añadiendo esta regla:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#validatePlacement -->
+```java
+    private void validatePlacement(Game game, PlaceShipDTO dto) {
+        if (dto.startX() < 0 || dto.startY() < 0
+                || dto.startX() >= game.getBoardSize() || dto.startY() >= game.getBoardSize()) {
+            throw new IllegalArgumentException("Position out of bounds");
+        }
+        if (dto.isHorizontal() && (long) dto.startX() + dto.length() > game.getBoardSize()) {
+            throw new IllegalArgumentException("Ship does not fit horizontally");
+        }
+        if (!dto.isHorizontal() && (long) dto.startY() + dto.length() > game.getBoardSize()) {
+            throw new IllegalArgumentException("Ship does not fit vertically");
+        }
+        if (shipRepository.findByGameId(game.getId()).stream()
+                .anyMatch(ship -> ship.getShipName().equals(dto.shipName()))) {
+            throw new IllegalArgumentException("Ship name already used");
+        }
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest test
+```
+<!-- comprobar: verde GameRulesTest -->
+
+**Blue:** conservar los límites en el mismo validador y repetir la suite. No
+introducir otra regla ni retocar los tests para admitir duplicados.
+
+**Nuevo red:** un barco vertical cruza a otro horizontal. El test expresa una decisión del
+juego; todavía no menciona el algoritmo que usaremos:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
+```java
+    @Test void rejectsOverlappingShips() {
+        Long id = game();
+        service.placeShip(id, ship("A", 3, 0, 1, true));
+        assertThatThrownBy(() -> service.placeShip(id, ship("B", 3, 1, 0, false)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Ships cannot overlap");
+    }
+```
+
+```bash
+./mvnw -Dtest=GameRulesTest#rejectsOverlappingShips test
+```
+<!-- comprobar: rojo GameRulesTest#rejectsOverlappingShips -->
+
+**Green:** ahora se necesitan dos auxiliares nuevos: uno recorre las posiciones
+de un barco y otro busca el solapamiento. Se introducen **por este test**, no en
+la preparación de la aplicación. Añade ambos y llama al validador desde la
+colocación:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    private boolean occupies(Ship ship, int x, int y) {
+        for (int i = 0; i < ship.getLength(); i++) {
+            int sx = ship.getStartX() + (ship.isHorizontal() ? i : 0);
+            int sy = ship.getStartY() + (ship.isHorizontal() ? 0 : i);
+            if (sx == x && sy == y) return true;
+        }
+        return false;
+    }
+
+    private void validateNoOverlap(Long id, PlaceShipDTO dto) {
+        for (Ship existing : shipRepository.findByGameId(id)) {
+            for (int i = 0; i < dto.length(); i++) {
+                int x = dto.startX() + (dto.isHorizontal() ? i : 0);
+                int y = dto.startY() + (dto.isHorizontal() ? 0 : i);
+                if (occupies(existing, x, y)) {
+                    throw new IllegalArgumentException("Ships cannot overlap");
+                }
+            }
+        }
+    }
+```
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -538,135 +1010,10 @@ implementadas todavía las restricciones**.
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-## 4. Límites, nombre y solapamiento
-
-Añade este test a `GameRulesTest`, antes de la última llave:
-
-<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
-```java
-    @Test void rejectsShipOutsideBoard() {
-        Long id = game();
-        assertThatThrownBy(() -> service.placeShip(id, ship("A", 2, 7, 0, true)))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.placeShip(id, ship("B", 2, 0, 7, false)))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest#rejectsShipOutsideBoard test
-```
-<!-- comprobar: rojo GameRulesTest#rejectsShipOutsideBoard -->
-
-Sustituye `validatePlacement`:
-
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#validatePlacement -->
-```java
-    private void validatePlacement(Game game, PlaceShipDTO dto) {
-        if (dto.startX() < 0 || dto.startY() < 0) {
-            throw new IllegalArgumentException("Position out of bounds");
-        }
-        if (dto.isHorizontal() && dto.startX() + dto.length() > game.getBoardSize()) {
-            throw new IllegalArgumentException("Ship does not fit horizontally");
-        }
-        if (!dto.isHorizontal() && dto.startY() + dto.length() > game.getBoardSize()) {
-            throw new IllegalArgumentException("Ship does not fit vertically");
-        }
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest test
-```
-<!-- comprobar: verde GameRulesTest -->
-
-El nombre no se puede repetir dentro de la misma partida:
-
-<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
-```java
-    @Test void rejectsRepeatedShipName() {
-        Long id = game();
-        service.placeShip(id, ship("A", 2, 0, 0, true));
-        assertThatThrownBy(() -> service.placeShip(id, ship("A", 2, 0, 2, true)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Ship name already used");
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest#rejectsRepeatedShipName test
-```
-<!-- comprobar: rojo GameRulesTest#rejectsRepeatedShipName -->
-
-Reemplaza `validatePlacement` conservando los límites y añadiendo esta regla:
-
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#validatePlacement -->
-```java
-    private void validatePlacement(Game game, PlaceShipDTO dto) {
-        if (dto.startX() < 0 || dto.startY() < 0) {
-            throw new IllegalArgumentException("Position out of bounds");
-        }
-        if (dto.isHorizontal() && dto.startX() + dto.length() > game.getBoardSize()) {
-            throw new IllegalArgumentException("Ship does not fit horizontally");
-        }
-        if (!dto.isHorizontal() && dto.startY() + dto.length() > game.getBoardSize()) {
-            throw new IllegalArgumentException("Ship does not fit vertically");
-        }
-        if (shipRepository.findByGameId(game.getId()).stream()
-                .anyMatch(ship -> ship.getShipName().equals(dto.shipName()))) {
-            throw new IllegalArgumentException("Ship name already used");
-        }
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest test
-```
-<!-- comprobar: verde GameRulesTest -->
-
-Un barco vertical cruza a otro horizontal. El test expresa una decisión del
-juego; todavía no menciona el algoritmo que usaremos:
-
-<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
-```java
-    @Test void rejectsOverlappingShips() {
-        Long id = game();
-        service.placeShip(id, ship("A", 3, 0, 1, true));
-        assertThatThrownBy(() -> service.placeShip(id, ship("B", 3, 1, 0, false)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Ships cannot overlap");
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest#rejectsOverlappingShips test
-```
-<!-- comprobar: rojo GameRulesTest#rejectsOverlappingShips -->
-
-Sustituye `validateNoOverlap`. Reutilizamos `occupies`, que recorre las posiciones
-de un barco según su orientación. No hace falta introducir otro algoritmo:
-
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#validateNoOverlap -->
-```java
-    private void validateNoOverlap(Long id, PlaceShipDTO dto) {
-        for (Ship existing : shipRepository.findByGameId(id)) {
-            for (int i = 0; i < dto.length(); i++) {
-                int x = dto.startX() + (dto.isHorizontal() ? i : 0);
-                int y = dto.startY() + (dto.isHorizontal() ? 0 : i);
-                if (occupies(existing, x, y)) {
-                    throw new IllegalArgumentException("Ships cannot overlap");
-                }
-            }
-        }
-    }
-```
-
-```bash
-./mvnw -Dtest=GameRulesTest test
-```
-<!-- comprobar: verde GameRulesTest -->
-
 ## 5. Atacar: estado, agua/impacto y coordenada repetida
+
+**Blue del ciclo anterior:** la geometría de ocupación ya tiene un nombre y se
+puede reutilizar. Repetir la suite antes de escribir la primera regla de ataque.
 
 Añade el caso pendiente. En el proyecto final, **primero** se comprueba el estado;
 el mensaje esperado es `Game is not in progress`, no `No ships placed`.
@@ -681,12 +1028,28 @@ el mensaje esperado es `Game is not in progress`, no `No ships placed`.
     }
 ```
 
+Aún no existe `attack`. Después de escribir el test, crea **solo esta firma**
+que devuelve el comportamiento de lectura existente y permite compilar:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+import es.daw2a.bshipalong.dto.AttackDTO;
+```
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    public GameResponseDTO attack(Long id, AttackDTO dto) {
+        return getGame(id);
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameRulesTest#cannotAttackPendingGame test
 ```
 <!-- comprobar: rojo GameRulesTest#cannotAttackPendingGame -->
 
-Sustituye `attack` por el mínimo que comprueba el estado:
+Red: no se lanza la excepción esperada. **Green:** sustituye `attack` por el
+mínimo que comprueba el estado:
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -704,7 +1067,53 @@ Sustituye `attack` por el mínimo que comprueba el estado:
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-Ahora sí pedimos un resultado observable de disparo:
+**Blue:** revisar que la decisión por estado está en el servicio y mantener
+verdes los casos anteriores. No añadir todavía el guardado de ataques.
+
+### Preparar el siguiente colaborador con la suite verde
+
+Ahora se va a necesitar `AttackRepository`. Añade los imports y el campo al
+servicio, y sustituye su único constructor por el de tres colaboradores:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+import es.daw2a.bshipalong.domain.Attack;
+import es.daw2a.bshipalong.repository.AttackRepository;
+```
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    private final AttackRepository attackRepository;
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService -->
+```java
+    public GameService(GameRepository repository, ShipRepository shipRepository,
+            AttackRepository attackRepository) {
+        this.repository = repository;
+        this.shipRepository = shipRepository;
+        this.attackRepository = attackRepository;
+    }
+```
+
+En `GameServiceTest`, añade únicamente el colaborador simulado:
+
+<!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+```java
+import es.daw2a.bshipalong.repository.AttackRepository;
+```
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
+```java
+    @Mock AttackRepository attackRepository;
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+Con el ensamblaje verde, ahora sí pedimos un resultado observable de disparo:
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -724,7 +1133,8 @@ Ahora sí pedimos un resultado observable de disparo:
 ```
 <!-- comprobar: rojo GameRulesTest#recordsWaterAndHit -->
 
-Sustituye `attack`. Los métodos de hundimiento/victoria siguen vacíos por ahora:
+**Green:** guardar el ataque y devolverlo. No se invocan todavía métodos de
+hundimiento/victoria porque aún no existen ni hay tests que los exijan:
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -737,9 +1147,24 @@ Sustituye `attack`. Los métodos de hundimiento/victoria siguen vacíos por ahor
         if (ships.isEmpty()) throw new IllegalStateException("No ships placed");
         boolean hit = ships.stream().anyMatch(s -> occupies(s, dto.x(), dto.y()));
         attackRepository.save(Attack.builder().gameId(id).x(dto.x()).y(dto.y()).hit(hit).build());
-        checkSunkShips(game, ships);
-        checkGameOver(game, ships);
         return toResponse(game);
+    }
+```
+
+Actualiza el mapper para representar también los ataques guardados:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
+```java
+    private GameResponseDTO toResponse(Game game) {
+        var ships = shipRepository.findByGameId(game.getId()).stream()
+                .map(s -> new GameResponseDTO.ShipDTO(s.getId(), s.getShipName(),
+                        s.getLength(), s.getStartX(), s.getStartY(), s.isHorizontal(), s.isSunk()))
+                .toList();
+        var attacks = attackRepository.findByGameId(game.getId()).stream()
+                .map(a -> new GameResponseDTO.AttackDTO(a.getId(), a.getX(), a.getY(),
+                        a.isHit(), a.getCreatedAt())).toList();
+        return new GameResponseDTO(game.getId(), game.getBoardSize(), game.getStatus().name(),
+                game.getCreatedAt(), ships, attacks);
     }
 ```
 
@@ -748,7 +1173,10 @@ Sustituye `attack`. Los métodos de hundimiento/victoria siguen vacíos por ahor
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-La misma coordenada no se dispara dos veces:
+**Blue:** revisar el flujo guardar → representar y ejecutar la suite completa.
+`occupies` se reutiliza; no hace falta reescribir la geometría para atacar.
+
+**Nuevo red:** la misma coordenada no se dispara dos veces:
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -783,8 +1211,6 @@ Conserva el método y añade el control antes de guardar:
         if (ships.isEmpty()) throw new IllegalStateException("No ships placed");
         boolean hit = ships.stream().anyMatch(s -> occupies(s, dto.x(), dto.y()));
         attackRepository.save(Attack.builder().gameId(id).x(dto.x()).y(dto.y()).hit(hit).build());
-        checkSunkShips(game, ships);
-        checkGameOver(game, ships);
         return toResponse(game);
     }
 ```
@@ -795,6 +1221,9 @@ Conserva el método y añade el control antes de guardar:
 <!-- comprobar: verde GameRulesTest -->
 
 ## 6. Hundimiento y victoria
+
+**Blue del ciclo anterior:** conservar el rechazo antes del `save` y repetir
+la suite. Hundimiento y victoria se construyen ahora como dos reglas distintas.
 
 No basta con acertar una celda: deben estar alcanzadas todas las del barco.
 Dejamos un segundo barco a flote para distinguir hundimiento de victoria.
@@ -818,9 +1247,9 @@ Dejamos un segundo barco a flote para distinguir hundimiento de victoria.
 ```
 <!-- comprobar: rojo GameRulesTest#sinksOnlyWhenAllCellsAreHit -->
 
-Sustituye `checkSunkShips`:
+**Green:** añade el auxiliar de hundimiento por primera vez:
 
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#checkSunkShips -->
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private void checkSunkShips(Game game, List<Ship> ships) {
         var attacks = attackRepository.findByGameId(game.getId());
@@ -842,12 +1271,37 @@ Sustituye `checkSunkShips`:
     }
 ```
 
+Conéctalo después de guardar el ataque, sin añadir aún victoria:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
+```java
+    public GameResponseDTO attack(Long id, AttackDTO dto) {
+        Game game = findGame(id);
+        if (game.getStatus() != GameStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Game is not in progress");
+        }
+        if (attackRepository.existsByGameIdAndXAndY(id, dto.x(), dto.y())) {
+            throw new IllegalArgumentException("Position already attacked");
+        }
+        List<Ship> ships = shipRepository.findByGameId(id);
+        if (ships.isEmpty()) throw new IllegalStateException("No ships placed");
+        boolean hit = ships.stream().anyMatch(s -> occupies(s, dto.x(), dto.y()));
+        attackRepository.save(Attack.builder().gameId(id).x(dto.x()).y(dto.y()).hit(hit).build());
+        checkSunkShips(game, ships);
+        return toResponse(game);
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameRulesTest test
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-Después, una prueba propia para la victoria:
+**Blue:** comprobar que el hundimiento no termina la partida mientras queda
+otro barco a flote. Mantener las pruebas anteriores y mejorar solo nombres o
+legibilidad si hace falta.
+
+Después, un **nuevo red** propio para la victoria:
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -863,9 +1317,9 @@ Después, una prueba propia para la victoria:
 ```
 <!-- comprobar: rojo GameRulesTest#winsWhenFleetIsSunk -->
 
-Sustituye `checkGameOver`:
+**Green:** añade `checkGameOver`; no se había creado un stub anticipado:
 
-<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#checkGameOver -->
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private void checkGameOver(Game game, List<Ship> ships) {
         if (!ships.isEmpty() && ships.stream().allMatch(Ship::isSunk)) {
@@ -875,12 +1329,37 @@ Sustituye `checkGameOver`:
     }
 ```
 
+Y conecta la nueva regla después del hundimiento:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
+```java
+    public GameResponseDTO attack(Long id, AttackDTO dto) {
+        Game game = findGame(id);
+        if (game.getStatus() != GameStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Game is not in progress");
+        }
+        if (attackRepository.existsByGameIdAndXAndY(id, dto.x(), dto.y())) {
+            throw new IllegalArgumentException("Position already attacked");
+        }
+        List<Ship> ships = shipRepository.findByGameId(id);
+        if (ships.isEmpty()) throw new IllegalStateException("No ships placed");
+        boolean hit = ships.stream().anyMatch(s -> occupies(s, dto.x(), dto.y()));
+        attackRepository.save(Attack.builder().gameId(id).x(dto.x()).y(dto.y()).hit(hit).build());
+        checkSunkShips(game, ships);
+        checkGameOver(game, ships);
+        return toResponse(game);
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameRulesTest test
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-La partida terminada no admite barcos nuevos:
+**Blue:** verificar el orden impacto → hundimiento → victoria y repetir la suite.
+No añadir todavía la siguiente restricción.
+
+**Nuevo red:** la partida terminada no admite barcos nuevos:
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -927,6 +1406,9 @@ Reemplaza `placeShip`, añadiendo la comprobación antes de los validadores:
 
 ## 7. Cancelar conserva los datos
 
+**Blue del ciclo anterior:** conservar el rechazo por estado antes de guardar
+el barco y mantener la suite verde.
+
 En este dominio queremos guardar el histórico; no es una prohibición universal
 de usar DELETE físico en cualquier aplicación. Añade:
 
@@ -944,20 +1426,27 @@ de usar DELETE físico en cualquier aplicación. Añade:
     }
 ```
 
+Después de escribir la prueba, añade solo la firma del caso de uso, sin cambiar
+ningún estado. Así la expectativa de archivo puede fallar en ejecución:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
+```java
+    public void cancelGame(Long id) {
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameRulesTest#cancellationKeepsHistoryAndHidesGame test
 ```
 <!-- comprobar: rojo GameRulesTest#cancellationKeepsHistoryAndHidesGame -->
 
-Primero sustituye `cancel` en **`Game.java`**, para definir la transición de la
-entidad después de haber escrito y ejecutado la expectativa de cancelación:
+Red: la partida sigue activa. **Green:** añade `cancel` a **`Game.java`**, ahora
+que su transición tiene una expectativa. La prohibición sobre partidas ganadas
+se probará en el ciclo siguiente:
 
-<!-- método: src/main/java/es/daw2a/bshipalong/domain/Game.java#cancel -->
+<!-- añadir: src/main/java/es/daw2a/bshipalong/domain/Game.java -->
 ```java
     public void cancel() {
-        if (status == GameStatus.WON) {
-            throw new IllegalStateException("Cannot cancel a finished game");
-        }
         status = GameStatus.CANCELLED;
         active = false;
         cancelledAt = LocalDateTime.now();
@@ -975,13 +1464,35 @@ Después reemplaza `cancelGame` en el servicio para guardar ese cambio:
     }
 ```
 
+Para que las partidas archivadas dejen de ser visibles, adapta los dos puntos
+de lectura existentes. Es parte del comportamiento exigido por el mismo test:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#findGame -->
+```java
+    private Game findGame(Long id) {
+        return repository.findById(id).filter(Game::isActive)
+                .orElseThrow(() -> new GameNotFoundException(id));
+    }
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#listGames -->
+```java
+    public List<GameResponseDTO> listGames(GameStatus status) {
+        return repository.findAll().stream().filter(Game::isActive)
+                .filter(game -> status == null || game.getStatus() == status)
+                .map(this::toResponse).toList();
+    }
+```
+
 ```bash
 ./mvnw -Dtest=GameRulesTest test
 ```
 <!-- comprobar: verde GameRulesTest -->
 
-Refuerza el contrato con estos casos. Si pasan a la primera, son regresiones
-adicionales, no se inventa una fase roja:
+**Blue:** las lecturas comparten el criterio de actividad. Mantener las
+expectativas y repetir la suite; no introducir aún la restricción nueva.
+
+**Nuevo red:** se puede cancelar en curso, pero no después de ganar:
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -999,10 +1510,344 @@ adicionales, no se inventa una fase roja:
     }
 ```
 
+```bash
+./mvnw -Dtest=GameRulesTest#canCancelInProgressButNotWon test
+```
+<!-- comprobar: rojo GameRulesTest#canCancelInProgressButNotWon -->
+
+**Green:** cambiar solo la regla de cancelación de la entidad:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/domain/Game.java#cancel -->
+```java
+    public void cancel() {
+        if (status == GameStatus.WON) {
+            throw new IllegalStateException("Cannot cancel a finished game");
+        }
+        status = GameStatus.CANCELLED;
+        active = false;
+        cancelledAt = LocalDateTime.now();
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** revisar que el servicio coordina búsqueda/guardado y la entidad protege
+la transición. Guardar el checkpoint verde antes de exponer las operaciones por HTTP.
+
 ## 8. Verificar el flujo HTTP de las operaciones nuevas
 
-La lógica ya está probada en el servicio; ahora verificamos las rutas reales,
-validaciones, códigos y persistencia juntas. Crea:
+La lógica ya está probada en el servicio. Los endpoints nuevos **no se añadieron
+en la preparación del punto 2**: ahora se construye su contrato MVC, uno por uno.
+Después se comprueba el flujo real. No sustituimos todo el controlador de golpe.
+
+### Colocación: red → green
+
+Crea un slice web con servicio mock. Su primer caso solo pide la ruta de barcos:
+
+<!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+package es.daw2a.bshipalong.web;
+
+import es.daw2a.bshipalong.domain.exceptions.GameNotFoundException;
+import es.daw2a.bshipalong.dto.*;
+import es.daw2a.bshipalong.service.GameService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(GameController.class)
+class GameOperationsWebTest {
+    @Autowired MockMvc mvc;
+    @MockitoBean GameService service;
+
+    private GameResponseDTO game(String status) {
+        return new GameResponseDTO(1L, 8, status, null, List.of(), List.of());
+    }
+    @Test void placeShipUsesService() throws Exception {
+        var request = new PlaceShipDTO("A", 2, 0, 0, true);
+        when(service.placeShip(1L, request)).thenReturn(game("IN_PROGRESS"));
+        mvc.perform(post("/api/games/1/ships").contentType("application/json").content("""
+                {"shipName":"A","length":2,"startX":0,"startY":0,"isHorizontal":true}
+                """))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/games/1"))
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+        verify(service).placeShip(1L, request);
+    }
+}
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#placeShipUsesService test
+```
+<!-- comprobar: rojo GameOperationsWebTest#placeShipUsesService -->
+
+Falta la ruta, no el caso de uso. Añade el import y el método al controlador:
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+import es.daw2a.bshipalong.dto.PlaceShipDTO;
+```
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @PostMapping("/{id}/ships")
+    public ResponseEntity<GameResponseDTO> place(
+            @PathVariable("id") Long id, @Valid @RequestBody PlaceShipDTO dto) {
+        var game = service.placeShip(id, dto);
+        return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** el controlador se limita a HTTP y delegación; no copiar aquí la
+geometría ni la transición. El test con mock no prueba la colocación real.
+
+### Ataque: siguiente red → green
+
+Añade a `GameOperationsWebTest`:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+    @Test void attackUsesService() throws Exception {
+        var request = new AttackDTO(0, 0);
+        when(service.attack(1L, request)).thenReturn(game("IN_PROGRESS"));
+        mvc.perform(post("/api/games/1/attacks").contentType("application/json")
+                .content("{\"x\":0,\"y\":0}"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/games/1"));
+        verify(service).attack(1L, request);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#attackUsesService test
+```
+<!-- comprobar: rojo GameOperationsWebTest#attackUsesService -->
+
+<!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+import es.daw2a.bshipalong.dto.AttackDTO;
+```
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @PostMapping("/{id}/attacks")
+    public ResponseEntity<GameResponseDTO> attack(
+            @PathVariable("id") Long id, @Valid @RequestBody AttackDTO dto) {
+        var game = service.attack(id, dto);
+        return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** revisar nombres y conservar el contrato de creación. El siguiente caso
+de cancelación aún no se implementa durante esta revisión.
+
+### Cancelación: siguiente red → green
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+    @Test void cancelUsesService() throws Exception {
+        mvc.perform(delete("/api/games/1"))
+                .andExpect(status().isNoContent()).andExpect(content().string(""));
+        verify(service).cancelGame(1L);
+    }
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#cancelUsesService test
+```
+<!-- comprobar: rojo GameOperationsWebTest#cancelUsesService -->
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancel(@PathVariable("id") Long id) {
+        service.cancelGame(id);
+        return ResponseEntity.noContent().build();
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+### Blue: reducir la construcción repetida de respuestas
+
+Las tres respuestas `201 + Location` tienen el mismo patrón. Extrae ese patrón
+sin cambiar códigos ni cuerpos:
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    private ResponseEntity<GameResponseDTO> created(GameResponseDTO game) {
+        return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
+    }
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#create -->
+```java
+    public ResponseEntity<GameResponseDTO> create(@Valid @RequestBody CreateGameDTO dto) {
+        return created(service.createGame(dto));
+    }
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#place -->
+```java
+    public ResponseEntity<GameResponseDTO> place(
+            @PathVariable("id") Long id, @Valid @RequestBody PlaceShipDTO dto) {
+        return created(service.placeShip(id, dto));
+    }
+```
+
+<!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#attack -->
+```java
+    public ResponseEntity<GameResponseDTO> attack(
+            @PathVariable("id") Long id, @Valid @RequestBody AttackDTO dto) {
+        return created(service.attack(id, dto));
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+### Errores locales, uno por caso, antes del advice de la sesión 5
+
+Por ahora los errores esperables llevan código correcto y cuerpo vacío. Primero
+un caso inexistente por el nuevo endpoint de cancelación:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+    @Test void missingCancelReturns404() throws Exception {
+        doThrow(new GameNotFoundException(999L)).when(service).cancelGame(999L);
+        mvc.perform(delete("/api/games/999")).andExpect(status().isNotFound());
+    }
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#missingCancelReturns404 test
+```
+<!-- comprobar: rojo GameOperationsWebTest#missingCancelReturns404 -->
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<Void> missing(GameNotFoundException ex) {
+        return ResponseEntity.notFound().build();
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** el GET ya no necesita su `try/catch`; el handler local lo cubre igual:
+
+<!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#get -->
+```java
+    public ResponseEntity<GameResponseDTO> get(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(service.getGame(id));
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+El rechazo de datos tiene otro significado. Añade su test antes del handler:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+    @Test void invalidPlacementReturns400() throws Exception {
+        var request = new PlaceShipDTO("A", 2, 7, 0, true);
+        when(service.placeShip(1L, request)).thenThrow(new IllegalArgumentException("Outside board"));
+        mvc.perform(post("/api/games/1/ships").contentType("application/json").content("""
+                {"shipName":"A","length":2,"startX":7,"startY":0,"isHorizontal":true}
+                """))
+                .andExpect(status().isBadRequest());
+    }
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#invalidPlacementReturns400 test
+```
+<!-- comprobar: rojo GameOperationsWebTest#invalidPlacementReturns400 -->
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> badRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().build();
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** conservar 404 para la excepción específica y 400 para el rechazo.
+El último caso es un estado incompatible:
+
+<!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
+```java
+    @Test void invalidStateReturns409() throws Exception {
+        when(service.attack(1L, new AttackDTO(0, 0)))
+                .thenThrow(new IllegalStateException("Game is not in progress"));
+        mvc.perform(post("/api/games/1/attacks").contentType("application/json")
+                .content("{\"x\":0,\"y\":0}"))
+                .andExpect(status().isConflict());
+    }
+```
+
+```bash
+./mvnw -Dtest=GameOperationsWebTest#invalidStateReturns409 test
+```
+<!-- comprobar: rojo GameOperationsWebTest#invalidStateReturns409 -->
+
+<!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
+```java
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Void> conflict(IllegalStateException ex) {
+        return ResponseEntity.status(409).build();
+    }
+```
+
+```bash
+./mvnw test
+```
+<!-- comprobar: verde * -->
+
+**Blue:** revisar que solo se traduce a HTTP; las reglas siguen en el servicio
+y el dominio. El payload uniforme se construirá después, en el documento 05.
+
+### Regresión del recorrido real
+
+Con los endpoints y sus errores ya probados, estos escenarios comprueban web,
+servicio y persistencia juntos. Son integración de lo que acabamos de construir,
+no hay que inventar una nueva fase roja si pasan a la primera. Crea:
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameRulesHttpTest.java -->
 ```java
@@ -1110,7 +1955,7 @@ class SchemaEvolutionTest {
 ```
 <!-- comprobar: verde * -->
 
-Checkpoint completo: **29 pruebas verdes**, incluidas las reglas, los flujos
+Checkpoint completo: **36 pruebas verdes**, incluidas las reglas, los flujos
 HTTP y la actualización de una base con datos anteriores.
 
 ## 9. Checkpoint y siguiente tramo
