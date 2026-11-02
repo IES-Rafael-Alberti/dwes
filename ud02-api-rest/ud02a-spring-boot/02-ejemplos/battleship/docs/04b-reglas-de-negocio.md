@@ -27,8 +27,10 @@ Antes de cambiar código, sitúa **archivo, clase, método y capa**:
 `when(service...)` configura el colaborador de una prueba MVC;
 `when(repository...)` configura el de una prueba unitaria de servicio. Reutiliza
 las clases y campos existentes; no declares un segundo mock al pasar de capa.
-Si cambia el constructor del servicio, revisa también todos los
-`new GameService(...)` directos. `@InjectMocks` utiliza los colaboradores mock.
+`GameService` recibe sus repositorios por inyección de constructor: Spring aporta
+los beans y, en el test unitario, `@InjectMocks` aporta los mocks. Si se añade un
+repositorio al constructor, añade su `@Mock` al test unitario. No construimos
+manualmente el servicio ni pasamos DTOs a su constructor.
 
 **Rótulos visibles:** «Archivo» corresponde a un archivo completo; «Método», a
 sustituir solo el indicado; «Añadir», a incorporar el miembro dentro de la clase;
@@ -55,9 +57,16 @@ no el estado actual de una clase que ya ha avanzado. Se continúa desde el últi
 ciclo trabajado, sin reconstruir lo que ya funciona ni saltar al final para abrir 05.
 
 **Retoma actual:** veintiuna pruebas con el rojo intencionado de agua/tocado y dos
-tests HTTP pendientes. Primero se normalizan estos últimos y se retira el caso MVC
-ya sustituido: veinte pruebas, un rojo previsto. El green de agua/tocado cierra
-con veinte verdes. No volver a añadir tests o helpers ya existentes.
+tests HTTP pendientes. El caso MVC que aún envía el POST sin cuerpo no se borra:
+se convierte en `rejectsGameWithoutBody`, que fija el `400` correcto ante una
+petición sin carga. Al adaptar la integración quedan veintiuna pruebas con un solo
+rojo previsto; el green de agua/tocado cierra con veintiuna verdes. No volver a
+añadir tests o helpers ya existentes.
+
+**Un test en rojo no se elimina para dejar la suite verde.** Si su expectativa ya
+no representa el contrato, se migra con el contrato nuevo; si el comportamiento
+observado es el correcto, se convierte en la nueva expectativa. Borrarlo oculta la
+decisión y enseña lo contrario de lo que buscamos.
 
 | Tramo terminado | Pruebas de la suite completa | Qué se puede demostrar |
 |---|---:|---|
@@ -76,7 +85,9 @@ con veinte verdes. No volver a añadir tests o helpers ya existentes.
 | Actualización con datos anteriores, apartado 8.1 | 36 | Checkpoint completo para empezar 05 |
 
 Estos recuentos corresponden a los archivos de esta guía. Si añadiste tests
-propios, el número puede ser mayor: conserva sus comportamientos. Hasta completar
+propios, el número puede ser mayor: conserva sus comportamientos. La retoma
+actual conserva además `rejectsGameWithoutBody`: tiene **una prueba más** que
+este recorrido base al alcanzar los mismos hitos. Hasta completar
 un caso, las firmas preparadas para operaciones posteriores no se consideran
 funcionalidad disponible. Demuestra solo lo que ya está probado.
 
@@ -457,9 +468,37 @@ Haz solo estos cambios estructurales:
 `GameControllerTest`, `GameHttpIntegrationTest`, los tests de creación heredados,
 los métodos del controlador y cualquier fixture/helper que invoque el servicio.
 Después usa IntelliJ **Find Usages** sobre `createGame` y una búsqueda textual de
-`createGame()` en `src/main` y `src/test`; revisa también `new GameService(`.
-Cada llamada debe pasar un `CreateGameDTO`. Como `CreateGameDTO` es un record,
+`createGame()` en `src/main` y `src/test`.
+Cada llamada a **`service.createGame(...)`** debe pasar un `CreateGameDTO`.
+Es un argumento del método de creación de partidas, no del constructor de
+`GameService`, que recibe los repositorios por inyección de dependencias.
+Como `CreateGameDTO` es un record,
 `new CreateGameDTO(10)` compara por valor al configurar Mockito, no por identidad.
+
+**Tramo B de la retoma — deuda HTTP del caso MVC.**
+
+`createsPendingGameWithLocation` todavía hace `POST` sin cuerpo y recibe `400`
+porque el controlador exige `@RequestBody`. No es un fallo del servicio: la
+lectura del cuerpo falla antes de llamarlo (`HttpMessageNotReadableException`),
+no por las restricciones `@Min`/`@Max` del DTO. Tampoco es motivo para borrar el test; ese
+`400` es ahora la respuesta correcta. Convierte el caso en una expectativa propia:
+
+Sustituye el método completo en **`web/GameControllerTest.java`**, incluido su
+`@Test` original: el bloque siguiente ya contiene esa anotación una vez.
+
+```java
+    @Test
+    void rejectsGameWithoutBody() throws Exception {
+        mvc.perform(post("/api/games").contentType("application/json"))
+                .andExpect(status().isBadRequest());
+    }
+```
+
+Retira el `when(service.createGame(...))` del método antiguo: esta petición no
+llega al servicio y no necesita un stub. El caso de creación con
+JSON conserva `201`, `Location`, `PENDING` y el tamaño pedido. Así el rojo
+observado se transforma en especificación y la suite pierde la deuda HTTP sin
+perder cobertura.
 
 **Tramo B de la retoma — pasar a integración: `GameHttpIntegrationTest`.**
 
@@ -716,6 +755,16 @@ JSON, llamada al servicio, `201`, `Location` y respuesta HTTP. La regla real de
 crear con tamaño 8 la demuestra `GameServiceTest` en 2.2; la persistencia real se
 comprueba en las pruebas JPA/integración de los apartados posteriores.
 
+Evita duplicar la cobertura del mismo escenario. Si el contrato cambia, **evoluciona el test que ya
+existe**: actualiza su petición y añade las comprobaciones que falten. Añadir un
+segundo test de creación deja al anterior sin propósito y obliga después a
+reconvertirlo o borrarlo, que es justo lo que queremos evitar.
+
+**Recorrido completo desde el checkpoint de entrada:** el bloque siguiente
+migra y renombra el único test de creación antiguo. **En la retoma actual, con
+los dos casos ya escritos, no lo apliques sobre `rejectsGameWithoutBody`**:
+conserva ese rechazo y completa el test con JSON que ya existe.
+
 **Método — `src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#createsPendingGameWithLocation`**
 
 <!-- método: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#createsPendingGameWithLocation -->
@@ -735,9 +784,12 @@ comprueba en las pruebas JPA/integración de los apartados posteriores.
 Conserva el `@Test` que ya tenía el método; el bloque anterior no lo repite.
 Si todavía se llama `createsPendingGameWithLocation`, renómbralo y reemplaza su
 cuerpo. Si ya existe `createAcceptsBoardSizeAndReturnsCreatedLocation`, actualiza
-ese caso: no renombres otro con el mismo identificador. En la retoma del aula,
-si quedaron ambos, incorpora las comprobaciones de id y `PENDING` al caso nuevo
-y retira el POST antiguo sin cuerpo que ya fue sustituido. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
+ese caso: no renombres otro con el mismo identificador. En la retoma del aula
+quedaron dos casos de creación: incorpora las comprobaciones de id y `PENDING` al
+caso nuevo con JSON y **no borres** el que envía el POST sin cuerpo; conviértelo
+en `rejectsGameWithoutBody` con `400`, como se indica en el tramo B. Un test en
+rojo por contrato obsoleto se migra o se convierte, nunca se retira para dejar la
+suite verde. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
 listas vacías porque la partida recién creada aún no tiene esos elementos.
 
 ```bash
