@@ -9,6 +9,40 @@
 
 ## 0. Alcance y relación con la referencia final
 
+### Cómo leer las capas de prueba y los cambios
+
+Antes de cambiar código, sitúa **archivo, clase, método y capa**:
+
+- **Servicio unitario — `GameServiceTest`:** JUnit y Mockito para repositorios;
+  prueba el servicio sin arrancar Spring, HTTP ni base de datos.
+- **Servicio con persistencia — `GameRulesTest`:** `@SpringBootTest` y
+  `@Transactional`; servicio y repositorios reales. No es un `@DataJpaTest`.
+- **Controlador MVC — `GameControllerTest` y `GameOperationsWebTest`:**
+  `@WebMvcTest`, MockMvc y servicio mock; prueban enlace, respuesta y delegación,
+  no las reglas reales ni JPA.
+- **Integración con MVC — `GameHttpIntegrationTest` y `GameRulesHttpTest`:**
+  `@SpringBootTest` y `@AutoConfigureMockMvc`; conectan MVC, servicio y persistencia.
+  MockMvc no abre un puerto ni convierte el escenario en un cliente HTTP por red.
+
+`when(service...)` configura el colaborador de una prueba MVC;
+`when(repository...)` configura el de una prueba unitaria de servicio. Reutiliza
+las clases y campos existentes; no declares un segundo mock al pasar de capa.
+Si cambia el constructor del servicio, revisa también todos los
+`new GameService(...)` directos. `@InjectMocks` utiliza los colaboradores mock.
+
+**Rótulos visibles:** «Archivo» corresponde a un archivo completo; «Método», a
+sustituir solo el indicado; «Añadir», a incorporar el miembro dentro de la clase;
+«Imports», a la cabecera; «Dependencia», a `pom.xml`. Conserva las anotaciones
+cuando se indique y evita duplicar métodos. Los marcadores internos se dejan
+pegados a su bloque de código para que el verificador existente siga funcionando.
+
+### Ritmo de clase: demostrar y aplicar
+
+Cada explicación o demo dura como máximo veinte minutos. Después se trabaja
+en la tarea propia con un objetivo concreto. Las etiquetas B/A/C/D… son puntos
+de corte del guion 06b, no un permiso para saltarse reglas. Blue forma parte del
+cierre de cada ciclo. En jueves tampoco se garantiza terminar toda la guía.
+
 Entramos con entidad mínima, servicio, DTO de salida y doce pruebas verdes.
 Salimos con tamaño/fecha, barcos, ataques, hundimiento, victoria y cancelación
 lógica, expuestos por HTTP y probados. Seguridad, paginación, payload uniforme
@@ -16,10 +50,14 @@ de errores, OpenAPI y producción se construirán después.
 
 ### Puntos de corte: no hay que terminar todo de una vez
 
-El checkpoint de entrada tiene **12 pruebas**. Para una clase de dos horas, el
-objetivo razonable es llegar a crear el tablero solicitado, colocar el primer
-barco y, si el ritmo acompaña, comprobar sus límites. Se continúa desde el último
-verde, no saltando a la implementación final para poder empezar 05.
+La tabla describe el **recorrido completo desde el checkpoint de doce pruebas**,
+no el estado actual de una clase que ya ha avanzado. Se continúa desde el último
+ciclo trabajado, sin reconstruir lo que ya funciona ni saltar al final para abrir 05.
+
+**Retoma actual:** veintiuna pruebas con el rojo intencionado de agua/tocado y dos
+tests HTTP pendientes. Primero se normalizan estos últimos y se retira el caso MVC
+ya sustituido: veinte pruebas, un rojo previsto. El green de agua/tocado cierra
+con veinte verdes. No volver a añadir tests o helpers ya existentes.
 
 | Tramo terminado | Pruebas de la suite completa | Qué se puede demostrar |
 |---|---:|---|
@@ -57,8 +95,12 @@ flowchart LR
 ```
 
 Sin visor Mermaid: `PENDING → IN_PROGRESS → WON`; desde los dos primeros se
-puede pasar a `CANCELLED`. Las peticiones no aceptan un campo `status` para
-forzar estas transiciones.
+puede pasar a `CANCELLED`. Los estados actuales son exactamente `PENDING`,
+`IN_PROGRESS`, `WON` y `CANCELLED`. En datos antiguos, `FINISHED` representaba
+una partida ya terminada y se migra a `WON`: en este modelo simplificado terminar
+la partida al hundirse toda la flota equivale a ganar. `CANCELLED` es una cancelación independiente, no el
+reemplazo de `FINISHED`. Las peticiones no aceptan un campo `status` para forzar
+estas transiciones.
 
 ## 1. Preparar las piezas que antes faltaban
 
@@ -68,6 +110,8 @@ reglas. No saltes directamente a los métodos del servicio.
 ### 1.1. Validación y migraciones nuevas
 
 Añade al POM, dentro de `<dependencies>`, y recarga Maven:
+
+**Dependencia — `pom.xml`**
 
 <!-- dependencia: pom.xml -->
 ```xml
@@ -80,6 +124,8 @@ Añade al POM, dentro de `<dependencies>`, y recarga Maven:
 Conserva V1 sin editar. Crea **V2**, que evoluciona la tabla existente y mantiene
 las filas que se hubieran creado con el POST anterior:
 
+**Archivo — `src/main/resources/db/migration/V2__evolve_game.sql`**
+
 <!-- archivo: src/main/resources/db/migration/V2__evolve_game.sql -->
 ```sql
 ALTER TABLE games RENAME TO game;
@@ -90,7 +136,17 @@ ALTER TABLE game ADD COLUMN cancelled_at TIMESTAMP;
 UPDATE game SET status = 'WON' WHERE status = 'FINISHED';
 ```
 
+La conversión conserva esas partidas como `WON`: `FINISHED` representaba una
+partida ya terminada por el modelo anterior y, en el flujo simplificado actual,
+la finalización de la flota es una victoria. `CANCELLED` sigue siendo una
+cancelación distinta. Si V2 ya se aplicó, no reescribas la versión aplicada. Si
+esa versión no incluía la conversión, crea una migración posterior (la siguiente
+versión libre) con este `UPDATE` antes de que la aplicación lea esas filas con
+el enum revisado.
+
 Ahora crea V3 para las tablas nuevas:
+
+**Archivo — `src/main/resources/db/migration/V3__create_ships_attacks.sql`**
 
 <!-- archivo: src/main/resources/db/migration/V3__create_ships_attacks.sql -->
 ```sql
@@ -125,12 +181,16 @@ El POM de clase ya contiene Lombok y su procesador. Aquí usamos `@Getter` y
 `@Setter` para evitar escribir accesores repetitivos. El constructor de `Game`
 sigue garantizando `PENDING`, por lo que `GameTest` se conserva.
 
+**Archivo — `src/main/java/es/daw2a/bshipalong/domain/GameStatus.java`**
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/domain/GameStatus.java -->
 ```java
 package es.daw2a.bshipalong.domain;
 
 public enum GameStatus { PENDING, IN_PROGRESS, WON, CANCELLED }
 ```
+
+**Archivo — `src/main/java/es/daw2a/bshipalong/domain/Game.java`**
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/domain/Game.java -->
 ```java
@@ -182,6 +242,8 @@ reglas futuras aún no implementadas**, como un `Game.cancel()` que lance
 El recorrido nuevo incorpora cada firma cuando su caso la necesita y evita
 duplicarla al llegar a ese apartado.
 
+**Archivo — `src/main/java/es/daw2a/bshipalong/domain/Ship.java`**
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/domain/Ship.java -->
 ```java
 package es.daw2a.bshipalong.domain;
@@ -210,6 +272,8 @@ public class Ship {
     private boolean sunk;
 }
 ```
+
+**Archivo — `src/main/java/es/daw2a/bshipalong/domain/Attack.java`**
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/domain/Attack.java -->
 ```java
@@ -251,12 +315,16 @@ anterior, no una petición que llevase funcionando desde la sesión 3.
 solicitar. `GameResponseDTO` es el dato de salida: describe lo que la API decide
 devolver. No son entidades ni tablas; sirven para definir el contrato JSON.
 
+**Archivo — `src/main/java/es/daw2a/bshipalong/dto/CreateGameDTO.java`**
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/dto/CreateGameDTO.java -->
 ```java
 package es.daw2a.bshipalong.dto;
 import jakarta.validation.constraints.*;
 public record CreateGameDTO(@Min(5) @Max(20) int boardSize) {}
 ```
+
+**Archivo — `src/main/java/es/daw2a/bshipalong/dto/PlaceShipDTO.java`**
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/dto/PlaceShipDTO.java -->
 ```java
@@ -270,12 +338,16 @@ public record PlaceShipDTO(
         @NotNull Boolean isHorizontal) {}
 ```
 
+**Archivo — `src/main/java/es/daw2a/bshipalong/dto/AttackDTO.java`**
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/dto/AttackDTO.java -->
 ```java
 package es.daw2a.bshipalong.dto;
 import jakarta.validation.constraints.*;
 public record AttackDTO(@NotNull @Min(0) Integer x, @NotNull @Min(0) Integer y) {}
 ```
+
+**Archivo — `src/main/java/es/daw2a/bshipalong/dto/GameResponseDTO.java`**
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/dto/GameResponseDTO.java -->
 ```java
@@ -314,6 +386,8 @@ Por ejemplo, una partida sin barcos ni ataques podría representarse así:
 Las listas vacías son parte del contrato: en los siguientes ciclos se llenarán
 al persistir barcos y ataques.
 
+**Archivo — `src/main/java/es/daw2a/bshipalong/repository/ShipRepository.java`**
+
 <!-- archivo: src/main/java/es/daw2a/bshipalong/repository/ShipRepository.java -->
 ```java
 package es.daw2a.bshipalong.repository;
@@ -324,6 +398,8 @@ public interface ShipRepository extends JpaRepository<Ship, Long> {
     List<Ship> findByGameId(Long gameId);
 }
 ```
+
+**Archivo — `src/main/java/es/daw2a/bshipalong/repository/AttackRepository.java`**
 
 <!-- archivo: src/main/java/es/daw2a/bshipalong/repository/AttackRepository.java -->
 ```java
@@ -377,6 +453,49 @@ Haz solo estos cambios estructurales:
    Ejecuta todos los tests. Si no compilan, aún estamos en preparación: resuelve
    esas referencias. No avances al rojo hasta tener compilación y suite verde.
 
+**Checklist exhaustivo de llamadas conocidas:** `GameServiceTest`,
+`GameControllerTest`, `GameHttpIntegrationTest`, los tests de creación heredados,
+los métodos del controlador y cualquier fixture/helper que invoque el servicio.
+Después usa IntelliJ **Find Usages** sobre `createGame` y una búsqueda textual de
+`createGame()` en `src/main` y `src/test`; revisa también `new GameService(`.
+Cada llamada debe pasar un `CreateGameDTO`. Como `CreateGameDTO` es un record,
+`new CreateGameDTO(10)` compara por valor al configurar Mockito, no por identidad.
+
+**Tramo B de la retoma — pasar a integración: `GameHttpIntegrationTest`.**
+
+Conserva la clase, `@SpringBootTest`, `@AutoConfigureMockMvc`, `@Transactional`,
+`MockMvc` y sus imports. Sustituye solo este método; su `@Test` permanece una vez.
+No sustituir el archivo completo por un bloque de imports o un método suelto.
+
+**Método — `src/test/java/es/daw2a/bshipalong/web/GameHttpIntegrationTest.java#createsPersistsAndRetrievesGame`**
+
+<!-- método: src/test/java/es/daw2a/bshipalong/web/GameHttpIntegrationTest.java#createsPersistsAndRetrievesGame -->
+```java
+    void createsPersistsAndRetrievesGame() throws Exception {
+        String location = mvc.perform(post("/api/games")
+                        .contentType("application/json")
+                        .content("{\"boardSize\":10}"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", startsWith("/api/games/")))
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andReturn().getResponse().getHeader("Location");
+
+        mvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andExpect(jsonPath("$.boardSize").value(10));
+
+        mvc.perform(get("/api/games").param("status", "PENDING"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+```
+
+En este escenario MockMvc trabaja en el hilo de la prueba y las operaciones
+participan en la transacción del test; sus datos se revierten al terminar.
+La persistencia y las consultas son reales, pero esto no demuestra un commit
+ni la recuperación desde una transacción o proceso independiente.
+
 El cambio del controlador y la actualización de los tests no son el rojo TDD:
 son migración del contrato para que el proyecto siga compilando. La validación
 `@Valid` puede probarse aparte; no demuestra que el servicio use el tamaño.
@@ -384,10 +503,14 @@ son migración del contrato para que el proyecto siga compilando. La validación
 La firma nueva conserva este cuerpo mientras se prepara el contrato. Añade el
 import de `CreateGameDTO` al servicio y cambia solo ese método:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
 import es.daw2a.bshipalong.dto.CreateGameDTO;
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame -->
 ```java
@@ -398,11 +521,15 @@ import es.daw2a.bshipalong.dto.CreateGameDTO;
 
 En el controlador añade los imports necesarios y adapta **solo el POST**:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
 import es.daw2a.bshipalong.dto.CreateGameDTO;
 import jakarta.validation.Valid;
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/web/GameController.java#create`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#create -->
 ```java
@@ -417,6 +544,8 @@ import jakarta.validation.Valid;
 Como el DTO de respuesta ha crecido, adapta **el método existente** `toResponse`.
 Todavía no consultamos barcos ni ataques ni inyectamos sus repositorios en el
 servicio: las dos listas siguen vacías, igual que en una partida recién creada.
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
 ```java
@@ -433,10 +562,14 @@ El servicio conserva por ahora **solo `GameRepository`** como colaborador.
 
 Los tests que pasan el DTO al servicio necesitan también este import:
 
+**Imports — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
+
 <!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
 import es.daw2a.bshipalong.dto.CreateGameDTO;
 ```
+
+**Imports — `src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java`**
 
 <!-- imports: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
 ```java
@@ -447,6 +580,8 @@ Para no repetir esa preparación en los casos web, puedes añadir a
 `GameControllerTest` este helper de fixture y usar `pending(17L)`, `pending(99L)`,
 etc. donde antes construías un DTO de dos argumentos. No añadirlo otra vez si
 ya existe un helper equivalente:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java -->
 ```java
@@ -467,6 +602,8 @@ checkpoint antes de añadir el siguiente test.
 
 Con la preparación verde, añade un test nuevo a `GameServiceTest`. No cambies
 ningún test existente ni el controlador en este paso:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
@@ -507,6 +644,8 @@ el checkpoint verde de preparación y todavía no estamos en TDD.
 Ahora cambia únicamente el cuerpo de `createGame` para pasar el tamaño al
 constructor de `Game`:
 
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#createGame -->
 ```java
     public GameResponseDTO createGame(CreateGameDTO dto) {
@@ -537,11 +676,47 @@ resultado incorrecto ni añadir otra regla durante este paso.
 
 ### 2.3. Comprobar el contrato HTTP por separado
 
-Una vez verde el servicio, adapta el test web de creación que ya existe para que
-envíe 8 y compruebe
-que el controlador lo enlaza correctamente. Al ser `@WebMvcTest`, el servicio es
-un mock: esta prueba comprueba el contrato HTTP, no la persistencia ni la regla
-del tamaño.
+**Cambio de capa: ahora dejamos `GameServiceTest` y pasamos a la prueba de
+controlador `GameControllerTest`.** Una vez verde el servicio, adapta el test web
+de creación que ya existe para que envíe 8 y compruebe que el controlador lo
+enlaza correctamente. No crees otro caso: renombra y reemplaza el existente.
+
+**Ubicación — `src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java`**
+**Clase — `GameControllerTest` (reutiliza la existente).** Comprueba, sin
+duplicarlos, estos elementos: `@WebMvcTest(GameController.class)`,
+`@Autowired MockMvc mvc` y `@MockitoBean GameService service`. Añade en la
+cabecera solo los imports que falten. Este es el bloque exacto de referencia
+(omite los que ya existan; `GameController` está en el mismo paquete y no se
+importa):
+
+```java
+import es.daw2a.bshipalong.dto.CreateGameDTO;
+import es.daw2a.bshipalong.dto.GameResponseDTO;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import es.daw2a.bshipalong.service.GameService;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+```
+
+Mantén `@WebMvcTest(GameController.class)`, `@Autowired MockMvc mvc` y
+`@MockitoBean GameService service` donde ya estén; no reemplaces la clase completa
+ni declares un segundo mock.
+
+El mock `service` solo prepara una respuesta para esta petición; no ejecuta
+`GameService`, JPA, Flyway ni las reglas de tamaño. Esta prueba demuestra enlace
+JSON, llamada al servicio, `201`, `Location` y respuesta HTTP. La regla real de
+crear con tamaño 8 la demuestra `GameServiceTest` en 2.2; la persistencia real se
+comprueba en las pruebas JPA/integración de los apartados posteriores.
+
+**Método — `src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#createsPendingGameWithLocation`**
 
 <!-- método: src/test/java/es/daw2a/bshipalong/web/GameControllerTest.java#createsPendingGameWithLocation -->
 ```java
@@ -557,8 +732,12 @@ del tamaño.
     }
 ```
 
-Conserva la anotación `@Test` que ya tenía el método y cambia su nombre y cuerpo,
-sin duplicar el caso. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
+Conserva el `@Test` que ya tenía el método; el bloque anterior no lo repite.
+Si todavía se llama `createsPendingGameWithLocation`, renómbralo y reemplaza su
+cuerpo. Si ya existe `createAcceptsBoardSizeAndReturnsCreatedLocation`, actualiza
+ese caso: no renombres otro con el mismo identificador. En la retoma del aula,
+si quedaron ambos, incorpora las comprobaciones de id y `PENDING` al caso nuevo
+y retira el POST antiguo sin cuerpo que ya fue sustituido. La respuesta usa `GameResponseDTO`; `ships` y `attacks` pueden ser
 listas vacías porque la partida recién creada aún no tiene esos elementos.
 
 ```bash
@@ -581,6 +760,8 @@ primero. Ningún cambio de firma o colaborador se presenta como un rojo funciona
 
 Añade estos imports a `GameService`:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
 import es.daw2a.bshipalong.domain.Ship;
@@ -590,6 +771,8 @@ import es.daw2a.bshipalong.repository.ShipRepository;
 
 Añade el campo junto al repositorio existente:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private final ShipRepository shipRepository;
@@ -597,6 +780,8 @@ Añade el campo junto al repositorio existente:
 
 Sustituye el constructor actual, **sin conservar otro constructor de un solo
 argumento**. El servicio debe tener un único constructor de inyección:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService -->
 ```java
@@ -609,10 +794,14 @@ argumento**. El servicio debe tener un único constructor de inyección:
 En el test unitario del servicio, añade el import y el colaborador mock. No
 cambies las expectativas de creación, consulta y listado:
 
+**Imports — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
+
 <!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
 import es.daw2a.bshipalong.repository.ShipRepository;
 ```
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
@@ -631,6 +820,8 @@ Hasta aquí solo hemos cambiado el ensamblaje; no se guardan barcos todavía.
 
 Crea esta clase de integración de servicio con JPA real. No necesita MockMvc:
 la pregunta es si el caso de uso guarda y devuelve el barco.
+
+**Archivo — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -670,6 +861,8 @@ class GameRulesTest {
 Faltará la firma. Añade únicamente un método que devuelva la partida actual,
 sin guardar ni cambiar el estado. Así podemos compilar y observar el fallo real:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
@@ -690,6 +883,8 @@ existe y el contexto arranca; no es un fallo de compilación.
 Sustituye solo `placeShip`. Reutiliza la consulta que ya conocemos; todavía no
 existe un auxiliar `findGame` ni se llama a validadores de reglas futuras:
 
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
     public GameResponseDTO placeShip(Long id, PlaceShipDTO dto) {
@@ -704,6 +899,8 @@ existe un auxiliar `findGame` ni se llama a validadores de reglas futuras:
 
 El mapper también debe devolver los barcos existentes. Sustituye su método;
 la lista de ataques continúa vacía porque ese caso de uso aún no se ha construido:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
 ```java
@@ -732,6 +929,8 @@ real. No se cambian los tests anteriores para ocultar un error del nuevo mapper.
 La búsqueda de una partida aparece en `getGame` y `placeShip`. Ahora sí tiene
 sentido extraerla. Añade un auxiliar **con la lógica que ya existe**:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private Game findGame(Long id) {
@@ -741,6 +940,8 @@ sentido extraerla. Añade un auxiliar **con la lógica que ya existe**:
 
 Sustituye el cuerpo de `getGame`, conservando su anotación transaccional:
 
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#getGame`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#getGame -->
 ```java
     public GameResponseDTO getGame(Long id) {
@@ -749,6 +950,8 @@ Sustituye el cuerpo de `getGame`, conservando su anotación transaccional:
 ```
 
 Y reutiliza ese auxiliar en `placeShip`:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -773,6 +976,8 @@ sigue `PENDING`; el cambio de estado tendrá **su propio test nuevo**.
 
 Añade este caso a `GameRulesTest`. No alteres `placesShipOnGame`:
 
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
+
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
     @Test void firstShipStartsGame() {
@@ -794,6 +999,8 @@ el test anterior sigue protegiendo esa capacidad.
 ### 3.6. Green y blue — cambiar solo la transición que falta
 
 Después de guardar el barco, cambia el estado si estaba pendiente:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -829,6 +1036,8 @@ focalizada indicada, ejecutar `./mvnw test` antes del siguiente test nuevo.
 
 Añade este test a `GameRulesTest`, antes de la última llave:
 
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
+
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
     @Test void rejectsShipOutsideBoard() {
@@ -852,6 +1061,8 @@ Añade este test a `GameRulesTest`, antes de la última llave:
 **Green:** añade `validatePlacement` con la regla que acaba de fallar. No existía
 un validador vacío. Después conéctalo antes de guardar el barco:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private void validatePlacement(Game game, PlaceShipDTO dto) {
@@ -867,6 +1078,8 @@ un validador vacío. Después conéctalo antes de guardar el barco:
         }
     }
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -894,6 +1107,8 @@ válidas anteriores siguen funcionando. No añadir aún nombre ni solapamiento.
 
 **Nuevo red:** el nombre no se puede repetir dentro de la misma partida:
 
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
+
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
     @Test void rejectsRepeatedShipName() {
@@ -911,6 +1126,8 @@ válidas anteriores siguen funcionando. No añadir aún nombre ni solapamiento.
 <!-- comprobar: rojo GameRulesTest#rejectsRepeatedShipName -->
 
 Reemplaza `validatePlacement` conservando los límites y añadiendo esta regla:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#validatePlacement`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#validatePlacement -->
 ```java
@@ -943,6 +1160,8 @@ introducir otra regla ni retocar los tests para admitir duplicados.
 **Nuevo red:** un barco vertical cruza a otro horizontal. El test expresa una decisión del
 juego; todavía no menciona el algoritmo que usaremos:
 
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
+
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
     @Test void rejectsOverlappingShips() {
@@ -963,6 +1182,8 @@ juego; todavía no menciona el algoritmo que usaremos:
 de un barco y otro busca el solapamiento. Se introducen **por este test**, no en
 la preparación de la aplicación. Añade ambos y llama al validador desde la
 colocación:
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
@@ -987,6 +1208,8 @@ colocación:
         }
     }
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -1016,7 +1239,12 @@ colocación:
 puede reutilizar. Repetir la suite antes de escribir la primera regla de ataque.
 
 Añade el caso pendiente. En el proyecto final, **primero** se comprueba el estado;
+la condición `status != IN_PROGRESS` rechaza cualquier estado que no esté en
+curso (las filas antiguas `FINISHED` deben haberse migrado antes de leerse),
+sin transición automática;
 el mensaje esperado es `Game is not in progress`, no `No ships placed`.
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1031,10 +1259,14 @@ el mensaje esperado es `Game is not in progress`, no `No ships placed`.
 Aún no existe `attack`. Después de escribir el test, crea **solo esta firma**
 que devuelve el comportamiento de lectura existente y permite compilar:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
 import es.daw2a.bshipalong.dto.AttackDTO;
 ```
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
@@ -1050,6 +1282,8 @@ import es.daw2a.bshipalong.dto.AttackDTO;
 
 Red: no se lanza la excepción esperada. **Green:** sustituye `attack` por el
 mínimo que comprueba el estado:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#attack`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -1075,16 +1309,22 @@ verdes los casos anteriores. No añadir todavía el guardado de ataques.
 Ahora se va a necesitar `AttackRepository`. Añade los imports y el campo al
 servicio, y sustituye su único constructor por el de tres colaboradores:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
 import es.daw2a.bshipalong.domain.Attack;
 import es.daw2a.bshipalong.repository.AttackRepository;
 ```
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private final AttackRepository attackRepository;
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#GameService -->
 ```java
@@ -1098,10 +1338,14 @@ import es.daw2a.bshipalong.repository.AttackRepository;
 
 En `GameServiceTest`, añade únicamente el colaborador simulado:
 
+**Imports — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
+
 <!-- imports: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
 import es.daw2a.bshipalong.repository.AttackRepository;
 ```
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameServiceTest.java -->
 ```java
@@ -1113,7 +1357,16 @@ import es.daw2a.bshipalong.repository.AttackRepository;
 ```
 <!-- comprobar: verde * -->
 
+**Tramo A — agua/tocado.** Si `recordsWaterAndHit` ya está escrito y rojo,
+no lo añadas otra vez ni repitas el constructor: retoma desde su ejecución y el
+green de `attack` y `toResponse`. Comprueba que `GameService` importe
+`es.daw2a.bshipalong.domain.Attack`, incluido en la preparación anterior;
+en la copia de aula ese import falta y debe incorporarse al hacer el green.
+Tras green y blue, turno de Mini Tasks.
+
 Con el ensamblaje verde, ahora sí pedimos un resultado observable de disparo:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1136,6 +1389,8 @@ Con el ensamblaje verde, ahora sí pedimos un resultado observable de disparo:
 **Green:** guardar el ataque y devolverlo. No se invocan todavía métodos de
 hundimiento/victoria porque aún no existen ni hay tests que los exijan:
 
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#attack`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
     public GameResponseDTO attack(Long id, AttackDTO dto) {
@@ -1152,6 +1407,8 @@ hundimiento/victoria porque aún no existen ni hay tests que los exijan:
 ```
 
 Actualiza el mapper para representar también los ataques guardados:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#toResponse -->
 ```java
@@ -1176,7 +1433,13 @@ Actualiza el mapper para representar también los ataques guardados:
 **Blue:** revisar el flujo guardar → representar y ejecutar la suite completa.
 `occupies` se reutiliza; no hace falta reescribir la geometría para atacar.
 
+**Tramo C — no repetir ataque.** Este caso todavía no está hecho en la
+retoma; no saltar directamente a hundimiento. Test, red, green y blue antes del
+siguiente turno.
+
 **Nuevo red:** la misma coordenada no se dispara dos veces:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1196,6 +1459,8 @@ Actualiza el mapper para representar también los ataques guardados:
 <!-- comprobar: rojo GameRulesTest#rejectsRepeatedAttack -->
 
 Conserva el método y añade el control antes de guardar:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#attack`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -1222,11 +1487,15 @@ Conserva el método y añade el control antes de guardar:
 
 ## 6. Hundimiento y victoria
 
+**Tramo D:** hundimiento; **tramo E:** victoria. Son ciclos y cortes separados.
+
 **Blue del ciclo anterior:** conservar el rechazo antes del `save` y repetir
 la suite. Hundimiento y victoria se construyen ahora como dos reglas distintas.
 
 No basta con acertar una celda: deben estar alcanzadas todas las del barco.
 Dejamos un segundo barco a flote para distinguir hundimiento de victoria.
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1248,6 +1517,8 @@ Dejamos un segundo barco a flote para distinguir hundimiento de victoria.
 <!-- comprobar: rojo GameRulesTest#sinksOnlyWhenAllCellsAreHit -->
 
 **Green:** añade el auxiliar de hundimiento por primera vez:
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
@@ -1272,6 +1543,8 @@ Dejamos un segundo barco a flote para distinguir hundimiento de victoria.
 ```
 
 Conéctalo después de guardar el ataque, sin añadir aún victoria:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#attack`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -1303,6 +1576,8 @@ legibilidad si hace falta.
 
 Después, un **nuevo red** propio para la victoria:
 
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
+
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
     @Test void winsWhenFleetIsSunk() {
@@ -1319,6 +1594,8 @@ Después, un **nuevo red** propio para la victoria:
 
 **Green:** añade `checkGameOver`; no se había creado un stub anticipado:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     private void checkGameOver(Game game, List<Ship> ships) {
@@ -1330,6 +1607,8 @@ Después, un **nuevo red** propio para la victoria:
 ```
 
 Y conecta la nueva regla después del hundimiento:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#attack`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#attack -->
 ```java
@@ -1359,7 +1638,12 @@ Y conecta la nueva regla después del hundimiento:
 **Blue:** verificar el orden impacto → hundimiento → victoria y repetir la suite.
 No añadir todavía la siguiente restricción.
 
+**Tramo F — partida ganada.** Otro ciclo propio; no añadirlo durante el
+blue de victoria.
+
 **Nuevo red:** la partida terminada no admite barcos nuevos:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1378,6 +1662,8 @@ No añadir todavía la siguiente restricción.
 <!-- comprobar: rojo GameRulesTest#cannotPlaceShipAfterVictory -->
 
 Reemplaza `placeShip`, añadiendo la comprobación antes de los validadores:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#placeShip -->
 ```java
@@ -1406,11 +1692,16 @@ Reemplaza `placeShip`, añadiendo la comprobación antes de los validadores:
 
 ## 7. Cancelar conserva los datos
 
+**Tramo G1:** archivar y ocultar; **G2:** rechazar la cancelación tras ganar.
+No se presupone que los dos casos quepan en una única demo.
+
 **Blue del ciclo anterior:** conservar el rechazo por estado antes de guardar
 el barco y mantener la suite verde.
 
 En este dominio queremos guardar el histórico; no es una prohibición universal
 de usar DELETE físico en cualquier aplicación. Añade:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1429,6 +1720,8 @@ de usar DELETE físico en cualquier aplicación. Añade:
 Después de escribir la prueba, añade solo la firma del caso de uso, sin cambiar
 ningún estado. Así la expectativa de archivo puede fallar en ejecución:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/service/GameService.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/service/GameService.java -->
 ```java
     public void cancelGame(Long id) {
@@ -1444,6 +1737,8 @@ Red: la partida sigue activa. **Green:** añade `cancel` a **`Game.java`**, ahor
 que su transición tiene una expectativa. La prohibición sobre partidas ganadas
 se probará en el ciclo siguiente:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/domain/Game.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/domain/Game.java -->
 ```java
     public void cancel() {
@@ -1454,6 +1749,8 @@ se probará en el ciclo siguiente:
 ```
 
 Después reemplaza `cancelGame` en el servicio para guardar ese cambio:
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#cancelGame`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#cancelGame -->
 ```java
@@ -1467,6 +1764,8 @@ Después reemplaza `cancelGame` en el servicio para guardar ese cambio:
 Para que las partidas archivadas dejen de ser visibles, adapta los dos puntos
 de lectura existentes. Es parte del comportamiento exigido por el mismo test:
 
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#findGame`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#findGame -->
 ```java
     private Game findGame(Long id) {
@@ -1474,6 +1773,8 @@ de lectura existentes. Es parte del comportamiento exigido por el mismo test:
                 .orElseThrow(() -> new GameNotFoundException(id));
     }
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/service/GameService.java#listGames`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/service/GameService.java#listGames -->
 ```java
@@ -1493,6 +1794,8 @@ de lectura existentes. Es parte del comportamiento exigido por el mismo test:
 expectativas y repetir la suite; no introducir aún la restricción nueva.
 
 **Nuevo red:** se puede cancelar en curso, pero no después de ganar:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/service/GameRulesTest.java -->
 ```java
@@ -1516,6 +1819,11 @@ expectativas y repetir la suite; no introducir aún la restricción nueva.
 <!-- comprobar: rojo GameRulesTest#canCancelInProgressButNotWon -->
 
 **Green:** cambiar solo la regla de cancelación de la entidad:
+
+El mensaje «finished game» significa partida terminada: aquí corresponde a
+`WON`, no a una constante `FINISHED` del enum actual.
+
+**Método — `src/main/java/es/daw2a/bshipalong/domain/Game.java#cancel`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/domain/Game.java#cancel -->
 ```java
@@ -1543,9 +1851,11 @@ La lógica ya está probada en el servicio. Los endpoints nuevos **no se añadie
 en la preparación del punto 2**: ahora se construye su contrato MVC, uno por uno.
 Después se comprueba el flujo real. No sustituimos todo el controlador de golpe.
 
-### Colocación: red → green
+### H1. Endpoint de barcos: red → green
 
 Crea un slice web con servicio mock. Su primer caso solo pide la ruta de barcos:
+
+**Archivo — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1593,10 +1903,14 @@ class GameOperationsWebTest {
 
 Falta la ruta, no el caso de uso. Añade el import y el método al controlador:
 
+**Imports — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
 import es.daw2a.bshipalong.dto.PlaceShipDTO;
 ```
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
@@ -1616,9 +1930,11 @@ import es.daw2a.bshipalong.dto.PlaceShipDTO;
 **Blue:** el controlador se limita a HTTP y delegación; no copiar aquí la
 geometría ni la transición. El test con mock no prueba la colocación real.
 
-### Ataque: siguiente red → green
+### H2. Endpoint de ataques: siguiente red → green
 
 Añade a `GameOperationsWebTest`:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1638,10 +1954,14 @@ Añade a `GameOperationsWebTest`:
 ```
 <!-- comprobar: rojo GameOperationsWebTest#attackUsesService -->
 
+**Imports — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- imports: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
 import es.daw2a.bshipalong.dto.AttackDTO;
 ```
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
@@ -1661,7 +1981,9 @@ import es.daw2a.bshipalong.dto.AttackDTO;
 **Blue:** revisar nombres y conservar el contrato de creación. El siguiente caso
 de cancelación aún no se implementa durante esta revisión.
 
-### Cancelación: siguiente red → green
+### H3. Endpoint de cancelación: siguiente red → green
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1676,6 +1998,8 @@ de cancelación aún no se implementa durante esta revisión.
 ./mvnw -Dtest=GameOperationsWebTest#cancelUsesService test
 ```
 <!-- comprobar: rojo GameOperationsWebTest#cancelUsesService -->
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
@@ -1696,12 +2020,16 @@ de cancelación aún no se implementa durante esta revisión.
 Las tres respuestas `201 + Location` tienen el mismo patrón. Extrae ese patrón
 sin cambiar códigos ni cuerpos:
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
     private ResponseEntity<GameResponseDTO> created(GameResponseDTO game) {
         return ResponseEntity.created(URI.create("/api/games/" + game.id())).body(game);
     }
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/web/GameController.java#create`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#create -->
 ```java
@@ -1710,6 +2038,8 @@ sin cambiar códigos ni cuerpos:
     }
 ```
 
+**Método — `src/main/java/es/daw2a/bshipalong/web/GameController.java#place`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#place -->
 ```java
     public ResponseEntity<GameResponseDTO> place(
@@ -1717,6 +2047,8 @@ sin cambiar códigos ni cuerpos:
         return created(service.placeShip(id, dto));
     }
 ```
+
+**Método — `src/main/java/es/daw2a/bshipalong/web/GameController.java#attack`**
 
 <!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#attack -->
 ```java
@@ -1731,10 +2063,12 @@ sin cambiar códigos ni cuerpos:
 ```
 <!-- comprobar: verde * -->
 
-### Errores locales, uno por caso, antes del advice de la sesión 5
+### H4–H6. Errores locales, un ciclo por código antes del advice de la sesión 5
 
 Por ahora los errores esperables llevan código correcto y cuerpo vacío. Primero
 un caso inexistente por el nuevo endpoint de cancelación:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1748,6 +2082,8 @@ un caso inexistente por el nuevo endpoint de cancelación:
 ./mvnw -Dtest=GameOperationsWebTest#missingCancelReturns404 test
 ```
 <!-- comprobar: rojo GameOperationsWebTest#missingCancelReturns404 -->
+
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
 
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
@@ -1764,6 +2100,8 @@ un caso inexistente por el nuevo endpoint de cancelación:
 
 **Blue:** el GET ya no necesita su `try/catch`; el handler local lo cubre igual:
 
+**Método — `src/main/java/es/daw2a/bshipalong/web/GameController.java#get`**
+
 <!-- método: src/main/java/es/daw2a/bshipalong/web/GameController.java#get -->
 ```java
     public ResponseEntity<GameResponseDTO> get(@PathVariable("id") Long id) {
@@ -1777,6 +2115,8 @@ un caso inexistente por el nuevo endpoint de cancelación:
 <!-- comprobar: verde * -->
 
 El rechazo de datos tiene otro significado. Añade su test antes del handler:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1795,6 +2135,8 @@ El rechazo de datos tiene otro significado. Añade su test antes del handler:
 ```
 <!-- comprobar: rojo GameOperationsWebTest#invalidPlacementReturns400 -->
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
     @ExceptionHandler(IllegalArgumentException.class)
@@ -1810,6 +2152,8 @@ El rechazo de datos tiene otro significado. Añade su test antes del handler:
 
 **Blue:** conservar 404 para la excepción específica y 400 para el rechazo.
 El último caso es un estado incompatible:
+
+**Añadir — `src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java`**
 
 <!-- añadir: src/test/java/es/daw2a/bshipalong/web/GameOperationsWebTest.java -->
 ```java
@@ -1827,6 +2171,8 @@ El último caso es un estado incompatible:
 ```
 <!-- comprobar: rojo GameOperationsWebTest#invalidStateReturns409 -->
 
+**Añadir — `src/main/java/es/daw2a/bshipalong/web/GameController.java`**
+
 <!-- añadir: src/main/java/es/daw2a/bshipalong/web/GameController.java -->
 ```java
     @ExceptionHandler(IllegalStateException.class)
@@ -1843,11 +2189,13 @@ El último caso es un estado incompatible:
 **Blue:** revisar que solo se traduce a HTTP; las reglas siguen en el servicio
 y el dominio. El payload uniforme se construirá después, en el documento 05.
 
-### Regresión del recorrido real
+### H7. Regresión del recorrido real
 
 Con los endpoints y sus errores ya probados, estos escenarios comprueban web,
 servicio y persistencia juntos. Son integración de lo que acabamos de construir,
 no hay que inventar una nueva fase roja si pasan a la primera. Crea:
+
+**Archivo — `src/test/java/es/daw2a/bshipalong/web/GameRulesHttpTest.java`**
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/web/GameRulesHttpTest.java -->
 ```java
@@ -1912,9 +2260,13 @@ class GameRulesHttpTest {
 
 ### 8.1. Comprobar también una base que ya tiene datos
 
+**Tramo I:** comprobación de migración; no omitir los flujos reales de H7.
+
 Arrancar siempre sobre una base vacía no comprueba por sí solo la actualización
 de filas antiguas. Esta prueba aplica V1, inserta datos del checkpoint previo y
 después ejecuta V2/V3. Es una comprobación de migración, no otra regla del juego:
+
+**Archivo — `src/test/java/es/daw2a/bshipalong/SchemaEvolutionTest.java`**
 
 <!-- archivo: src/test/java/es/daw2a/bshipalong/SchemaEvolutionTest.java -->
 ```java

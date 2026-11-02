@@ -126,10 +126,14 @@ mkdocs build --strict
 Horario semanal: **2h + 2h + 3h** (tres días a la semana).
 
 Dentro de cada sesión:
-- **Code-along**: el profe explica teoría y escribe código en vivo con los alumnos (Battleship)
-- **Trabajo de la tarea activa**: últimos 30 min (sesiones de 2h) o 60 min
-  (sesiones de 3h). Mini Tasks se realiza individualmente; Book Catalog y
-  Gestión de eventos, en grupo.
+- Se alternan ciclos de **60 minutos**: **hasta 20 min de explicación y
+  code-along de Battleship + 30 min de trabajo en la tarea activa + 10 min de
+  control** de pruebas, avances y bloqueos.
+- Las sesiones de **2 h tienen dos ciclos**; las de **3 h, tres**. El arranque y
+  el cierre están incluidos. Si la explicación termina antes, se amplía el
+  trabajo autónomo; no se recorta este para añadir otra demo.
+- Mini Tasks se realiza individualmente; Book Catalog y Gestión de eventos,
+  en grupo.
 
 El alumnado aplica los conceptos de Battleship en la tarea activa: primero Mini
 Tasks, luego Book Catalog y finalmente Gestión de eventos. La tabla siguiente
