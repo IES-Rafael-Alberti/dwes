@@ -33,5 +33,5 @@ Este proyecto se migró de Spring Boot 3.3.3 a **4.0.5**. Los cambios no obvios 
 | `-parameters` del compilador | SB4 requiere `<parameters>true</parameters>` en `maven-compiler-plugin`. Sin esto, `@RequestParam` sin `name` explícito lanza **404** con error "parameter name not available via reflection". |
 | `@DataJpaTest` eliminado | No existe en SB4 ni hay un starter sustituto. Usar `@SpringBootTest(properties = "spring.jpa.defer-datasource-initialization=true")`. El `data.sql` se ejecuta antes del DDL de Hibernate si no se difiere. |
 | `@WebMvcTest` nuevo paquete | `org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest` → `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest` |
-| `@MockBean` → `@MockitoBean` | `org.springframework.boot.test.mock.mockito.MockBean` → `org.springframework.test.context.bean.override.mockito.MockitoBean` |
+| `@MockBean` → `@MockitoBean` | En código histórico de SB3, `org.springframework.boot.test.mock.mockito.MockBean`; en código nuevo de SB4, `org.springframework.test.context.bean.override.mockito.MockitoBean`. |
 | Starter web partido | `spring-boot-starter-web` → `spring-boot-starter-webmvc`. Tests necesitan `spring-boot-starter-webmvc-test` (no incluido en `spring-boot-starter-test`). |

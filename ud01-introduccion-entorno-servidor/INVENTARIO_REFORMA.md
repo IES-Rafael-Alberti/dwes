@@ -4,6 +4,17 @@
 
 UD1 está **cerrada para impartición desde el 23 de julio de 2026**. Cumple la definición de cierre de `00-planificacion/PRIORIDADES_CURSO_2026_2027.md`. Solo queda la comprobación operativa no bloqueante del banco GIFT mediante importación real en Moodle.
 
+## Nota para la próxima edición (reforma de fin de curso)
+
+- Las tareas `03-ejercicios/02-extension-hello-server` y
+  `03-ejercicios/03-practica-cooperativa-2026` exigen aplicar TDD, pero en
+  2026/2027 el TDD no se trabajó hasta UD2a. Ambas quedaron aplazadas al inicio
+  del curso y se reanudaron el 2026-11-09, una vez visto TDD.
+- No publicar tareas que exijan un contenido todavía no impartido. Para la
+  próxima edición hay que reformar estas dos actividades para que puedan
+  resolverse sin TDD, o trasladarlas a UD2a. Revisar también la dependencia del
+  test rojo/verde en la práctica cooperativa y en su rúbrica.
+
 ## Diagnóstico
 
 - No existe un README ni un recorrido canónico de la unidad.

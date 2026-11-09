@@ -1,9 +1,14 @@
 # Tests de Controladores en Spring Boot con `@WebMvcTest` y `MockMvc`
 
+> Ejemplos heredados de Eventos. La referencia de consulta actual, con ejemplo
+> comprobado y separación entre mock e integración, está en
+> [MockMvc y Spring Test](../../../../../../01-documentacion/03-pruebas/diccionarios/04-mockmvc-y-spring-test.md).
+> Consultar esa referencia antes de copiar firmas de servicio o configuración.
+
 ## Índice
 1. Introducción
 2. ¿Qué es `@WebMvcTest`?
-3. Inyección de dependencias con `@MockBean`
+3. Inyección de dependencias con `@MockitoBean`
 4. `MockMvc`: pruebas de la capa web sin servidor
 5. Envío y validación de JSON
 6. Validación de respuestas con `jsonPath`
@@ -19,7 +24,7 @@ Los **tests de controladores** verifican que la capa web (endpoints HTTP) funcio
 Estos tests se diferencian de los tests unitarios porque:
 - No usan `@Mock` ni `@InjectMocks`.
 - No prueban la lógica del servicio: **solo la capa web**.
-- Utilizan `@MockBean` para sustituir los servicios reales por mocks.
+- Utilizan `@MockitoBean` para sustituir los servicios reales por mocks.
 
 ---
 
@@ -33,7 +38,9 @@ Estos tests se diferencian de los tests unitarios porque:
 ❌ **No carga:**
 - Servicios reales (`@Service`)
 - Repositorios reales (`@Repository`)
-- Seguridad, salvo que se configure
+
+La seguridad y los filtros pueden formar parte del slice según las dependencias
+y configuración. `@WebMvcTest` no los desactiva automáticamente.
 
 Ejemplo:
 ```java
@@ -43,17 +50,17 @@ class EventoControladorTest { }
 
 ---
 
-## 3. Inyección de dependencias con `@MockBean`
-A diferencia de `@Mock`, `@MockBean` registra el mock como **bean dentro del ApplicationContext de Spring**.
+## 3. Inyección de dependencias con `@MockitoBean`
+A diferencia de `@Mock`, `@MockitoBean` registra el mock como **bean dentro del ApplicationContext de Spring**.
 
 ```java
-@MockBean
+@MockitoBean
 private EventoServicio eventoServicio;
 ```
 
 Esto significa:
 - El controlador usa este mock en lugar del servicio real.
-- Si falta un `@MockBean` para una dependencia del controlador, el test fallará al cargar el contexto.
+- Si falta un `@MockitoBean` para una dependencia del controlador, el test fallará al cargar el contexto.
 
 ---
 
@@ -197,7 +204,7 @@ void deleteShouldReturnNoContent() throws Exception {
 | Elemento       | Descripción                     |
 | -------------- | ------------------------------- |
 | `@WebMvcTest`  | Carga solo la capa web          |
-| `@MockBean`    | Registra mocks dentro de Spring |
+| `@MockitoBean`   | Registra mocks dentro de Spring |
 | `MockMvc`      | Simula peticiones HTTP          |
 | `jsonPath`     | Valida partes del JSON          |
 | `ObjectMapper` | Convierte objetos ↔ JSON        |

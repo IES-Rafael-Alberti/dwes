@@ -75,8 +75,8 @@ Ver `rubrica.md` y `ra-ce.md` en este directorio.
 
 Este ejercicio culmina las sesiones 7, 8 y 10 de Battleship: seguridad JWT,
 perfiles, persistencia preparada para producción y contrato OpenAPI. Consulta
-la [sesión de seguridad](../../02-ejemplos/battleship/docs/07-seguridad-jwt.md),
-la de [producción](../../02-ejemplos/battleship/docs/08-produccion-perfiles.md)
-y la [trazabilidad SDD](../../02-ejemplos/battleship/docs/10-sdd-openapi.md).
+la [sesión de seguridad](../../02-ejemplos/battleship/docs/03-seguridad/07-seguridad-jwt.md),
+la de [producción](../../02-ejemplos/battleship/docs/04-operacion/08-produccion-perfiles.md)
+y la [trazabilidad SDD](../../02-ejemplos/battleship/docs/04-operacion/10-sdd-openapi.md).
 Battleship muestra la referencia completa; aquí se reproducen esos conceptos
 en la API de eventos, sin entregar Battleship.

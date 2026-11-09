@@ -7,7 +7,7 @@ no sustituyen ese recorrido.
 ## Ruta rápida
 
 1. Estudia la [teoría de Spring Boot](ud02a-spring-boot/01-documentacion/README.md).
-2. Sigue el [mapa incremental de Battleship](ud02a-spring-boot/01-documentacion/08-battleship-caso-practico.md).
+2. Sigue el [mapa incremental de Battleship](ud02a-spring-boot/01-documentacion/02-api-rest/08-battleship-caso-practico.md).
 3. Desarrolla cada sesión en el [code-along de Battleship](ud02a-spring-boot/02-ejemplos/battleship/docs/README.md).
 4. Aplica los conceptos en esta progresión: [mini-tasks](ud02a-spring-boot/03-ejercicios/01-mini-tasks/) (JPA/H2 y API básica), [book-catalog](ud02a-spring-boot/03-ejercicios/02-book-catalog/) (REST, errores y MockMvc) y [gestión de eventos](ud02a-spring-boot/03-ejercicios/03-gestion-eventos/) (JWT, Flyway y OpenAPI).
 

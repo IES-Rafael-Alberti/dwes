@@ -7,15 +7,15 @@ El code-along se construye en **`02-ejemplos/bshipAlong/`**, con **Spring Boot
 funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
 
 - Sesión 2: realizada en clase; entidad mínima `Game`, test `PENDING` y tabla `games`.
-- [Sesión 3](03-controladores-rest.md): adaptada al proyecto de clase y reproducida
+- [Sesión 3](01-construccion/03-controladores-rest.md): adaptada al proyecto de clase y reproducida
   paso a paso en una copia, incluidos los cinco ciclos rojo/verde y la integración.
-- [Sesión 4](04-capa-servicios-dtos.md): servicio y DTOs desde el checkpoint 3,
+- [Sesión 4](01-construccion/04-capa-servicios-dtos.md): servicio y DTOs desde el checkpoint 3,
   realizada en clase y comprobada con doce pruebas finales.
-- [Tramo 4b](04b-reglas-de-negocio.md): construcción completa del núcleo de reglas,
+- [Tramo 4b](01-construccion/04b-reglas-de-negocio.md): construcción completa del núcleo de reglas,
   modelo, migraciones y endpoints; preparación verde y ciclos red/green/blue,
   cierre de 36 pruebas. Se reparte en los bloques
   que requiera el ritmo de clase, no se presupone terminado en la sesión 4.
-- [Sesión 5](05-manejo-errores.md): advice y payload de errores desde 04b,
+- [Sesión 5](01-construccion/05-manejo-errores.md): advice y payload de errores desde 04b,
   reproducida con los rojos previos y 43 pruebas finales. Cada handler local se
   retira por separado para mantener verde la suite. Empezar cuando se cierre
   04b, no por haber llegado a una hora determinada.
@@ -27,7 +27,11 @@ final de cada sesión. Battleship es el code-along, no otra entrega.
 
 ## Material de referencia anterior
 
-Estas sesiones amplían el [recorrido incremental canónico](../../../01-documentacion/08-battleship-caso-practico.md). Empieza allí: fija los checkpoints y separa el núcleo comprobado de las extensiones de seguridad y producción.
+Estas sesiones amplían el [recorrido incremental canónico](../../../01-documentacion/02-api-rest/08-battleship-caso-practico.md). Empieza allí: fija los checkpoints y separa el núcleo comprobado de las extensiones de seguridad y producción.
+
+Las guías están agrupadas en `01-construccion/`, `02-pruebas/`, `03-seguridad/`
+y `04-operacion/`. La segunda parte del curso se estudia desde el
+[bloque A de persistencia](../../../01-documentacion/04-persistencia/bloque-a/01-entidades-relaciones-y-ciclo-de-vida.md).
 
 El proyecto de referencia actual usa Spring Boot 4.0.5 y Java 25. Algunas sesiones muestran el camino hacia el resultado final y no describen necesariamente un commit intermedio conservado en el repositorio.
 
@@ -144,17 +148,17 @@ adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
 
 | # | Code-along (Battleship) | Tarea (Mini Tasks individual; restantes en grupo) | Tiempo estimado |
 |---|------------------------|------------------|-----------------|
-| 01 | Introducción, proyecto SB4, H2, primera ejecución (`01-introduccion-y-setup.md`) | Mini Tasks: preparar el repositorio propio desde cero | 2h |
-| 02 | TDD, primer test, entidad Game (`02-tdd-primer-test.md`) | Mini-tasks v1 | 2h |
-| 03 | Controladores REST, endpoints básicos (`03-controladores-rest.md`) | Mini-tasks v2 | 3h |
-| 04 | Cerrar integración de 03; servicio y DTOs (`04-capa-servicios-dtos.md`) | Mini Tasks individual: normalizar título con TDD (50 min) | 3h |
-| 04b | Modelo, migraciones y reglas completas (`04b-reglas-de-negocio.md`) | Mini Tasks individual: completar tarea de forma idempotente | Varios bloques según ritmo |
-| 05 | Manejo de errores, @ControllerAdvice (`05-manejo-errores.md`) | Mini Tasks: respuesta del caso de error | 2h |
-| 06 | Test slicing, @WebMvcTest, @DataJpaTest (`06-test-slicing.md`) | Mini-tasks tests | 2h |
-| 07 | Seguridad JWT, RBAC, CORS, rate limiting (`07-seguridad-jwt.md`) | Book Catalog: entregas 1–3 | 3h |
-| 08 | Perfiles, paginación, OpenAPI, actuator, logging (`08-produccion-perfiles.md`) | Book Catalog: entregas 4–6 | 3h |
-| 09 | Docker, Tomcat tuning, alternativas (`09-docker-tomcat.md`) | Gestión de eventos: iniciar su tramo evaluable | 2h |
-| 10 | [Trazabilidad SDD del contrato](10-sdd-openapi.md) | Gestión de eventos: contrato y conformidad | Lectura |
+| 01 | [Introducción y setup](01-construccion/01-introduccion-y-setup.md) | Mini Tasks: preparar el repositorio propio desde cero | 2h |
+| 02 | [Primer test y entidad](01-construccion/02-tdd-primer-test.md) | Mini-tasks v1 | 2h |
+| 03 | [Controladores REST](01-construccion/03-controladores-rest.md) | Mini-tasks v2 | 3h |
+| 04 | [Servicio y DTOs](01-construccion/04-capa-servicios-dtos.md) | Mini Tasks individual: normalizar título con TDD | 3h |
+| 04b | [Modelo y reglas](01-construccion/04b-reglas-de-negocio.md) | Mini Tasks individual: completar tarea de forma idempotente | Varios bloques |
+| 05 | [Manejo de errores](01-construccion/05-manejo-errores.md) | Cierre de Mini Tasks; avance de Book Catalog según el punto del grupo | Según avance |
+| 06 | [Test slicing](02-pruebas/06-test-slicing.md), referencia pendiente de adaptación | Consulta sobre los tests de la práctica activa | Consulta |
+| 07 | [Seguridad JWT](03-seguridad/07-seguridad-jwt.md), referencia del recorrido anterior | Gestión de eventos según alcance publicado | Replanificado |
+| 08 | [Producción y perfiles](04-operacion/08-produccion-perfiles.md), referencia anterior | Conceptos redistribuidos en los nuevos bloques | Replanificado |
+| 09 | [Docker y Tomcat](04-operacion/09-docker-tomcat.md) | Consulta según necesidad | Consulta |
+| 10 | [Trazabilidad SDD del contrato](04-operacion/10-sdd-openapi.md) | Gestión de eventos: contrato y conformidad | Lectura |
 
 La duración global se ajusta a los checkpoints realmente alcanzados. La tabla
 orienta la secuencia; no obliga a comprimir 4b ni a quitar tiempo de la tarea activa.

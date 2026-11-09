@@ -23,7 +23,7 @@ Tasks que corresponde. No hay que terminar toda la práctica de una vez.
 En la **sesión 3**, lee los controladores V1/V2, prueba sus contratos HTTP y
 añade con TDD `GET /v1/tasks/{id}` (existente y `404`). Las rutas de la actividad
 son `/v1/tasks` y `/v2/tasks`, y el campo se llama `done`. El detalle está al final
-de la [sesión 3 de Battleship](../../02-ejemplos/battleship/docs/03-controladores-rest.md).
+de la [sesión 3 de Battleship](../../02-ejemplos/battleship/docs/01-construccion/03-controladores-rest.md).
 Este primer avance en memoria no sustituye al slice JPA de cierre descrito abajo.
 
 Sobre `main`, implementa una **funcionalidad vertical pequeña** (*slice*): un

@@ -94,6 +94,7 @@ venv/
 # ============================================
 .idea/
 *.iml
+.slim/deepwork/
 *.ipr
 *.iws
 .vscode/

@@ -94,6 +94,39 @@ mvn -q -Ptests-paging-cache test
 mvn -q -Ptests-final test
 ```
 
+---
+
+## Estado de la revisión TDD — 15/10/2026
+
+### Hecho
+
+- Revisado el documento `01-documentacion/03-pruebas/02-tdd-primeros-pasos.md` para que
+  describa el código real de Mini Tasks, no un controlador genérico inexistente.
+- Aclarada la diferencia entre la demo de `02-ejemplos` y el proyecto ejecutable
+  de `03-ejercicios/01-mini-tasks`.
+- Confirmado que el `pom.xml` ya contiene
+  `org.springframework.boot:spring-boot-starter-test` con alcance `test`; no es
+  necesario añadir `junit-jupiter` por separado.
+- Ampliada `TaskControllerV2` con GET por id, `@Valid`, respuestas `201`, `400`
+  y `404`, manteniendo V1 sin cambios funcionales.
+- Añadido `TaskControllerV2Test` con MockMvc standalone y validator.
+- Adaptado `TaskControllerV1Test` al mismo enfoque standalone para no depender de
+  `@WebMvcTest`.
+- Corregido en el documento el paquete de `@WebMvcTest` para Spring Boot 4:
+  `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest`.
+- `git diff --check` validado.
+
+### Pendiente
+
+- Ejecutar los tests desde IntelliJ después de recargar Maven; este entorno no
+  tiene `mvn` ni `mvnw` disponibles.
+- Regenerar el PDF de `02-tdd-primeros-pasos.md` cuando se cierre el contenido.
+- Decidir en una sesión posterior cómo separar o enlazar mejor documentación,
+  demos y ejercicios, ya que actualmente están distribuidos entre
+  `01-documentacion`, `02-ejemplos` y `03-ejercicios`.
+- Continuar, cuando corresponda, con la evolución JPA: servicio, repositorio,
+  entidad y manejo uniforme de errores.
+
 * Cuando un test falle, motiva a que lean el fallo y localicen la clase a cambiar.
 
 **Bloque 4 (15’):** Cierre y extensiones
@@ -188,7 +221,7 @@ mvn -q -Ptests-basic test
 
 **Criterios de aceptación:**
 
-* Controlador delgado, lógica en `TaskService`, tests con `@MockBean`.
+* Controlador delgado, lógica en `TaskService`, tests con `@MockitoBean`.
 
 **Ejercicio 4 (Media):** Crea `PUT /v4/tasks/{id}` con `UpdateTaskDTO` para actualizar `title`/`done`.
 

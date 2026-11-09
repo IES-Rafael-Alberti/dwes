@@ -30,7 +30,6 @@ public class TaskController {
         Task task= taskService.showTask(id);
         return ResponseEntity.ok(task);
     }
-
     @PostMapping
     public ResponseEntity<Task> create(@RequestBody @Valid CreateTaskDTO dto) {
         Task saved = taskService.create(dto);
@@ -39,6 +38,7 @@ public class TaskController {
                 .created(URI.create("/tasks/" + saved.getId()))
                 .body(saved);
     }
+
 
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<Task> toggle(@PathVariable Long id) {

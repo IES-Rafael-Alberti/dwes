@@ -75,7 +75,18 @@ El contrato canónico de seguridad se consolidará a partir de Battleship y debe
 
 ## Práctica del alumnado
 
+### Pendiente al comenzar seguridad: pruebas con JWT
+
+Recordatorio docente (2026-10-27): retomar este punto con el profesor al llegar
+a seguridad; no implementarlo todavía en el recorrido actual de tests.
+`@WithMockUser` permite comprobar autorización con una identidad simulada, pero
+no valida un JWT. Preparar pruebas con los filtros activos y la cabecera
+`Authorization: Bearer <token>`: acceso público sin token, acceso protegido sin
+token, token válido, token inválido o caducado y permisos insuficientes.
+Si se simula el servicio JWT, distinguir esas pruebas de las que verifican
+realmente la firma y la caducidad con el componente JWT real.
+
 El ejercicio [Gestión de eventos](../03-ejercicios/03-gestion-eventos/README.md)
 aplica JWT, roles y CORS sobre una API existente. La
-[sesión de seguridad de Battleship](../02-ejemplos/battleship/docs/07-seguridad-jwt.md)
+[sesión de seguridad de Battleship](../02-ejemplos/battleship/docs/03-seguridad/07-seguridad-jwt.md)
 es la referencia canónica para preparar esa práctica.

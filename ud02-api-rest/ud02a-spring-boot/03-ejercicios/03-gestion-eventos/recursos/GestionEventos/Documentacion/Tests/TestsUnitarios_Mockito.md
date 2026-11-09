@@ -1,4 +1,11 @@
 # Guía de Tests Unitarios con Mockito y AssertJ
+
+> Esta guía conserva ejemplos extensos de Eventos. Para localizar y leer una
+> instrucción concreta, utiliza las referencias actuales de
+> [Mockito](../../../../../../01-documentacion/03-pruebas/diccionarios/03-mockito.md)
+> y [aserciones](../../../../../../01-documentacion/03-pruebas/diccionarios/02-aserciones-junit-assertj-hamcrest.md).
+> Sus ejemplos no añaden una nueva entrega ni sustituyen el contrato de la práctica.
+
 ## Índice
 1. [Introducción](#introduccion)
 2. [Conceptos Básicos](#conceptos-basicos)
@@ -434,7 +441,8 @@ verify(repo, timeout(200)).findAll();
 
 ## ArgumentCaptor
 
-Muy útil para comprobar qué datos se guardan realmente.
+Muy útil para comprobar qué datos se pasan al método del colaborador. Si es un
+mock, capturar el argumento no demuestra que se haya guardado en una BD real.
 
 ```java
 ArgumentCaptor<Evento> captor = ArgumentCaptor.forClass(Evento.class);
@@ -953,7 +961,7 @@ void validacionFalla() {
 1. **Añadir test**: Probar `obtenEventoPorNombre()` cuando existe y cuando no existe
 2. **Añadir test**: Probar que `actualizarEvento()` no actualiza campos nulos
 3. **Refactorizar**: Extraer la creación de eventos de prueba a métodos helper
-4. **Investigar**: Cómo usar `@MockBean` en tests de integración con Spring Boot
+4. **Investigar**: Comparar `@MockitoBean` (tests con contexto Spring) con Mockito puro en tests unitarios
 
 ---
 

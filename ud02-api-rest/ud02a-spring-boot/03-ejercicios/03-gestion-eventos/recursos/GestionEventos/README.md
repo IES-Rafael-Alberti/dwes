@@ -6,7 +6,7 @@ Small Spring Boot project for managing events, organizers, and participants.
 
 This project uses Spring profiles. For a full explanation see:
 
-- Documentación: Perfiles de Spring → `Documentacion/Perfiles_Spring.md`
+- Documentación: Perfiles de Spring → `Documentacion/03-configuracion/Perfiles_Spring.md`
 
 Quick start:
 - Default active profile is set in `src/main/resources/application.properties` via `spring.profiles.active=dev`.
