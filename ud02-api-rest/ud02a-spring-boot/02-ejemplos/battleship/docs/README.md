@@ -19,7 +19,12 @@ funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
   reproducida con los rojos previos y 43 pruebas finales. Cada handler local se
   retira por separado para mantener verde la suite. Empezar cuando se cierre
   04b, no por haber llegado a una hora determinada.
-- Sesiones 6 y siguientes: pendientes de adaptación progresiva desde ese checkpoint.
+- [Asociaciones JPA en bshipAlong](01-construccion/06-asociaciones-jpa-bshipalong.md):
+  recorrido del guion 10 desde el cierre de errores, con asociaciones, servicio y
+  pruebas de persistencia. Pendiente de reconstrucción desde este documento.
+- [Integridad y actualización de barcos en bshipAlong](01-construccion/07-integridad-y-actualizacion-bshipalong.md):
+  migración V4, restricciones y edición mediante PUT/PATCH.
+- Otros tramos posteriores: adaptación progresiva según el avance real del aula.
 
 **Tareas:** Mini Tasks es **individual**; después Book Catalog y Gestión de
 eventos son **en grupo**. Se trabaja una tarea cada vez y su avance se indica al
@@ -141,8 +146,9 @@ Dentro de cada sesión:
 
 El alumnado aplica los conceptos de Battleship en la tarea activa: primero Mini
 Tasks, luego Book Catalog y finalmente Gestión de eventos. La tabla siguiente
-es una previsión temática; no certifica que las sesiones posteriores a la 5 estén
-adaptadas ni fija que se abra una tarea antes de cerrar la anterior.
+es una previsión temática; salvo donde se indique, no certifica que los tramos
+posteriores a la 5 estén adaptados ni fija que se abra una tarea antes de cerrar
+la anterior.
 
 ## Sesiones
 
