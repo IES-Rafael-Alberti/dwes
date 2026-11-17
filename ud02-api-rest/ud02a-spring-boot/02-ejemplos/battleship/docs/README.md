@@ -24,6 +24,8 @@ funcional (Boot 4.0.5); no se abre como punto de partida del code-along.
   pruebas de persistencia. Pendiente de reconstrucción desde este documento.
 - [Integridad y actualización de barcos en bshipAlong](01-construccion/07-integridad-y-actualizacion-bshipalong.md):
   migración V4, restricciones y edición mediante PUT/PATCH.
+- [PostgreSQL y consultas JPA en bshipAlong](01-construccion/08-postgresql-y-consultas-bshipalong.md):
+  conexión a PostgreSQL, migraciones Flyway y primeras consultas de repositorio.
 - Otros tramos posteriores: adaptación progresiva según el avance real del aula.
 
 **Tareas:** Mini Tasks es **individual**; después Book Catalog y Gestión de
