@@ -81,6 +81,11 @@ volumes:
   bshipalong_pgdata:
 ```
 
+Puedes arrancar la base desde una terminal o desde IntelliJ. Elige una de las
+dos opciones; no necesitas crear dos contenedores.
+
+### 3.1. Opción terminal
+
 En una terminal Linux establece una contraseña **solo de desarrollo**, que no
 sea ninguna de tus contraseñas reales, y arranca la base:
 
@@ -90,6 +95,46 @@ docker compose up -d
 docker compose ps
 ```
 
+### 3.2. Opción IntelliJ: Compose y contraseña en `.env`
+
+**Archivo nuevo:** `.env`, en la raíz de `bshipAlong`, junto a `compose.yaml`:
+
+```dotenv
+DB_PASSWORD=cambia-esta-clave-local
+```
+
+Utiliza una clave solo de desarrollo. En el `.gitignore` de ese proyecto añade
+esta línea si todavía no está incluida:
+
+```gitignore
+.env
+```
+
+El archivo es local: no lo añadas al repositorio ni lo incluyas en un ZIP que
+compartas. Compose lee `DB_PASSWORD` para sustituir `${DB_PASSWORD:?...}` y asignar
+su valor a `POSTGRES_PASSWORD` en el contenedor. No hay que modificar el YAML
+anterior ni escribir la contraseña dentro de él.
+
+En IntelliJ, con la integración de Docker disponible:
+
+1. Abre **Run → Edit Configurations** y añade una configuración **Docker Compose**.
+2. Ponle un nombre reconocible, por ejemplo `bshipAlong PostgreSQL`.
+3. Selecciona la conexión a Docker y, en **Compose files**, el `compose.yaml` de
+   la raíz de este proyecto. Selecciona el servicio `db`.
+4. El IDE busca por defecto `.env` junto al archivo Compose. Para indicar su ruta
+   explícitamente, activa **Modify options → Environment variables files** y
+   selecciona ese `.env`. El nombre de la opción puede variar según la versión.
+5. Aplica los cambios y ejecuta la configuración con **Run**. Comprueba el
+   contenedor y su estado desde **Services → Docker**.
+
+No actives **Remove volumes on down**: borraría los datos al retirar los
+contenedores. Si no dispones de integración Docker en el IDE, utiliza 3.1.
+
+**Importante:** las variables del proceso Compose y las de la aplicación Java
+son configuraciones diferentes. Un `export` en otra terminal no configura el
+proceso del IDE. El perfil y la contraseña de Spring Boot se preparan en 4.3;
+crear este `.env` no basta para arrancar la aplicación.
+
 Espera a que el servicio aparezca como `healthy`. `127.0.0.1` limita el puerto
 publicado al propio equipo. El volumen conserva los datos al parar o recrear el
 contenedor; **no uses `docker compose down -v`**, porque elimina ese volumen y sus
@@ -98,6 +143,8 @@ La contraseña de PostgreSQL se establece al inicializar un volumen vacío: camb
 la variable después no cambia automáticamente la contraseña existente.
 
 ## 4. Seleccionar PostgreSQL sin perder H2
+
+### 4.1. Configuración común para ambas formas de arranque
 
 Crea `src/main/resources/application-postgres.yaml`:
 
@@ -110,12 +157,66 @@ spring:
 ```
 
 El archivo `application.yaml` original conserva H2 como opción predeterminada.
-El perfil `postgres` reemplaza sus datos de conexión; siguen activos Flyway y
-`ddl-auto: validate`. En la misma terminal donde exportaste la contraseña:
+Se carga como configuración común también cuando activas `postgres`:
+`application-postgres.yaml` sobrescribe sus datos de conexión y conserva el
+resto, incluidos Flyway y `ddl-auto: validate`.
+
+No tienes que activar `default` junto a `postgres`. El perfil `default` se usa
+cuando no hay perfiles activos explícitos; no es lo mismo que el archivo común
+`application.yaml`. Si necesitas varios perfiles, puedes indicar una lista como
+`postgres,dev`: si ambos definen una propiedad, el último tiene prioridad entre
+esos archivos de perfil. No añadas `dev` si no lo utiliza tu proyecto.
+
+### 4.2. Opción terminal
+
+En la misma terminal donde exportaste la contraseña en 3.1, ejecuta:
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
+
+Si arrancaste Compose desde IntelliJ con `.env`, ese archivo **no se carga
+automáticamente en la aplicación**. Para esta opción de terminal necesitas
+exportar también `DB_PASSWORD` antes del comando anterior.
+
+### 4.3. Opción IntelliJ: perfil y variables de la aplicación
+
+Con PostgreSQL ya arrancado mediante 3.1 o 3.2:
+
+1. Abre **Run → Edit Configurations** y selecciona la configuración que ejecuta
+   la clase principal de `bshipAlong`, no la configuración de Docker Compose.
+2. En **Active profiles**, escribe `postgres`. Si no aparece ese campo, utiliza
+   **Program arguments** con `--spring.profiles.active=postgres`. Basta con una
+   de las dos opciones; no es necesario repetirlo en ambas.
+3. En **Environment variables**, añade `DB_PASSWORD` con el **mismo valor** que
+   usaste al inicializar PostgreSQL. Para el ejemplo de 3.2:
+
+   ```text
+   DB_PASSWORD=cambia-esta-clave-local
+   ```
+
+4. Si reutilizas otro servidor o cambiaste el puerto, usuario o base, añade
+   también `DB_URL` y `DB_USER`. Con los valores del Compose de este documento no
+   hace falta añadirlos, porque ya son los valores predeterminados del perfil:
+
+   ```text
+   DB_URL=jdbc:postgresql://localhost:15432/bshipalong
+   DB_USER=bship
+   ```
+
+5. Aplica los cambios y ejecuta la aplicación con **Run**. No la arranques a la
+   vez por terminal si ambas instancias van a usar el puerto 8080.
+
+Spring Boot no lee por sí mismo el `.env` de Compose. En este recorrido el IDE
+pasa las variables a la aplicación mediante su configuración de ejecución.
+No compartas una configuración de ejecución que incluya contraseñas.
+
+### 4.4. Comprobar perfil, migraciones y persistencia
+
+En la consola de arranque debe aparecer `postgres` como perfil activo, no solo
+`default`. Si no aparece, revisa la configuración de ejecución antes de probar
+la API. Si reutilizas una base ya inicializada, cambiar el `.env` o la variable
+del IDE **no cambia su contraseña**: necesitas las credenciales que ya tenga.
 
 Observa en el arranque la conexión a PostgreSQL y las migraciones V1–V4. Si la
 base estaba vacía, Flyway las aplica en orden; si ya estaban aplicadas y no han
@@ -132,7 +233,8 @@ curl -i -X POST http://localhost:8080/api/games \
 curl -s http://localhost:8080/api/games
 ```
 
-Detén la aplicación con `Ctrl+C`, vuelve a arrancarla con el mismo perfil y
+Detén la aplicación con `Ctrl+C` en terminal o con **Stop** en IntelliJ, vuelve a
+arrancarla con el mismo perfil y
 repite la consulta. La partida sigue ahí porque está en PostgreSQL, no en la H2
 en memoria. Inspecciona también el historial:
 
