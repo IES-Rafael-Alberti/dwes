@@ -46,6 +46,11 @@ carpetas no obliga a leer todos los anexos antes de empezar a programar.
 
 ### Consultas y representación de datos
 
+- **[Consultas derivadas y JPQL: explicación progresiva](04-persistencia/bloque-b/01-consultas-derivadas-y-jpql.md)**:
+  lectura previa al repositorio de Battleship; nombres de método, parámetros,
+  entidad frente a tabla y comprobación de resultados.
+- **[Battleship: filtrar, ordenar y paginar consultas](../02-ejemplos/battleship/docs/01-construccion/09-filtros-orden-y-paginacion-bshipalong.md)**:
+  explicación y práctica en el repositorio `bshipAlong`, después de la guía 08.
 - [Proyecciones JPA](04-persistencia/10-proyecciones-jpa.md).
 
 Los bloques posteriores se incorporarán progresivamente. El trabajo de aplicación

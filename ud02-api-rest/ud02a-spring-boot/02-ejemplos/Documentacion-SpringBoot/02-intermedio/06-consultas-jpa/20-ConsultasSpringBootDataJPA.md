@@ -9,6 +9,10 @@ lang: "es"
 
 # 🧩 Consultas en Spring Boot con Spring Data JPA
 
+> **Entrada actual para clase:** [Consultas derivadas y JPQL: explicación progresiva](../../../../01-documentacion/04-persistencia/bloque-b/01-consultas-derivadas-y-jpql.md).
+> Este apunte previo se conserva como consulta de alternativas; no es el recorrido
+> que hay que seguir completo para construir las consultas de Battleship.
+
 Spring Data JPA simplifica el acceso a bases de datos en aplicaciones Java mediante un enfoque declarativo.  
 En lugar de escribir SQL manualmente, podemos definir métodos en interfaces de repositorio que **Spring interpreta automáticamente**.
 

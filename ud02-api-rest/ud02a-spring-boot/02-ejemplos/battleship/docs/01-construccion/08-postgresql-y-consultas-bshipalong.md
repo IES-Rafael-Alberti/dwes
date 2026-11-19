@@ -248,6 +248,12 @@ más tarde `docker compose down` para retirar los contenedores y la red, sin `-v
 
 ## 5. Dos consultas en el repositorio
 
+**Antes de continuar con el código:** leer el apunte
+[Consultas derivadas y JPQL](../../../../01-documentacion/04-persistencia/bloque-b/01-consultas-derivadas-y-jpql.md),
+apartados 1–5. Explica desde el principio cómo se leen las dos declaraciones
+siguientes. Si el repositorio ya está escrito, no copiarlo otra vez: comprender
+las consultas y continuar con las pruebas del apartado 6.
+
 `JpaRepository` ya ofrece operaciones como `findById` y `save`. Una **consulta
 derivada** expresa condiciones en el nombre del método. JPQL es otra forma de
 escribir consultas usando entidades y atributos Java, no nombres de tablas SQL.
