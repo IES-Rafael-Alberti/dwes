@@ -178,15 +178,37 @@ Añade este import a `GameRepository.java`:
 import org.springframework.data.domain.Sort;
 ```
 
-Y este método dentro de la interfaz, **sin borrar** `findByActiveTrue()`:
+Dentro de la interfaz, **conserva el método sin parámetros del apartado 2.2 y
+añade una segunda declaración**. Ese fragmento debe quedar con **las dos firmas**:
 
 ```java
+List<Game> findByActiveTrue();
 List<Game> findByActiveTrue(Sort sort);
 ```
+
+Si la primera ya existe, no la copies otra vez: añade únicamente la segunda.
+No estamos añadiendo un parámetro al método anterior ni sustituyéndolo.
 
 Es una sobrecarga: ambos métodos filtran activas; el segundo recibe además un
 criterio de ordenación. Los nombres de `Sort` son propiedades de `Game`, no
 necesariamente nombres de columnas SQL.
+
+**Por qué se conservan ambas:** `GameService.listGames`, su mock en
+`GameServiceTest` y la prueba `activeQueryExcludesCancelledGames` siguen llamando
+a `findByActiveTrue()`. La nueva prueba de ordenación llamará a
+`findByActiveTrue(sort)`. En este paso solo comprobamos la ordenación desde el
+repositorio; todavía no la exponemos por HTTP ni cambiamos el servicio.
+
+Si aparece un error de compilación que indica que se requiere `Sort` pero no se
+han pasado argumentos, comprueba que no hayas reemplazado la primera firma.
+En este recorrido, recupérala junto a la segunda para conservar los llamadores.
+
+**Alternativa válida:** mantener solo `findByActiveTrue(Sort sort)` y actualizar
+**todas** las llamadas sin orden a `findByActiveTrue(Sort.unsorted())`, incluidos
+el servicio, las pruebas y los mocks (con el import de `Sort` correspondiente).
+`Sort.unsorted()` expresa que no se solicita ordenación; no garantiza el orden
+de los resultados ni equivale a pasar `null`. Ambas opciones son válidas: aquí
+usamos sobrecargas para introducir la ordenación sin cambiar las llamadas previas.
 
 ### 3.3. Comprobar orden y desempate
 

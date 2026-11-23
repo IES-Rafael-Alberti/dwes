@@ -51,6 +51,12 @@ carpetas no obliga a leer todos los anexos antes de empezar a programar.
   entidad frente a tabla y comprobación de resultados.
 - **[Battleship: filtrar, ordenar y paginar consultas](../02-ejemplos/battleship/docs/01-construccion/09-filtros-orden-y-paginacion-bshipalong.md)**:
   explicación y práctica en el repositorio `bshipAlong`, después de la guía 08.
+- [Contrato HTTP paginado de partidas](../02-ejemplos/battleship/docs/01-construccion/10-contrato-http-paginado-bshipalong.md):
+  servicio, controlador y pruebas del cambio de array a objeto paginado.
+- [Proyecciones y carga en bshipAlong](../02-ejemplos/battleship/docs/01-construccion/11-proyecciones-y-carga-bshipalong.md):
+  consulta resumida y observación SQL sin modificar el contrato HTTP.
+- [Usuarios, perfiles y roles en bshipAlong](../02-ejemplos/battleship/docs/01-construccion/12-usuarios-perfiles-y-roles-bshipalong.md):
+  modelo de identidades y relaciones 1:1 y N:M, antes de introducir seguridad.
 - [Proyecciones JPA](04-persistencia/10-proyecciones-jpa.md).
 
 Los bloques posteriores se incorporarán progresivamente. El trabajo de aplicación
